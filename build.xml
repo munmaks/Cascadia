@@ -1,0 +1,4 @@
+- compiler des sources (target compile) ;
+- créer le jar exécutable (target jar) ; il devra s'agir de la target par défaut ;
+- générer la javadoc, écrite en anglais, dans le répertoire docs/doc (target javadoc) ;
+- nettoyer le projet pour qu'il ne rete plus que les éléments demandés (target clean).
