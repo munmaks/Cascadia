@@ -66,12 +66,12 @@
 - Si égalité au deuxième rang aucun point marqué
 - Pour chaque jeton nature, le joueur marque 1 point
 - Comptez les points et trouver le vainqueur
-![Exemple compter les points](./image/exemple1.png)
+![Exemple compter les points](image/exemple1.png)
 
 ## Mode Solo
 - Le début d'une partie est comme à 2 joueurs sauf qu'on prend qu'une seule tuile habitat de départ
 - En fin de tour de jeu avant de compléter les tuiles Habitat et les jetons faune on doit retirer de la partie le lot tuile / jeton le plus écarté de la pioche (à voir comment les selectionner), puis piocher 2 lots habitat/jeton pour compléter les lots
-![Exemple déroulement Mode Solo](./image/exemple2.png)
+![Exemple déroulement Mode Solo](image/exemple2.png)
 ## Carte Décompte de la Faune
 1. Ours
 - rapportent des points en fonction de la taille des groupes crées. La forme et l’orientation des groupes n’importent pas.
@@ -81,7 +81,7 @@ Précisions sur les cartes :
 (C) Marquez des points pour chaque groupe comportant 1, 2 ou 3 ours et obtenez 3 points de bonus si vous avez au moins un groupe de chaque taille. 
 (D) Marquez des points pour chaque groupe comportant 2, 3 ou 4 ours.
 
-![Décompte de la Faune : Ours](./image/ours.png)
+![Décompte de la Faune : Ours](image/ours.png)
 
 2. Wapitis
 - rapportent des points pour chaque groupe de wapitis. Chaque wapiti ne peut faire partie que d’un seul groupe. 
@@ -93,7 +93,7 @@ Précisions sur les cartes :
 (C) Décomptez chaque groupe de wapitis en fonction de sa taille, peu importe sa forme et son orientation. 
 (D) Décomptez uniquement les groupes de wapitis disposés en cercle, comme indiqué sur la carte.
 
-![Décompte de la Faune : Wapitis](./image/wapitis.png)
+![Décompte de la Faune : Wapitis](image/wapitis.png)
 
 3. Saumons
 - rapportent des points pour chaque banc de saumons. Un banc de saumons est une ligne de
@@ -106,7 +106,7 @@ Précisions sur les cartes :
 (C) Décomptez chaque banc de saumons en fonction de sa taille (de 3 à 5 saumons ou plus). 
 (D) Décomptez chaque banc de 3 saumons ou plus : marquez 1 point par saumon dans la ligne + 1 point pour chaque jeton Faune adjacent à la ligne (quelle que soit l’espèce)
 
-![Décompte de la Faune : Saumons](./image/saumons.png)
+![Décompte de la Faune : Saumons](image/saumons.png)
 
 4. Buses
 - rapportent des points en se déployant au-dessus de votre environnement, soit seules, soit par 2, soit par ligne de mire entre 2 buses. 
@@ -118,7 +118,7 @@ Précisions sur les cartes :
 (C) Marquez 3 points pour chaque ligne de mire entre 2 buses. Une même buse peut être décomptée dans plusieurs lignes de mire. 
 (D) Reliez vos buses par paires en ligne droite, et marquez des points en fonction du nombre d’animaux différents qui séparent chaque paire (hors buses). Une même buse ne peut faire partie que d’une seule paire.
 
-![Décompte de la Faune : Buses](./image/buses.png)
+![Décompte de la Faune : Buses](image/buses.png)
 
 5. Renards
 - sont décomptés individuellement (qu’ils soient adjacents entre eux ou non) ou par paire, et chaque
@@ -130,9 +130,9 @@ Précisions sur les cartes :
 (C) Pour chaque renard, repérez l’espèce la plus présente autour de lui (hors renards) et marquez des points en fonction du nombre d’animaux de cette espèce présents autour du renard. 
 (D) Pour chaque paire de renards, marquez des points en fonction du nombre de paires d’espèces différentes (hors renards) qui l’entourent. Comme indiqué sur la carte, les animaux d’une paire n’ont pas besoin d’être adjacents entre eux.
 
-![Décompte de la Faune : Renards](./image/renards.png)
+![Décompte de la Faune : Renards](image/renards.png)
 
 ## Succès
-![Succès 0](./image/succes0.png)
-![Succès 1](./image/succes1.png)
-![Succès 2](./image/succes2.png)
+![Succès 0](image/succes0.png)
+![Succès 1](image/succes1.png)
+![Succès 2](image/succes2.png)
