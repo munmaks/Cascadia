@@ -72,7 +72,7 @@ out/
 .mtj.tmp/
 # Compiled class file
 *.class
-*.jar
+# *.jar
 *.war
 *.ear
 *.nar
