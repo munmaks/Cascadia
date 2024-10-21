@@ -21,6 +21,7 @@ local.properties
 ##############################
 .vscode/
 .code-workspace
+.dist
 
 ##############################
 ## Gradle
