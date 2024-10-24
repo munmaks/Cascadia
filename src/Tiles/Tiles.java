@@ -1,3 +1,4 @@
-public interface Tile {
-    ;    
+package Tiles;
+
+public interface Tiles {
 }

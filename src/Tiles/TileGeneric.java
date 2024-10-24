@@ -2,11 +2,11 @@ package Tiles;
 
 import java.util.Objects;
 
-public class KeystoneTile implements Tiles {
+public class TileGeneric implements Tiles {
 	String habitat;
 	String animal;
 
-	public KeystoneTile(String habitat, String animal) {
+	public TileGeneric(String habitat, String animal) {
 		this.habitat = habitat;
 		this.animal = animal;
 	}
@@ -26,3 +26,4 @@ public class KeystoneTile implements Tiles {
 		return res;
 	}
 }
+

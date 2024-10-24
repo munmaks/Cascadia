@@ -1,12 +1,16 @@
 package Tiles;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
-public class KeystoneTiles implements Tiles{
+public class KeystoneTiles implements Tiles {
 	public ArrayList<KeystoneTile> keystonetile = new ArrayList<KeystoneTile>();
-	public void add(KeystoneTile keystoneTile) {
-		keystonetile.add(keystoneTile);
+	public void add(KeystoneTile tilegeneric) {
+		keystonetile.add(tilegeneric);
+	}
+	public String toString() {
+		String res ="";
+		res += keystonetile.toString();
+		return res;
 	}
 	public static void main(String[] args) {
 		var keystones = new KeystoneTiles();
@@ -35,6 +39,6 @@ public class KeystoneTiles implements Tiles{
 		keystones.add(new KeystoneTile("Mountain", "Elk"));
 		keystones.add(new KeystoneTile("Mountain", "Hawk"));
 		keystones.add(new KeystoneTile("Mountain", "Hawk"));
-		System.out.println(keystones.keystonetile);
+		System.out.println(keystones);
 	}
 }
