@@ -1,4 +1,4 @@
-package Tiles;
+package fr.uge.Tiles;
 
 import java.util.ArrayList;
 
@@ -7,6 +7,8 @@ public class KeystoneTiles implements Tiles {
 	public void add(KeystoneTile tilegeneric) {
 		keystonetile.add(tilegeneric);
 	}
+
+	@Override
 	public String toString() {
 		String res ="";
 		res += keystonetile.toString();

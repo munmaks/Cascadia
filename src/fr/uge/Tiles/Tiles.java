@@ -1,4 +1,5 @@
-package Tiles;
+package fr.uge.Tiles;
 
 public interface Tiles {
+    ;
 }

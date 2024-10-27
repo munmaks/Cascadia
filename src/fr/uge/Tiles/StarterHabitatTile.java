@@ -1,4 +1,4 @@
-package Tiles;
+package fr.uge.Tiles;
 
 import java.util.ArrayList;
 

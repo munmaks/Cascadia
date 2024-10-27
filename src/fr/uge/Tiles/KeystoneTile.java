@@ -1,12 +1,12 @@
-package Tiles;
+package fr.uge.Tiles;
 
 import java.util.Objects;
 
-public class TileGeneric implements Tiles {
+public class KeystoneTile implements Tiles {
 	String habitat;
 	String animal;
 
-	public TileGeneric(String habitat, String animal) {
+	public KeystoneTile(String habitat, String animal) {
 		this.habitat = habitat;
 		this.animal = animal;
 	}
@@ -26,4 +26,3 @@ public class TileGeneric implements Tiles {
 		return res;
 	}
 }
-
