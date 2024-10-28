@@ -1,12 +1,12 @@
 package fr.uge.environment;
 
 public enum WildlifeType {
-    BEAR,
-    ELK,
-    SALMON,
-    HAWK,
-    FOX;
-    
+  BEAR,
+  ELK,
+  SALMON,
+  HAWK,
+  FOX;
+  
   // add descriptions or point values here
   //    private final String description;
   //
