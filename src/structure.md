@@ -7,9 +7,12 @@ Cascadia
 ├── environment
 │   ├── Environment.java
 │   ├── Tile.java
+│	├── TileType.java
 │   ├── KeystoneTile.java
 │   ├── WildlifeToken.java
 │   ├── WildlifeType.java
+│	├── StarterHabitatTile.java
+│	├── HabitatTile.java
 ├── scoring
 │   ├── ScoreCalculator.java
 │   ├── WildlifeScoringCard.java

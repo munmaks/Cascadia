@@ -4,7 +4,16 @@ import java.util.List;
 import java.util.Objects;
 // import java.lang.StringBuilder;
 
-public record HabitatTile(List<Tile> habitats, List<WildlifeToken> tokens, int x, int y) implements Tile {
+public record HabitatTile(
+      TileType firstHabitat,
+      TileType secondHabitat,
+      WildlifeToken firstAnimal,    
+      WildlifeToken secondAnimal,   
+      WildlifeToken thirdAnimal,    /* optional for some habitat tiles */
+      List<Tile> neighbors,         /* list of neighbors */
+      int x,
+      int y
+    ) implements Tile {
 
   private static boolean occupied;
 
@@ -21,34 +30,32 @@ public record HabitatTile(List<Tile> habitats, List<WildlifeToken> tokens, int x
    */
 
   public HabitatTile {
-    Objects.requireNonNull(habitats, "Habitats can't be null");
-    Objects.requireNonNull(tokens, "Tokens can't be null");
+    Objects.requireNonNull(firstHabitat, "Habitats can't be null");
+    Objects.requireNonNull(secondHabitat, "Habitats can't be null");
+    Objects.requireNonNull(firstAnimal, "Animals can't be null");
+    Objects.requireNonNull(secondAnimal, "Animals can't be null");
     occupied = false;
   }
-
-
   
   
-  private final String habitatsAsString() {
-    var builder = new StringBuilder();
-    var separator = "";
-    builder.append("Habitats: ");
-    for (var habitat : habitats) {
-      builder.append(separator).append(habitat.toString());
-      separator = ", ";
+  private final String habitatsAndAnimalsAsString() {
+    /* only two animals */
+    if (thirdAnimal == null) {
+      return "Habitats: " + firstHabitat + "and " + secondHabitat +
+           "\nAnimals: " + firstAnimal + ", " + secondAnimal;
     }
-    builder.append("\n");
-    return builder.toString();
+    /* three animals */
+    return "Habitats: " + firstHabitat + "and " + secondHabitat +
+         "\nAnimals: " + firstAnimal + ", " + secondAnimal + ", " + thirdAnimal;
   }
-  
- 
-  private final String tokensAsString() {
+
+  private final String neighborsAsString() {
     var builder = new StringBuilder();
     var separator = "";
 
-    builder.append("\nTokens: ");
-    for (var token : tokens) {
-      builder.append(separator).append(token.toString());
+    builder.append("\nNeighbors: ");
+    for (var neighbor : neighbors) {
+      builder.append(separator).append(neighbor.toString());
       separator = ", ";
     }
     builder.append("\n");
@@ -59,8 +66,8 @@ public record HabitatTile(List<Tile> habitats, List<WildlifeToken> tokens, int x
   @Override
   public String toString() {
     var builder = new StringBuilder();
-    builder.append(habitatsAsString());
-    builder.append(tokensAsString());
+    builder.append(habitatsAndAnimalsAsString());
+    builder.append(neighborsAsString());
     return builder.toString();
   }
 }

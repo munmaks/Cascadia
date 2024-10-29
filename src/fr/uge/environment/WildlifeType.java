@@ -5,7 +5,7 @@ public enum WildlifeType {
   ELK,
   SALMON,
   HAWK,
-  FOX;
+  FOX
   
   // add descriptions or point values here
   //    private final String description;

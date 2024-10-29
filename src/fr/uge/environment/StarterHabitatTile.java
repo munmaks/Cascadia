@@ -1,14 +1,12 @@
 package fr.uge.environment;
 
-public record StarterHabitatTile(
-      HabitatTile leftTile,
-      HabitatTile rightTile,
-      KeystoneTile topTile
-    ) implements Tile {
+import java.util.Objects;
 
-  //  private final HabitatTile leftTile;
-  //  private final HabitatTile rightTile;
-  //  private final KeystoneTile top;
+public record StarterHabitatTile(
+      KeystoneTile topTile,
+      HabitatTile leftTile,
+      HabitatTile rightTile
+    ) implements Tile {
 
   /*
    * configStarterHabitatTile.txt
@@ -17,6 +15,16 @@ public record StarterHabitatTile(
    * */
   // five entities
   public StarterHabitatTile {
+    Objects.requireNonNull(topTile);
+    Objects.requireNonNull(leftTile);
+    Objects.requireNonNull(rightTile);
+  }
+
   
+  @Override
+  public String toString() {
+    return topTile.toString() + "\n" +
+           leftTile.toString() + "\n" +
+           rightTile.toString() + "\n";
   }
 }

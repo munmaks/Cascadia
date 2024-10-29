@@ -1,11 +1,19 @@
 package fr.uge.environment;
 
-public record KeystoneTile(Tile tile, WildlifeToken animal, int x, int y) implements Tile {
+import java.util.Objects;
+
+public record KeystoneTile(
+      Tile tile,
+      WildlifeToken animal,
+      int x,
+      int y
+    ) implements Tile {
 
   public KeystoneTile {
-    // check if not null etc ...
-    
+    Objects.requireNonNull(tile);
+    Objects.requireNonNull(animal);
   }
+
   
   @Override
   public String toString() {
