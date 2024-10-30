@@ -7,10 +7,7 @@ public record Deck() {
   private static final ArrayList<Tile> habitatTiles = new ArrayList<Tile>();
   private static int index = 0;
   public Deck {
-    /*
-     * fill the Deck with config file
-     * 
-    */
+
   }
 
 
