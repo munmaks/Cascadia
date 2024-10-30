@@ -3,18 +3,27 @@ package fr.uge.environment;
 import java.util.List;
 import java.util.Objects;
 // import java.lang.StringBuilder;
+//
+//public record HabitatTile(
+//      TileType firstHabitat,
+//      TileType secondHabitat,
+//      WildlifeToken firstAnimal,    
+//      WildlifeToken secondAnimal,   
+//      WildlifeToken thirdAnimal,    // optional for some habitat tiles
+//      List<Tile> neighbors,         //
+//      int x,
+//      int y
+//    ) implements Tile {
 
 public record HabitatTile(
-      TileType firstHabitat,
-      TileType secondHabitat,
-      WildlifeToken firstAnimal,    
-      WildlifeToken secondAnimal,   
-      WildlifeToken thirdAnimal,    /* optional for some habitat tiles */
-      List<Tile> neighbors,         /* list of neighbors */
+      TileType[] habitats,       // 2 habitats
+      WildlifeType[] animals,    // 2 or 3 animals
+      Tile[] neighbors,          // 6 neighbors
       int x,
       int y
     ) implements Tile {
-
+  
+  
   private static boolean occupied;
 
   /*
@@ -42,14 +51,17 @@ public record HabitatTile(
     /* only two animals */
     if (thirdAnimal == null) {
       return "Habitats: " + firstHabitat + " " + secondHabitat +
-           "\nAnimals: " + firstAnimal + ", " + secondAnimal;
+           "  with two animals: " + firstAnimal + ", " + secondAnimal;
     }
     /* three animals */
     return "Habitats: " + firstHabitat + " " + secondHabitat +
-         "\nAnimals: " + firstAnimal + ", " + secondAnimal + ", " + thirdAnimal;
+         " with three animals: " + firstAnimal + ", " + secondAnimal + ", " + thirdAnimal;
   }
 
   private final String neighborsAsString() {
+    if (neighbors.size() == 0){
+      return "\n";
+    }
     var builder = new StringBuilder();
     var separator = "";
 
