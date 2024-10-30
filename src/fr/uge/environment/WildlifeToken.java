@@ -12,7 +12,7 @@ public record WildlifeToken(WildlifeType animal) {
 
   @Override
   public String toString() {
-    return "WildlifeToken: animal is " + animal;
+    return " "+ animal;
   }
    
 //  var bearToken = new WildlifeToken(WildlifeType.BEAR);

@@ -41,11 +41,11 @@ public record HabitatTile(
   private final String habitatsAndAnimalsAsString() {
     /* only two animals */
     if (thirdAnimal == null) {
-      return "Habitats: " + firstHabitat + "and " + secondHabitat +
+      return "Habitats: " + firstHabitat + " " + secondHabitat +
            "\nAnimals: " + firstAnimal + ", " + secondAnimal;
     }
     /* three animals */
-    return "Habitats: " + firstHabitat + "and " + secondHabitat +
+    return "Habitats: " + firstHabitat + " " + secondHabitat +
          "\nAnimals: " + firstAnimal + ", " + secondAnimal + ", " + thirdAnimal;
   }
 
