@@ -10,21 +10,28 @@ public record StarterHabitatTile(
 
   /*
    * configStarterHabitatTile.txt
-   * 15 Tiles : with three animals
-   * Mountain, Wetland : Elk, Hawk, Fox
+   * 5 starter habitat tiles looking like:
+   *
+   *   X
+   * Y   Z
+   *
+   * X: Keystone tile
+   * Y: Habitat tile with three animals.
+   * Z: Habitat tile with two animals.
+   * 
+   * Source: from game rules
    * */
-  // five entities
+
   public StarterHabitatTile {
     Objects.requireNonNull(topTile);
     Objects.requireNonNull(leftTile);
     Objects.requireNonNull(rightTile);
   }
 
-  
   @Override
   public String toString() {
-    return topTile.toString() + "\n" +
-           leftTile.toString() + "\n" +
-           rightTile.toString() + "\n";
+    return topTile.toString() +
+           leftTile.toString() +
+           rightTile.toString();
   }
 }

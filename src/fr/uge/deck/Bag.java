@@ -18,11 +18,11 @@ import java.util.List;
 
 public record Bag(ArrayList<Tile> tiles) {
 
-  private static String filePathHabitatTileThreeAnimals = "src/config/configHabitatTileThreeAnimals.txt";
-  private static String filePathHabitatTileTwoAnimals = "src/config/configHabitatTileTwoAnimals.txt";
-  private static String filePathKeystoneTile = "src/config/configKeystoneTile.txt";
-  private static String filePathStarterHabitatTile = "src/config/configStarterHabitatTile.txt";
-  private static final int nbNeighbor = 6;
+  private static final String filePathHabitatTileThreeAnimals = "src/config/configHabitatTileThreeAnimals.txt";
+  private static final String filePathHabitatTileTwoAnimals = "src/config/configHabitatTileTwoAnimals.txt";
+  private static final String filePathKeystoneTile = "src/config/configKeystoneTile.txt";
+  private static final String filePathStarterHabitatTile = "src/config/configStarterHabitatTile.txt";
+  private static final int nbNeighbors = 6;
 
   public Bag {
 //    private static String filepaththreeanimaltile = "src/config/configHabitatTileThreeAnimals.txt";
@@ -83,7 +83,7 @@ public record Bag(ArrayList<Tile> tiles) {
             WildlifeType.valueOf(words[3]),     // second animal
             WildlifeType.valueOf(words[4])      // third animal
         };
-        var habit = new HabitatTile(habitats, animals, new Tile[nbNeighbor], -1, -1);
+        var habit = new HabitatTile(habitats, animals, new Tile[nbNeighbors], -1, -1);
         tiles.add(habit);
       }
     }
@@ -103,7 +103,7 @@ public record Bag(ArrayList<Tile> tiles) {
             WildlifeType.valueOf(words[2]),     // first animal
             WildlifeType.valueOf(words[3]),     // second animal
         };
-        var habit = new HabitatTile(habitats, animals, new Tile[nbNeighbor], -1, -1);
+        var habit = new HabitatTile(habitats, animals, new Tile[nbNeighbors], -1, -1);
         tiles.add(habit);
       }
     }
@@ -119,7 +119,7 @@ public record Bag(ArrayList<Tile> tiles) {
         var habit = new KeystoneTile(
             TileType.valueOf(words[0]),                         // one habitat
             WildlifeType.valueOf(words[1]),  // one animal
-            new Tile[nbNeighbor],
+            new Tile[nbNeighbors],
             -1, -1
         );
         tiles.add(habit);
@@ -145,7 +145,7 @@ public record Bag(ArrayList<Tile> tiles) {
         var topTile = new KeystoneTile(
             TileType.valueOf(words[0]),                         // one habitat
             WildlifeType.valueOf(words[1]),  // one animal
-            new Tile[nbNeighbor],
+            new Tile[nbNeighbors],
             -1, -1
         );
 
@@ -158,7 +158,7 @@ public record Bag(ArrayList<Tile> tiles) {
             WildlifeType.valueOf(words[5]),     // second animal
             WildlifeType.valueOf(words[6]),     // third animal
         };
-        var leftTile = new HabitatTile(leftHabitats, leftAnimals, new Tile[nbNeighbor], -1, -1);
+        var leftTile = new HabitatTile(leftHabitats, leftAnimals, new Tile[nbNeighbors], -1, -1);
 
         
         var rightHabitats = new TileType[]{
@@ -169,19 +169,38 @@ public record Bag(ArrayList<Tile> tiles) {
             WildlifeType.valueOf(words[9]),     // first animal
             WildlifeType.valueOf(words[10]),     // second animal
         };
-        var rightTile = new HabitatTile(rightHabitats, rightAnimals, new Tile[nbNeighbor], -1, -1);
+        var rightTile = new HabitatTile(rightHabitats, rightAnimals, new Tile[nbNeighbors], -1, -1);
 
         tiles.add(new StarterHabitatTile(topTile, leftTile, rightTile));
       }
     }
-    
-    public static void main(String[] args) {
+
+
+    public static void main(String[] args) throws IOException {
       var tiles = new ArrayList<Tile>();
       Bag bag = new Bag(tiles);
-//      System.out.println(bag.allhabitattile());
-  //    System.out.println(bag.allkeystonetile());
-  //    System.out.println(allstarterhabitattile);
-  //    System.out.println(bag);
+      try {
+        bag.readHabitatTilesThreeAnimals();
+      } catch (IOException e) {
+        System.err.println(e.getMessage());
+      }
+
+      try {
+        bag.readHabitatTilesTwoAnimals();
+      } catch (IOException e) {
+        System.err.println(e.getMessage());
+      }
+
+      
+      try {
+        bag.readStarterHabitatTiles();
+      } catch (IOException e) {
+        System.err.println(e.getMessage());
+      }
+      
+      // bag.readHabitatTilesTwoAnimals();
+
+      System.out.println(bag.tiles());
     }
 
 }

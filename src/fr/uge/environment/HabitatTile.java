@@ -1,19 +1,7 @@
 package fr.uge.environment;
 
-import java.util.List;
 import java.util.Objects;
-// import java.lang.StringBuilder;
-//
-//public record HabitatTile(
-//      TileType firstHabitat,
-//      TileType secondHabitat,
-//      WildlifeToken firstAnimal,    
-//      WildlifeToken secondAnimal,   
-//      WildlifeToken thirdAnimal,    // optional for some habitat tiles
-//      List<Tile> neighbors,         //
-//      int x,
-//      int y
-//    ) implements Tile {
+
 
 public record HabitatTile(
       TileType[] habitats,       // 2 habitats
@@ -22,9 +10,6 @@ public record HabitatTile(
       int x,
       int y
     ) implements Tile {
-  
-  
-  private static boolean occupied;
 
   /*
    * configTilesWithTwoAnimals.txt
@@ -38,28 +23,50 @@ public record HabitatTile(
    * 
    */
 
+  private static boolean occupied;
+  private static WildlifeToken placedAnimal;      /* it is initialised from occupyTile() */
+
   public HabitatTile {
-    Objects.requireNonNull(firstHabitat, "Habitats can't be null");
-    Objects.requireNonNull(secondHabitat, "Habitats can't be null");
-    Objects.requireNonNull(firstAnimal, "Animals can't be null");
-    Objects.requireNonNull(secondAnimal, "Animals can't be null");
+    Objects.requireNonNull(habitats, "Habitats can't be null");
+    Objects.requireNonNull(animals, "Animals can't be null");
+    Objects.requireNonNull(neighbors, "Neighbors can't be null");
     occupied = false;
   }
-  
-  
-  private final String habitatsAndAnimalsAsString() {
-    /* only two animals */
-    if (thirdAnimal == null) {
-      return "Habitats: " + firstHabitat + " " + secondHabitat +
-           "  with two animals: " + firstAnimal + ", " + secondAnimal;
-    }
-    /* three animals */
-    return "Habitats: " + firstHabitat + " " + secondHabitat +
-         " with three animals: " + firstAnimal + ", " + secondAnimal + ", " + thirdAnimal;
+
+
+  public final boolean isOccupied() {
+    return occupied;
   }
 
+  public final boolean occupyTile(WildlifeToken animal) {
+    if (isOccupied()) {
+      return false;     /* we don't place animal, and return false (it wasn't placed) */
+    }
+    placedAnimal = animal;
+    occupied = true;
+    return occupied;    /* we placed animal */
+  }
+
+  private final String habitatsAndAnimalsAsString() {
+
+    var builder = new StringBuilder();
+    builder.append("\n" + habitats[0] + " " + habitats[1] + ": ");  /* everytime only two habitats */
+
+    var separator = "(";
+    /* two or three animals */
+    for (var animal : animals) {
+      builder.append(separator).append(animal.toString());
+      separator = ", ";
+    }
+    builder.append(")");
+    return builder.toString();
+  }
+
+  
+  
+  
   private final String neighborsAsString() {
-    if (neighbors.size() == 0){
+    if (neighbors.length == 0){
       return "\n";
     }
     var builder = new StringBuilder();
@@ -79,9 +86,13 @@ public record HabitatTile(
   public String toString() {
     var builder = new StringBuilder();
     builder.append(habitatsAndAnimalsAsString());
-    builder.append(neighborsAsString());
+    // builder.append(neighborsAsString());
     return builder.toString();
   }
+  
+//  public static void main(String[] args) {
+//    ;
+//  }
 }
 
 
