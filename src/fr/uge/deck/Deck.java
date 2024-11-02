@@ -45,19 +45,18 @@ public record Deck() {
     var iteration = 0;
 
     /* we have max iteration, to prevent infinity loop */
-    while (true && iteration <= MAX_ITERATION) {
-        
-        /* random int in range (from 0 to animals.length - 1) */
-        index = random.nextInt(animals.length);
+    while (iteration <= MAX_ITERATION) {
+
+        index = random.nextInt(animals.length);   /* random int in range (from 0 to 4 included) */
         ++iteration;
 
-        /* if tokens of this animals are still available */
-        if (animals[index] > 0) {
+        if (animals[index] > 0) {   /* if tokens of this animals are still available */
             animals[index]--;
             return new WildlifeToken(WildlifeType.values()[index]);
         }
     }
-    System.err.println("Max Interation in drawToken()");  /* normally it shouldn't happen */
+    /* normally it shouldn't happen */
+    System.err.println("Maximum number of iterations exceeded in drawToken()");
     return null;
   }
 

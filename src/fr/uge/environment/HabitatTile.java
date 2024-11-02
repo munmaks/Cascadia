@@ -7,8 +7,8 @@ public record HabitatTile(
       TileType[] habitats,       // 2 habitats
       WildlifeType[] animals,    // 2 or 3 animals
       Tile[] neighbors,          // 6 neighbors
-      int x,
-      int y
+      int q,
+      int r
     ) implements Tile {
 
   /*

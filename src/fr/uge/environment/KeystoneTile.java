@@ -6,7 +6,8 @@ public record KeystoneTile(
       TileType tile,
       WildlifeType animal,
       Tile[] neighbors,
-      int x, int y
+      int q,
+      int r
     ) implements Tile {
 
   public KeystoneTile {
