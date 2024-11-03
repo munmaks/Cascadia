@@ -19,7 +19,6 @@ public record Deck() {
    * FOX    : 3
    * SALMON : 4
    */
-
                                /* BEAR   ELK  HAWK   FOX  SALMON; */
   private static int[] animals =  {20,   20,   20,   20,   20};
   private static final Random random = new Random();
