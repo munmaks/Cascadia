@@ -15,6 +15,7 @@ public record Environment() {
   private static final int [][] grid;
 
 
+  /* we need 20 lines and 16 columns for best experience later */
   public Environment {
     grid = new int [10][10];  /* 100 total tiles to show in player's environment */
     

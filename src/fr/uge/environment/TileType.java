@@ -1,24 +1,24 @@
 package fr.uge.environment;
 
+
+/**
+ * <p>Represents Type of Tile </p>
+ * <p>Indexes for TileType `enum`:</p>
+ * <ul>
+ * <li>FOREST   : 0</li>
+ * <li>WETLAND  : 1</li>
+ * <li>MOUNTAIN : 2</li>
+ * <li>RIVER    : 3</li>
+ * <li>PRARIE   : 4</li>
+ * </ul>
+ */
 public enum TileType {
   FOREST,
   WETLAND,
   MOUNTAIN,
   RIVER,
-  PRARIE;
-
-  /**
-   * Indexes for TileType `enum`:
-   * FOREST   : 0
-   * WETLAND  : 1
-   * MOUNTAIN : 2
-   * RIVER    : 3
-   * PRARIE   : 4
-   */
-
-  @Override
-  public String toString() {
-      return this.name();
-  }
-
+  PRARIE
 }
+
+  
+

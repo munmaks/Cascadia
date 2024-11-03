@@ -5,15 +5,21 @@ import java.util.Objects;
 public record StarterHabitatTile(
       KeystoneTile topTile,
       HabitatTile leftTile,
-      HabitatTile rightTile
+      HabitatTile rightTile,
+      int version
     ) implements Tile {
 
   /*
    * configStarterHabitatTile.txt
-   * 5 starter habitat tiles looking like:
+   * 5 starter habitat tiles in version - 3 look like:
    *
    *   X
    * Y   Z
+   *
+   * And in version 1 and 2 they look like:
+   * 
+   * X
+   * Y Z
    *
    * X: Keystone tile
    * Y: Habitat tile with three animals.
@@ -27,6 +33,7 @@ public record StarterHabitatTile(
     Objects.requireNonNull(leftTile);
     Objects.requireNonNull(rightTile);
   }
+
 
   @Override
   public String toString() {

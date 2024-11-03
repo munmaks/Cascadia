@@ -13,7 +13,7 @@ public final class Game {
     this.board = new GameBoard();
     this.players = new ArrayList<Player>();
   }
-  
+
 
   public void startGame() {
     /* Implementation */ 
