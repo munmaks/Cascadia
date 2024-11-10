@@ -1,16 +1,21 @@
 package fr.uge.environment;
 
+import fr.uge.util.Constants;
+
 /**
  * The Coordinates defined by x and y coordinates.
  * 
- * @param x - row
- * @param y - column
+ * @param y - row
+ * @param x - column
  */
-public record Coordinates(int x, int y) {
+public record Coordinates(int y, int x){
 
   public Coordinates {
-    if (x < 0 || y < 0) {
-      throw new IllegalArgumentException("(x, y) coordiantes must be positifs");
+    if (y < 0 || y >= Constants.MAX_SIZE ||
+        x < 0 || x >= Constants.MAX_SIZE){
+      throw new IllegalArgumentException(
+          "(" + x + ", " + y + ") coordiantes must be valid from(0, 0) to (" + 
+          Constants.MAX_SIZE + ", " + Constants.MAX_SIZE + ")");
     }
   }
 
@@ -18,5 +23,5 @@ public record Coordinates(int x, int y) {
   public final String toString() {
     return "(" + x + ", " + y + ")";
   }
-  
+
 }

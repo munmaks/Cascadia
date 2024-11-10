@@ -3,22 +3,21 @@ package fr.uge.environment;
 import java.util.List;
 import java.util.Objects;
 
+import fr.uge.util.Constants;
+
 /**
  * Cell class for represent a cell where a tile can be placed */
 public record Cell(Coordinates coordinates, int version) {
-
-  /* for version 3, we have constant */
-  private static final int MAX_ROTATIONS = 6;
-
+  
   /**
    *  Occupation status of tile represented by the cell.
    */
   private static boolean occupiedByTile = false;
 
-
   /* by default it's empty type of tile on this cellule */
-  private static Tile tile = null;
+  private static Tile tile = new EmptyTile();
 
+  private static int z = 0;
 
   /**<p>for version 1 - 2, we needn't rotation</p>
    * <p>for version 3:</p>
@@ -28,18 +27,39 @@ public record Cell(Coordinates coordinates, int version) {
   private static int currentRotation = 0;
 
   
+  private static boolean valid = false;
+  
+
 
   public Cell {
+    valid = validateInputs(coordinates, version);
+    if (valid) {
+      calculateThirdParameter(coordinates);      
+    }
+  }
+  
+  
+  private final boolean validateInputs(Coordinates coordinates, int version) {
     Objects.requireNonNull(coordinates);
     if (version <= 0 || version > 4) {
       throw new IllegalArgumentException("Game Version can only be 1, 2 or 3");
     }
+    return (coordinates.x() >= 0 && coordinates.x() < Constants.MAX_SIZE) &&
+           (coordinates.y() >= 0 && coordinates.y() < Constants.MAX_SIZE);
+  }
+  
 
-    if (coordinates.x() < 0 || coordinates.y() < 0) {
-      throw new IllegalArgumentException("Invalid coordinates x or y");
-    }
+  public final boolean validCoordinates() {
+    return valid;
+  }
 
-    tile = new EmptyTile(coordinates, version);
+  private final void calculateThirdParameter(Coordinates coordinates) {
+    z = -(coordinates.x() + coordinates.y());
+  }
+
+
+  public final int getThirdParameter() {
+    return z;
   }
 
 
@@ -64,34 +84,26 @@ public record Cell(Coordinates coordinates, int version) {
     return tile;
   }
 
-  
-  public final Coordinates getCoordinates() {
-    return coordinates;
-  }
-
 
 
   public final void turnСlockwise() {
-    if (version == 1) {
+    if (version == Constants.VERSION_HEXAGONAL) {
+      currentRotation = (currentRotation + 1) % Constants.MAX_ROTATIONS;
       return;
     }
-    currentRotation = (currentRotation + 1) % MAX_ROTATIONS;
   }
 
 
   public final void turnСounterСlockwise() {
-    if (version == 1) {
+    if (version == Constants.VERSION_HEXAGONAL) {
+      currentRotation = (currentRotation - 1 + Constants.MAX_ROTATIONS) % Constants.MAX_ROTATIONS;
       return;
     }
-    currentRotation = (currentRotation - 1 + MAX_ROTATIONS) % MAX_ROTATIONS;
   }
 
 
   public final int getRotation() {
-    if (version == 3) {
-      return currentRotation;
-    }
-    return 0;
+    return (version == Constants.VERSION_HEXAGONAL) ? (currentRotation) : (0) ;
   }
 
 

@@ -8,9 +8,10 @@ import java.util.Random;
 import fr.uge.environment.Tile;
 import fr.uge.environment.WildlifeToken;
 import fr.uge.environment.WildlifeType;
-
+import fr.uge.util.Constants;
 
 public record Deck(int version) {
+  
   /**
    * Indexes from WildlifeType `enum`:
    * BEAR   : 0
@@ -19,8 +20,13 @@ public record Deck(int version) {
    * FOX    : 3
    * SALMON : 4
    */
-                               /* BEAR   ELK  HAWK   FOX  SALMON; */
-  private static int[] animals =  {20,   20,   20,   20,   20};
+  private static int[] animals =  {
+        Constants.ANIMAL_TOKENS,  /* BEAR   */
+        Constants.ANIMAL_TOKENS,  /* ELK    */
+        Constants.ANIMAL_TOKENS,  /* HAWK   */
+        Constants.ANIMAL_TOKENS,  /* FOX    */
+        Constants.ANIMAL_TOKENS   /* SALMON */
+      };
   private static final Random random = new Random();
 
   /* big number to prevent infinty loop in method drawToken() */

@@ -18,51 +18,31 @@ import fr.uge.environment.WildlifeType;
 import fr.uge.environment.TileType;
 import fr.uge.environment.Tile;
 
+import fr.uge.util.Constants;
+
 
 public record Bag(int nbPlayers, int version) {
 
   /* fill tiles with needed number of tiles for a game */
   private static final ArrayList<Tile> tiles = new ArrayList<Tile>();
 
-  /* constants for configurations*/
-  private static final String PATH_KEYSTONE_TILE = "src/config/configKeystoneTile.txt";
-  private static final String PATH_HABITAT_TILE_THREE_ANIMALS = "src/config/configHabitatTileThreeAnimals.txt";
-  private static final String PATH_HABITAT_TILE_TWO_ANIMALS = "src/config/configHabitatTileTwoAnimals.txt";
-  private static final String PATH_STARTER_HABITAT_TILE = "src/config/configStarterHabitatTile.txt";
-  private static final String PATH_SQUARE_HABITAT_TILE = "src/config/configSquareHabitatTile.txt";
-
   /* we need to get only `nbPlayers` starter habitats */
   private static int nbNeighbors = 0;
   private static int indexStarterHabitatTile = -1;
 
-  private static final int MAX_STARTER_HABITATS = 5;
-  private static StarterHabitatTile[] starterHabitats = new StarterHabitatTile[MAX_STARTER_HABITATS];
-  private static int maxTilesForGame;
-  private static int maxTilesTotal;
+//  private static final int MAX_STARTER_HABITATS = 5;
+  private static StarterHabitatTile[] starterHabitats = new StarterHabitatTile[Constants.MAX_STARTER_HABITATS];
+  private static int maxTilesForGame = 0;
+  private static int maxTilesTotal = 0;
 
-  private static final int MIN_VERSION = 1;
-  private static final int MAX_VERSION = 2;
-
-  private static final int MIN_PLAYERS = 1;
-  private static final int MAX_PLAYERS = 4;
-
-  private static final int NEIGHBORS_DEFAULT = 6;
-  private static final int NEIGHBORS_VERSION_ONE = 4;
-
-  private static final int MAX_TILES_DEFAULT = 85;      /* 100 - 15 (starter habitat tiles) */
-  private static final int MAX_TILES_VERSION_ONE = 50;  /* maximum for version 1 */
-
-  private static final int NB_PLAYERS_VERSION_ONE = 2;
-  private static final int TILE_COUNT_MAX_VERSION = 20;
 
 
   public Bag {
     validateInputs(nbPlayers, version);
     maxTilesForGame = calculateMaxTiles(nbPlayers, version);
-    nbNeighbors   = (version == MAX_VERSION) ? NEIGHBORS_DEFAULT : NEIGHBORS_VERSION_ONE;
-    maxTilesTotal = (version == MAX_VERSION) ? MAX_TILES_DEFAULT : MAX_TILES_VERSION_ONE;
+    maxTilesTotal = (version == Constants.VERSION_HEXAGONAL) ? Constants.MAX_TILES_HEXAGONAL : Constants.MAX_TILES_SQUARE;
     try {
-      if (version == MAX_VERSION) {
+      if (version == Constants.VERSION_HEXAGONAL) {
           initializeVersionTwoTiles();
       } else {
           initializeDefaultTiles();
@@ -85,27 +65,37 @@ public record Bag(int nbPlayers, int version) {
 
 
 
-  private void validateInputs(int nbPlayers, int version) {
-    if (nbPlayers < MIN_PLAYERS || nbPlayers > MAX_PLAYERS) {
+  private final void validateInputs(int nbPlayers, int version) {
+    if (nbPlayers < Constants.MIN_PLAYERS ||
+        nbPlayers > Constants.MAX_PLAYERS) {
         throw new IllegalArgumentException(
-            "nbPlayers must be between " + MIN_PLAYERS + " and " + MAX_PLAYERS
-          );
+            "nbPlayers must be between " + Constants.MIN_PLAYERS + " and " + Constants.MAX_PLAYERS);
     }
-    if (version < MIN_VERSION || version > MAX_VERSION) {
+    if (version < Constants.VERSION_SQUARE ||
+        version > Constants.VERSION_HEXAGONAL) {
         throw new IllegalArgumentException(
-            "Version must be between "   + MIN_VERSION + " and " + MAX_VERSION
-          );
+            "Version must be between "   + Constants.VERSION_SQUARE + " and " + Constants.VERSION_HEXAGONAL);
     }
-    if (version != MAX_VERSION && nbPlayers != NB_PLAYERS_VERSION_ONE) {
-      throw new IllegalArgumentException("Version 1 must have only 2 players");
+    if (version != Constants.VERSION_HEXAGONAL &&
+        nbPlayers != Constants.NB_PLAYERS_SQUARE) {
+      throw new IllegalArgumentException(
+            "Square Version must have exactly 2 players");
     }
   }
 
-
+  /**
+   * TO IMPROVE LATER, COMMENT JUST FOR YOU MEHDI ;)
+   * Calculate max tiles that bag going contains for different versions
+   * Expression (20 * 2) + 3 + (3 * 2) means:
+   * (tiles per players * nbPlayers) + constant for tiles on board + (starter tile * nbPlayers) 
+   * P.S. starter tile contains 3 tiles
+   * @param nbPlayers ...
+   * @param version ...
+   * */
   private int calculateMaxTiles(int nbPlayers, int version) {
-    return (version == MAX_VERSION) ?
-           ((TILE_COUNT_MAX_VERSION * nbPlayers) + 3) :
-           ((TILE_COUNT_MAX_VERSION * NB_PLAYERS_VERSION_ONE) + 3 + 6); // two starter tiles 
+    return (version == Constants.VERSION_HEXAGONAL) ?
+           ((Constants.TILE_PER_PLAYER * nbPlayers) + Constants.THREE):
+           (Constants.MAX_TILES_SQUARE - 1);    /* (20 * 2) + 3 + (3 * 2) = 49 */
   }
   
   
@@ -124,8 +114,8 @@ public record Bag(int nbPlayers, int version) {
    * add all habitats tiles in `tiles`.
    * */
   private final void readSquareTiles() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(PATH_SQUARE_HABITAT_TILE))) {
-      String line;
+    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_SQUARE_HABITAT_TILE))) {
+      String line = "";
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
                                        /* tile   animal  animal */
@@ -140,8 +130,8 @@ public record Bag(int nbPlayers, int version) {
    * add all habitats tiles in `tiles`.
    * */
   private final void readHabitatTilesThreeAnimals() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(PATH_HABITAT_TILE_THREE_ANIMALS))) {
-      String line;
+    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_HABITAT_TILE_THREE_ANIMALS))) {
+      String line = "";
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
         var habitatTile = getHabitatTileThreeAnimals(
@@ -152,12 +142,13 @@ public record Bag(int nbPlayers, int version) {
     }
   }
 
+
   /**
    * add all habitats tiles in `tiles`.
    * */
   private final void readHabitatTilesTwoAnimals() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(PATH_HABITAT_TILE_TWO_ANIMALS))) {
-      String line;
+    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_HABITAT_TILE_TWO_ANIMALS))) {
+      String line = "";
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
         var habitatTile = getHabitatTileTwoAnimals(
@@ -168,13 +159,13 @@ public record Bag(int nbPlayers, int version) {
     }
   }
 
-    
+
   /**
    * add all keystone tiles in `tiles`.
    * */
   private final void readKeystoneTiles() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(PATH_KEYSTONE_TILE))) {
-      String line;
+    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_KEYSTONE_TILE))) {
+      String line = "";
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
         var keystone = getKeystoneTile(row[0], row[1]);
@@ -193,8 +184,8 @@ public record Bag(int nbPlayers, int version) {
    * */
   private final void readStarterHabitatTiles() throws IOException {
     int index = 0;
-    try (var reader = Files.newBufferedReader(Paths.get(PATH_STARTER_HABITAT_TILE))) {
-      String line;
+    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_STARTER_HABITAT_TILE))) {
+      String line = "";
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
         var topTile = getKeystoneTile(row[0], row[1]);  /* tile,  animal */
@@ -213,7 +204,6 @@ public record Bag(int nbPlayers, int version) {
   }
 
 
-  
   /**
    * Gives random Habitat or Keystone tile
    * @return one tile from array `tiles`
@@ -229,10 +219,10 @@ public record Bag(int nbPlayers, int version) {
    * User can get one starter habitat tile
    * */
   public static StarterHabitatTile getStarterHabitatTile() {
-    if (indexStarterHabitatTile >= MAX_STARTER_HABITATS) {  /* prevent overflow ... */
+    if (indexStarterHabitatTile >= Constants.MAX_STARTER_HABITATS) {  /* prevent overflow ... */
       return null;
     }
-    indexStarterHabitatTile++;
+    ++indexStarterHabitatTile;
     return starterHabitats[indexStarterHabitatTile];
   }
 
@@ -285,7 +275,7 @@ public record Bag(int nbPlayers, int version) {
       String oneTile,
       String firstAnimal, String secondAnimal
     ) {
-    var tile = new TileType[]{TileType.valueOf(oneTile)};
+    var tile = new TileType[]{ TileType.valueOf(oneTile) };
     var tokens = new WildlifeType[]{
         WildlifeType.valueOf(firstAnimal),
         WildlifeType.valueOf(secondAnimal)
@@ -311,9 +301,9 @@ public record Bag(int nbPlayers, int version) {
   @Override
   public String toString() {
     var builder = new StringBuilder();
-    int i = 1;
+    var i = 1;
     for (var tile : tiles) {
-      builder.append(i++ + " ").append(tile.toString()).append("\n");
+      builder.append(i++).append(" ").append(tile.toString()).append("\n");
     }
     //builder.append(starterHabitats.toString());
     return builder.toString();
@@ -322,7 +312,7 @@ public record Bag(int nbPlayers, int version) {
 
   // for tests
 //  public static void main(String[] args) throws IOException {
-//    var bag = new Bag(2, 1);
+//    var bag = new Bag(4, 3);
 //    System.out.println(bag.toString());
 //  }
 
