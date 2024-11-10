@@ -4,4 +4,6 @@ public sealed interface Tile permits
   KeystoneTile,
   HabitatTile,
   StarterHabitatTile,
-  EmptyTile{}
+  EmptyTile {
+
+}

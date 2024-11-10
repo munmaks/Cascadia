@@ -5,10 +5,7 @@ import java.util.Objects;
 
 public record HabitatTile(
       TileType[] habitats,       /* 1-2 habitats  depends from game version */
-      WildlifeType[] animals,    /* 2-3 animals   depends from game version */
-      int x,
-      int y,
-      int version   /* 1, 2 or 3 */
+      WildlifeType[] animals     /* 2-3 animals   depends from game version */
     ) implements Tile {
 
   /*
@@ -23,38 +20,36 @@ public record HabitatTile(
    * clockwise = dans le sens des aiguilles d'une montre
    * counterclockwise = dans le sens inverse des aiguilles d'une montre
    * */
+
+
+  private static boolean occupiedByAnimal = false;  /* idle */
+  private static WildlifeToken placedAnimal = null;
+
   
-  private static boolean occupiedByAnimal;
-  private static WildlifeToken placedAnimal;      /* it is initialised from occupyTile() */ 
-
-
   public HabitatTile {
     Objects.requireNonNull(habitats, "Habitats can't be null");
     Objects.requireNonNull(animals, "Animals can't be null");
-    occupiedByAnimal = false;   /* idle */
   }
 
-  public final WildlifeToken getPlacedAnimal() {
+  public final WildlifeToken getAnimal() {
     return placedAnimal;
   }
-
 
   public final boolean isOccupied() {
     return occupiedByAnimal;
   }
 
-  /** to improve later, need to check if there's nearby we have other tiles
-   * because we can't place a tile in isolated place.
-   * @return token 
+  /**
+   * @param Animal token
+   * @return true - it's possible, otherwise no
    * */
   public final boolean canBePlaced(WildlifeToken token) {
     Objects.requireNonNull(token, "token must not be null in canBePlaced()");
     if (isOccupied()) {
       return false;
     }
-
     for (var authorisedAnimal : animals) {
-      if (token.animal().equals(authorisedAnimal)) {
+      if (authorisedAnimal.equals(token.animal())) {
         return true;
       }
     }
@@ -62,25 +57,32 @@ public record HabitatTile(
   }
 
 
-  public final boolean placeAnimal(WildlifeToken animal) {
-    Objects.requireNonNull(animal, "animal must not be null in placeToken()");
+  public final boolean placeAnimal(WildlifeToken token) {
+    Objects.requireNonNull(token, "animal must not be null in placeToken()");
     if (isOccupied()) {
       return false;     /* we don't place animal, and return false (it wasn't placed) */
     }
-    placedAnimal = animal;
+    if (!canBePlaced(token)) {
+      return false;
+    }
+    placedAnimal = token;
     occupiedByAnimal = true;
     return occupiedByAnimal;    /* we placed animal */
   }
 
+
   /* to improve later */
   private final String habitatsAndAnimalsAsString() {
-
     var builder = new StringBuilder();
-    builder.append("\n" + habitats[0] + " " + habitats[1] + ": ");  /* everytime only two habitats */
+    var separator = "";
+    for (var habitat : habitats) {
+      builder.append(separator).append(habitat);
+      separator = " ";
+    }
+    builder.append(": ");
+    separator = "(";
 
-    var separator = "(";
-    /* two or three animals */
-    for (var animal : animals) {
+    for (var animal : animals) {  /* two or three animals */
       builder.append(separator).append(animal.toString());
       separator = ", ";
     }
@@ -96,7 +98,6 @@ public record HabitatTile(
     builder.append(habitatsAndAnimalsAsString());
     return builder.toString();
   }
-  
 
 
   // for tests
@@ -104,7 +105,7 @@ public record HabitatTile(
 //
 //    var habitats = new TileType[] { TileType.MOUNTAIN, TileType.RIVER };
 //    var animals = new WildlifeType[] { WildlifeType.BEAR, WildlifeType.ELK, WildlifeType.FOX };
-//    var habitat = new HabitatTile(habitats, animals, -1, -1, 1);
+//    var habitat = new HabitatTile(habitats, animals, 1);
 //
 //  }
 }

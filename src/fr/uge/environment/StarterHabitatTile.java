@@ -5,27 +5,27 @@ import java.util.Objects;
 public record StarterHabitatTile(
       KeystoneTile topTile,
       HabitatTile leftTile,
-      HabitatTile rightTile,
-      int version
+      HabitatTile rightTile
     ) implements Tile {
 
   /*
    * configStarterHabitatTile.txt
-   * 5 starter habitat tiles in version - 3 look like:
-   *
-   *   X
-   * Y   Z
-   *
-   * And in version 1 and 2 they look like:
+   * 5 starter habitat tiles:
+   * Version 1 and 2 they look like:
    * 
    * X
    * Y Z
+   *
+   * Version - 3 looks like:
+   *
+   *   X
+   * Y   Z
    *
    * X: Keystone tile
    * Y: Habitat tile with three animals.
    * Z: Habitat tile with two animals.
    * 
-   * Source: from game rules
+   * Source: game rules
    * */
 
   public StarterHabitatTile {

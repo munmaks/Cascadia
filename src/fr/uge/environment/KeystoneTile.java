@@ -3,28 +3,53 @@ package fr.uge.environment;
 import java.util.Objects;
 
 public record KeystoneTile(
-      TileType tile,
-      WildlifeType animal,
-      Tile[] neighbors,
-      int x,
-      int y,
-      int version   /* 1, 2 or 3 */
+      TileType tile,          /* habitat type */
+      WildlifeType animal     /* animal type  */
     ) implements Tile {
 
-  public KeystoneTile {
-    if (version < 1 || version > 3) {
-      throw new IllegalArgumentException();
-    }
+  private static boolean occupied = false;
 
+  private static WildlifeToken placedAnimal = null; 
+
+  public KeystoneTile {
     Objects.requireNonNull(tile);
     Objects.requireNonNull(animal);
-    Objects.requireNonNull(neighbors);
   }
 
+
+  public final boolean isOccupied() {
+    return occupied;
+  }
+
+  /**
+   * Place an animal on tile if it's possible 
+   * @param token - New Animal
+   * @return boolean */
+  public final boolean canBePlaced(WildlifeToken token){
+    if (isOccupied()) {
+      return false;
+    }
+    return animal.equals(token.animal());
+  }
+
+
+  public final boolean placeAnimal(WildlifeToken token) {
+    if (canBePlaced(token)) {
+      occupied = true;
+      placedAnimal = token;            
+    }
+    return false;
+  }
+  
+  
+  public final WildlifeToken getAnimal() { 
+    return placedAnimal;
+  }
+  
 
   @Override
   public String toString() {
-    return "\n" + tile + ": " + animal;
+    return tile + ": " + animal;
   }
-
+  
 }

@@ -1,8 +1,7 @@
 package fr.uge.environment;
 
 public record EmptyTile(
-      int x,
-      int y,
+      Coordinates coordinates,
       int version   /* 1, 2 or 3 */
     ) implements Tile {
 
@@ -10,4 +9,11 @@ public record EmptyTile(
     /* don't have any habitats and any animals */
   }
 
+  
+  @Override
+  public final String toString() {
+    // TODO Auto-generated method stub
+    return "Empty Tile";
+  }
+  
 }

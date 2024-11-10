@@ -10,7 +10,7 @@ import fr.uge.environment.WildlifeToken;
 import fr.uge.environment.WildlifeType;
 
 
-public record Deck() {
+public record Deck(int version) {
   /**
    * Indexes from WildlifeType `enum`:
    * BEAR   : 0
@@ -39,7 +39,7 @@ public record Deck() {
    * @param void
    * @return WildlifeToken - the randomly selected token.
    */
-  public WildlifeToken drawToken(){
+  public WildlifeToken getRandomToken(){
     var index = 0;
     var iteration = 0;
 
@@ -72,7 +72,7 @@ public record Deck() {
     var index = token.animal().ordinal();
     animals[index]++;
 
-    return drawToken();
+    return getRandomToken();
   }
 
 }
