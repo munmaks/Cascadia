@@ -1,22 +1,22 @@
-package fr.uge.deck;
+package fr.uge.bag;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+// import java.util.List;
+// import java.util.Objects;
 import java.util.Random;
 import java.util.Collections;
 
 import fr.uge.environment.KeystoneTile;
 import fr.uge.environment.HabitatTile;
 import fr.uge.environment.StarterHabitatTile;
-import fr.uge.environment.WildlifeToken;
-import fr.uge.environment.WildlifeType;
-import fr.uge.environment.TileType;
 import fr.uge.environment.Tile;
+import fr.uge.environment.TileType;
+import fr.uge.environment.WildlifeType;
+// import fr.uge.environment.WildlifeToken;
 
 import fr.uge.util.Constants;
 
@@ -26,11 +26,10 @@ public record Bag(int nbPlayers, int version) {
   /* fill tiles with needed number of tiles for a game */
   private static final ArrayList<Tile> tiles = new ArrayList<Tile>();
 
-  /* we need to get only `nbPlayers` starter habitats */
-  private static int nbNeighbors = 0;
+
   private static int indexStarterHabitatTile = -1;
 
-//  private static final int MAX_STARTER_HABITATS = 5;
+//  private static final integer MAX_STARTER_HABITATS = 5;
   private static StarterHabitatTile[] starterHabitats = new StarterHabitatTile[Constants.MAX_STARTER_HABITATS];
   private static int maxTilesForGame = 0;
   private static int maxTilesTotal = 0;

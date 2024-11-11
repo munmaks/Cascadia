@@ -1,20 +1,20 @@
 package fr.uge.environment;
 
-import java.util.List;
 import java.util.Objects;
+//import java.util.List;
 
 import fr.uge.util.Constants;
 
 /**
  * Cell class for represent a cell where a tile can be placed */
 public record Cell(Coordinates coordinates, int version) {
-  
+
   /**
    *  Occupation status of tile represented by the cell.
    */
   private static boolean occupiedByTile = false;
 
-  /* by default it's empty type of tile on this cellule */
+  /* by default it's empty type of tile on this cell */
   private static Tile tile = new EmptyTile();
 
   private static int z = 0;
@@ -26,26 +26,37 @@ public record Cell(Coordinates coordinates, int version) {
    * */
   private static int currentRotation = 0;
 
-  
+
   private static boolean valid = false;
-  
+
 
 
   public Cell {
     valid = validateInputs(coordinates, version);
     if (valid) {
       calculateThirdParameter(coordinates);      
+    } else {
+      
     }
   }
   
   
   private final boolean validateInputs(Coordinates coordinates, int version) {
     Objects.requireNonNull(coordinates);
-    if (version <= 0 || version > 4) {
-      throw new IllegalArgumentException("Game Version can only be 1, 2 or 3");
+    boolean flag = false;
+    flag = Constants.isValidVersion(version);
+    if (flag) {
+      throw new IllegalArgumentException(
+          "Game Version should be from " + Constants.VERSION_SQUARE + " to " +
+          Constants.VERSION_HEXAGONAL + ", your version - " + version);
     }
-    return (coordinates.x() >= 0 && coordinates.x() < Constants.MAX_SIZE) &&
-           (coordinates.y() >= 0 && coordinates.y() < Constants.MAX_SIZE);
+    flag = Constants.isValidCoordinates(coordinates.y(), coordinates.x());
+    if (flag) {
+      throw new IllegalArgumentException(
+          "(" + coordinates.x() + ", " + coordinates.y() + ") should be from(0, 0) to (" + 
+          Constants.MAX_COL + ", " + Constants.MAX_ROW + ")");
+    }
+    return flag;
   }
   
 
@@ -67,7 +78,6 @@ public record Cell(Coordinates coordinates, int version) {
     return occupiedByTile;
   }
 
-
   public final boolean placeTile(Tile tileToPlace) {
     Objects.requireNonNull(tileToPlace);
     if (isOccupied()) {
@@ -75,7 +85,6 @@ public record Cell(Coordinates coordinates, int version) {
     }
     tile = tileToPlace;
     occupiedByTile = true;
-
     return occupiedByTile;
   }
 
@@ -89,7 +98,6 @@ public record Cell(Coordinates coordinates, int version) {
   public final void turnСlockwise() {
     if (version == Constants.VERSION_HEXAGONAL) {
       currentRotation = (currentRotation + 1) % Constants.MAX_ROTATIONS;
-      return;
     }
   }
 
@@ -97,7 +105,6 @@ public record Cell(Coordinates coordinates, int version) {
   public final void turnСounterСlockwise() {
     if (version == Constants.VERSION_HEXAGONAL) {
       currentRotation = (currentRotation - 1 + Constants.MAX_ROTATIONS) % Constants.MAX_ROTATIONS;
-      return;
     }
   }
 

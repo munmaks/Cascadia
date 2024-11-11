@@ -11,11 +11,11 @@ import fr.uge.util.Constants;
 public record Coordinates(int y, int x){
 
   public Coordinates {
-    if (y < 0 || y >= Constants.MAX_SIZE ||
-        x < 0 || x >= Constants.MAX_SIZE){
+    if (y < 0 || y >= Constants.MAX_ROW ||
+        x < 0 || x >= Constants.MAX_COL){
       throw new IllegalArgumentException(
           "(" + x + ", " + y + ") coordiantes must be valid from(0, 0) to (" + 
-          Constants.MAX_SIZE + ", " + Constants.MAX_SIZE + ")");
+          Constants.MAX_COL + ", " + Constants.MAX_ROW + ")");
     }
   }
 

@@ -1,13 +1,14 @@
-package fr.uge.deck;
+package fr.uge.bag;
 
 import java.util.Objects;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Random;
+//import java.util.List;
+//import java.util.ArrayList;
 
-import fr.uge.environment.Tile;
 import fr.uge.environment.WildlifeToken;
 import fr.uge.environment.WildlifeType;
+
+
 import fr.uge.util.Constants;
 
 public record Deck(int version) {
@@ -29,8 +30,9 @@ public record Deck(int version) {
       };
   private static final Random random = new Random();
 
-  /* big number to prevent infinty loop in method drawToken() */
+  /* big number to prevent infinity loop in method drawToken() */
   private static final int MAX_ITERATION = 1 << 15;
+
 
   /* compact constructor */
   public Deck {
@@ -52,7 +54,7 @@ public record Deck(int version) {
     /* we have max iteration, to prevent infinity loop */
     while (iteration <= MAX_ITERATION) {
 
-        index = random.nextInt(animals.length);   /* random int in range (from 0 to 4 included) */
+        index = random.nextInt(animals.length);   /* random integer in range (from 0 to 4 included) */
         ++iteration;
 
         if (animals[index] > 0) {   /* if tokens of this animals are still available */
@@ -67,7 +69,7 @@ public record Deck(int version) {
 
   
   /**
-   * This method is called when we need to replace a token on the gameboard with a new one.
+   * This method is called when we need to replace a token on the game board with a new one.
    * @param token token to change
    * @return new token.
    */
