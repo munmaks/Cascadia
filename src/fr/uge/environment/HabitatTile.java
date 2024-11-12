@@ -99,15 +99,6 @@ public record HabitatTile(
     return builder.toString();
   }
 
-
-  // for tests
-//  public static void main(String[] args) {
-//
-//    var habitats = new TileType[] { TileType.MOUNTAIN, TileType.RIVER };
-//    var animals = new WildlifeType[] { WildlifeType.BEAR, WildlifeType.ELK, WildlifeType.FOX };
-//    var habitat = new HabitatTile(habitats, animals, 1);
-//
-//  }
 }
 
 

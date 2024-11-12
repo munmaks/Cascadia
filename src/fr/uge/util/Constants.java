@@ -1,6 +1,5 @@
 package fr.uge.util;
 
-//import java.util.ArrayList;
 
 public final class Constants {
 
@@ -11,6 +10,9 @@ public final class Constants {
   public static final int MAX_GAME_TURNS = 20;
   public static final int NB_PLAYERS_SQUARE = 2;
 
+  
+  /* Game Board */
+  public static final int TOKENS_ON_BOARD = 4;
 
   /* Environment */
   // public static final int MAX_SIZE = 12;  /* grid size, 10 - 14 */
@@ -19,7 +21,7 @@ public final class Constants {
   
   public static final int NB_NEIGHBORS_SQUARE = 4;
   public static final int NB_NEIGHBORS_HEXAGONAL = 6;
-  public static final int MAX_ROTATIONS = 6;
+  public static final int MAX_ROTATIONS = 6;  /* for hexagonals */
 
   public static final int VERSION_SQUARE = 1;
   public static final int VERSION_HEXAGONAL = 3;
@@ -86,27 +88,52 @@ public final class Constants {
 
   public static final int TILE_PER_PLAYER = 20;
 
+  /* version hexagonal */
   public static final int MIN_PLAYERS = 1;
   public static final int MAX_PLAYERS = 4;
 
   /* exactly 3 tiles must remain on the game board in the end of the game */
   public static final int THREE = 3;
 
-  
-  
+
+
   /* Deck */
   public static final int ANIMAL_TOKENS = 20;
   
   
+  
+  /* useful methods across the project */
   public static boolean isValidVersion(int version) {
     return version >= VERSION_SQUARE &&
            version <= VERSION_HEXAGONAL;
   }
-  
-  public static boolean isValidCoordinates(int x, int y) {
-    return (y >= 0 && y < MAX_ROW) &&
-           (x >= 0 && x < MAX_COL);
+
+  public static boolean isValidCoordinates(int y, int x) {
+    return y >= 0 && y < MAX_ROW &&
+           x >= 0 && x < MAX_COL;
   }
+
+  public static boolean isValidNbPlayers(int nbPlayers) {
+    return nbPlayers >= MIN_PLAYERS && nbPlayers <= MAX_PLAYERS;
+  }
+
+  
+  public static boolean isInvalidSquareNbPlayers(int nbPlayers, int version) {
+    return version != VERSION_HEXAGONAL && nbPlayers != NB_PLAYERS_SQUARE;
+  }
+
+
+  public static final String IllegalCoordinates = 
+      "Invalid coordinates, must be between (0, 0) and " + 
+      "(" + MAX_ROW + ", " + MAX_COL + ")\n";
+
+  public static final String IllegalNbPlayers = "nbPlayers must be between " + 
+      MIN_PLAYERS + " and " + MAX_PLAYERS + "\n";
+
+  public static final String IllegalVersion = "Version must be between "   + 
+      Constants.VERSION_SQUARE + " and " + Constants.VERSION_HEXAGONAL + "\n";
+
+  public static final String IllegalSquareNbPlayers = "Square Version must have exactly 2 players";
   
 }
 
