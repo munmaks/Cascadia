@@ -1,29 +1,32 @@
 package fr.uge.core;
 
 import fr.uge.environment.Environment;
-import fr.uge.util.Constants;
-
 import fr.uge.scoring.BearScoringCard;
-import fr.uge.scoring.FoxScoringCard;
-import fr.uge.scoring.HawkScoringCard;
-import fr.uge.scoring.SalmonScoringCard;
 import fr.uge.scoring.ElkScoringCard;
 import fr.uge.scoring.FamilyScoringCard;
+import fr.uge.scoring.FoxScoringCard;
+import fr.uge.scoring.HawkScoringCard;
 import fr.uge.scoring.IntermediateScoringCard;
+import fr.uge.scoring.SalmonScoringCard;
+import fr.uge.util.Constants;
+import java.util.Objects;
 
 public final class Player {
   private static Environment environment;
   private static int natureTokens = 0;
+  private static String name = null;
 
   /**
    * To think later how we get here all wildlife scoring card?
    * List, all in parameters or ...
    * */
-  public Player(int version) {
+  public Player(String playerName, int version) {
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);
     }
-    environment = new Environment(version);
+    Objects.requireNonNull(playerName, "Player name cannot be null");
+    this.environment = new Environment(version);
+    this.name = playerName;
   }
 
 
@@ -82,4 +85,15 @@ public final class Player {
     
     return 0;
   }
+
+    @Override
+    public String toString() {
+
+        return "Player{" +
+                "environment=" + environment +
+                ", natureTokens=" + natureTokens +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
 }
