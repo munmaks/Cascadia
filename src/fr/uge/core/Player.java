@@ -1,6 +1,7 @@
 package fr.uge.core;
 
-import fr.uge.environment.Environment;
+import java.util.Objects;
+
 import fr.uge.scoring.BearScoringCard;
 import fr.uge.scoring.ElkScoringCard;
 import fr.uge.scoring.FamilyScoringCard;
@@ -8,13 +9,16 @@ import fr.uge.scoring.FoxScoringCard;
 import fr.uge.scoring.HawkScoringCard;
 import fr.uge.scoring.IntermediateScoringCard;
 import fr.uge.scoring.SalmonScoringCard;
+
+import fr.uge.environment.Environment;
+
 import fr.uge.util.Constants;
-import java.util.Objects;
+
 
 public final class Player {
-  private static Environment environment;
-  private static int natureTokens = 0;
-  private static String name = null;
+  private int natureTokens = 0;
+  private String name = null;    // just for counting later
+  private Environment environment;
 
   /**
    * To think later how we get here all wildlife scoring card?

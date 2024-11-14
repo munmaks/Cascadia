@@ -18,7 +18,7 @@ public record Environment(int version) {
   // private static int nature_tokens = 0;    // for player
 
   /* environment of all placed tiles by one player */
-  private static final ArrayList<Tile> tiles = new ArrayList<Tile>();
+  private static final ArrayList<Cell> cells = new ArrayList<Cell>();
 
   /* 100 - 196 total tiles to show in player's environment */
   private static final Cell[][] grid = new Cell[Constants.MAX_ROW][Constants.MAX_COL];
@@ -54,13 +54,13 @@ public record Environment(int version) {
   
   
   /* adds a new tile to Player's environment */
-  private static void addTile(Tile tile) {
-    Objects.requireNonNull(tile);
-
-    /* update all neighbors */
-    
-    tiles.add(tile);
-  }
+//  private static void addTile(Tile tile) {
+//    Objects.requireNonNull(tile);
+//
+//    /* update all neighbors */
+//    
+//    tiles.add(tile);
+//  }
 
   
   /**
@@ -155,7 +155,7 @@ public record Environment(int version) {
     Objects.requireNonNull(cell);
     Objects.requireNonNull(tile);
     if (cell.placeTile(tile)) {
-      tiles.add(tile);  /* placed and added to all player's tiles */
+      cells.add(cell);  /* placed and added to all player's occupied cells */
       return true;
     }
     return false;
@@ -167,8 +167,8 @@ public record Environment(int version) {
   public final boolean canBePlacedWildlifeToken(WildlifeToken token) {
     Objects.requireNonNull(token);
     boolean flag = false;
-    for (var tile : tiles) {
-      switch (tile) {
+    for (var cell : cells) {
+      switch (cell.getTile()) {
         case HabitatTile habitat -> { flag = habitat.canBePlaced(token);}
         case KeystoneTile keystone -> { flag = keystone.canBePlaced(token); }
         /* normally shouldn't happen */
@@ -208,15 +208,26 @@ public record Environment(int version) {
     return grid[coordinates.y()][coordinates.x()];
   }
 
+  
+  
+//  public final List<Cell> getCellsWithToken(WildlifeToken token){
+//    Objects.requireNonNull(token);
+//    var list = new ArrayList<Cell>();
+//    for (var tile : cells) {
+//      if (tile.)
+//    }
+//    return List.copyOf(list);
+//  }
+  
 
 
   /* gets all tiles in the environment */
-  public final List<Tile> getTiles() {
-    return List.copyOf(tiles);
+  public final List<Cell> getCells() {
+    return List.copyOf(cells);
   }
   
   
-
+  
   // for tests
   public static void main(String[] main) {
     var version = 3;
@@ -235,6 +246,7 @@ public record Environment(int version) {
     // System.out.println("rotation: " + cell.getRotation());
     System.out.println("tile: " + tile.toString() + " token: " + token.toString());
     System.out.println(cell);
+    System.out.println(env.getCells());
   }
   
   

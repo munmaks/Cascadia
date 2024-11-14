@@ -13,4 +13,8 @@ public record EmptyTile() implements Tile {
     return "Empty Tile";
   }
   
+  @Override
+  public WildlifeToken getAnimal() {
+    return null;
+  }
 }

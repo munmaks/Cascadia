@@ -12,7 +12,7 @@ import fr.uge.environment.WildlifeType;
 import fr.uge.util.Constants;
 
 public record Deck(int version) {
-  
+
   /**
    * Indexes from WildlifeType `enum`:
    * BEAR   : 0
@@ -31,12 +31,17 @@ public record Deck(int version) {
   private static final Random random = new Random();
 
   /* big number to prevent infinity loop in method drawToken() */
-  private static final int MAX_ITERATION = 1 << 15;
+  private static final int MAX_ITERATION = 1 << 15;   /* big number to prevent infinity loop */
 
 
   /* compact constructor */
   public Deck {
-    
+    if (!Constants.isValidVersion(version)) {
+      throw new IllegalArgumentException(Constants.IllegalVersion);
+    }
+    if (version != Constants.VERSION_HEXAGONAL) {
+      decreaseAnimals();
+    }
   }
 
   /**
@@ -47,14 +52,14 @@ public record Deck(int version) {
    * @param void
    * @return WildlifeToken - the randomly selected token.
    */
-  public WildlifeToken getRandomToken(){
+  public final WildlifeToken getRandomToken(){
     var index = 0;
     var iteration = 0;
 
     /* we have max iteration, to prevent infinity loop */
     while (iteration <= MAX_ITERATION) {
 
-        index = random.nextInt(animals.length);   /* random integer in range (from 0 to 4 included) */
+        index = random.nextInt(animals.length);   /* random integer in range [0, 5[ */
         ++iteration;
 
         if (animals[index] > 0) {   /* if tokens of this animals are still available */
@@ -73,7 +78,7 @@ public record Deck(int version) {
    * @param token token to change
    * @return new token.
    */
-  public WildlifeToken updateToken(WildlifeToken token) {
+  public final WildlifeToken updateToken(WildlifeToken token) {
     Objects.requireNonNull(token, "Token must not be null!");
 
     /* return into deck current token */
@@ -82,5 +87,12 @@ public record Deck(int version) {
 
     return getRandomToken();
   }
-
+  
+  
+  private static void decreaseAnimals() {
+    for (var i = 0; i < animals.length; ++i) {
+      /* if we play square version, so we need only a half of hexagonal version */
+      animals[i] -= Constants.ANIMALS_SQUARE;
+    }
+  }
 }

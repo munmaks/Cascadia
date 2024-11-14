@@ -5,5 +5,5 @@ public sealed interface Tile permits
   HabitatTile,
   StarterHabitatTile,
   EmptyTile {
-
+WildlifeToken getAnimal();
 }

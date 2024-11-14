@@ -99,7 +99,7 @@ public final class Constants {
 
   /* Deck */
   public static final int ANIMAL_TOKENS = 20;
-  
+  public static final int ANIMALS_SQUARE = 10;
   
   
   /* useful methods across the project */
@@ -121,7 +121,6 @@ public final class Constants {
   public static boolean isInvalidSquareNbPlayers(int nbPlayers, int version) {
     return version != VERSION_HEXAGONAL && nbPlayers != NB_PLAYERS_SQUARE;
   }
-
 
   public static final String IllegalCoordinates = 
       "Invalid coordinates, must be between (0, 0) and " + 

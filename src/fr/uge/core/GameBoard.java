@@ -18,11 +18,16 @@ public final class GameBoard {
   private static final WildlifeScoringCard[] scoringCards = new WildlifeScoringCard[5]; // to add later Constants.SCORING_CARDS
   private static final WildlifeToken[] tokens = new WildlifeToken[Constants.TOKENS_ON_BOARD];
   private static final HashMap<WildlifeToken, Integer> map = new HashMap<WildlifeToken, Integer>();
+  private static boolean areUpdated = false;
+  
   private static int indexOfTokenToUpdate = 0;
   
   public GameBoard(int nbPlayers, int version) {
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);
+    }
+    if (Constants.isInvalidSquareNbPlayers(nbPlayers, version)) {
+      throw new IllegalArgumentException(Constants.IllegalSquareNbPlayers);
     }
     bag = new Bag(nbPlayers, version);
     deck = new Deck(version);
@@ -44,6 +49,9 @@ public final class GameBoard {
    * This method is used to determine if the tokens on the board need to be updated.
    */
   public final boolean tokensNeedUpdate() {
+    if (areUpdated) {  /* already updated */
+      return false;
+    }
     // count the number of occurences of each token, and store it in a map, but clear it first
     map.clear();
     for (var i = 0; i < tokens.length; ++i) {
@@ -60,56 +68,83 @@ public final class GameBoard {
     }
     return false;
   }
-
+  
+  
+  public final boolean areTokensUpdated() {
+    return areUpdated;
+  }
+  
+  /**
+   * Turn Manager switch 
+   * */
+  public final void setDefaultAreUpdate() {
+    areUpdated = false;
+  }
+  
+  
   private static WildlifeToken updateToken(WildlifeToken token) {
     Objects.requireNonNull(token);
     return deck.updateToken(token);
   }
   
-
-  public final void updateTokens(){
-    /* if token to change occurs 3 or more times, change it
-       to improve code later */
-    WildlifeToken tokenToChange = null; // new WildlifeToken(WildlifeType.BEAR);
-    for (var elem : map.entrySet()) {
-      if (elem.getValue() >= 3) {
-        tokenToChange = elem.getKey();
-        break;
-      }
+  // to delete later
+  private static void testUpdateTokens() {
+    for (var i = 0; i < tokens.length; ++i) {
+      tokens[i] = updateToken(tokens[i]);
     }
-    // there will be always only one token with 3 or more occurences
-    // WildlifeToken tokenToChange = map.entrySet().stream()
-    //     .filter(entry -> entry.getValue() >= 3)
-    //     .map(entry -> entry.getKey())
-    //     .findFirst()
-    //     .orElse(null);
-
-    // If there's no token with 3 or more occurrences, no update is needed
-    if (tokenToChange == null) {
+  }
+  
+  
+  public final void updateTokens(){
+    if (areUpdated) {
       return;
     }
+    /* if token to change occurs 3 or more times, change it
+       to improve code later */
+//    WildlifeToken tokenToChange = null; // new WildlifeToken(WildlifeType.BEAR);
+//    for (var elem : map.entrySet()) {
+//      if (elem.getValue() >= 3) {
+//        tokenToChange = elem.getKey();
+//        break;
+//      }
+//    }
+    // there will be always only one token with 3 or more occurences
+     WildlifeToken tokenToChange = map.entrySet().stream()
+         .filter(entry -> entry.getValue() >= 3)
+         .map(entry -> entry.getKey())
+         .findFirst()
+         .orElse(null);
+
+    // if there's no token with 3 or more occurrences, no update is needed
+    if (tokenToChange == null) { return; }
 
     for (var i = 0; i < tokens.length; ++i) {
       if (tokens[i].equals(tokenToChange)) {
         tokens[i] = updateToken(tokens[i]);
       }
     }
+    areUpdated = true;
   }
 
 
   public static void main(String[] args) {
     GameBoard gb = new GameBoard(2, 3);
     System.out.println("Tokens before update:");
+
+    while (!gb.tokensNeedUpdate()) {
+      testUpdateTokens();
+    }
     for (var i = 0; i < Constants.TOKENS_ON_BOARD; ++i) {
       System.out.println(tokens[i]);
     }
     System.out.println("Tokens need update: " + gb.tokensNeedUpdate());
-
+    
     gb.updateTokens();
     System.out.println("Tokens after update:");
     for (var i = 0; i < Constants.TOKENS_ON_BOARD; ++i) {
       System.out.println(tokens[i]);
     }
+    
   }
 
 }

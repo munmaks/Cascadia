@@ -41,4 +41,9 @@ public record StarterHabitatTile(
            leftTile.toString() +
            rightTile.toString();
   }
+  
+  @Override
+  public WildlifeToken getAnimal() {
+    return null;
+  }
 }
