@@ -226,6 +226,16 @@ public record Environment(int version) {
     return List.copyOf(cells);
   }
   
+  public String toString() {
+    var str = new StringBuilder();
+    for (var row = 0; row < Constants.MAX_ROW; ++row) {
+      for (var col = 0; col < Constants.MAX_COL; ++col) {
+        str.append(grid[row][col].toString());
+      }
+      str.append("\n");
+    }
+    return str.toString();
+  }
   
   
   // for tests

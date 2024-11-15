@@ -29,7 +29,7 @@ public record Cell(Coordinates coordinates, int version) {
   }
   
   
-  private final void validateInputs(Coordinates coordinates, int version) {
+  private static void validateInputs(Coordinates coordinates, int version) {
     Objects.requireNonNull(coordinates);
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);

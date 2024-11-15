@@ -18,7 +18,7 @@ import fr.uge.util.Constants;
 public final class Player {
   private int natureTokens = 0;
   private String name = null;    // just for counting later
-  private Environment environment;
+  private Environment environment = null;
 
   /**
    * To think later how we get here all wildlife scoring card?
@@ -29,9 +29,15 @@ public final class Player {
       throw new IllegalArgumentException(Constants.IllegalVersion);
     }
     Objects.requireNonNull(playerName, "Player name cannot be null");
-    this.environment = new Environment(version);
-    this.name = playerName;
+    environment = new Environment(version);
+    name = playerName;
   }
+  
+  
+  public final Environment getEnvironment() {
+    return environment;
+  }
+
 
 
   /** calculates the player's based on his environment and current wildlife cards */
