@@ -1,31 +1,33 @@
 package fr.uge.environment;
 
-import java.util.Objects;
-//import java.util.List;
-
 import fr.uge.util.Constants;
+import java.util.Objects;
 
 /**
  * Cell class for represent a cell where a tile can be placed */
-public record Cell(Coordinates coordinates, int version) {
+public final class Cell {
 
+  private final Coordinates coordinates;
+  private final int version;
   /**
    *  Occupation status of tile represented by the cell.
    */
-  private static boolean occupiedByTile = false;
+  private boolean occupiedByTile = false;
 
   /* by default it's empty type of tile on this cell */
-  private static Tile tile = new EmptyTile();
+  private Tile tile = new EmptyTile();
 
   /**<p>for version 1 - 2, we needn't rotation</p>
    * <p>for version 3:</p>
    * <p>1 turn clockwise = 60 degrees, 6 turns clockwise = 360 == 0 degrees.<br>
    * 1 turn counter clockwise = 300 degrees, 6 turns clockwise 360 == 0 degrees</p>
    * */
-  private static int currentRotation = 0;
+  private int currentRotation = 0;
 
-  public Cell {
+  public Cell(Coordinates coordinates, int version) {
     validateInputs(coordinates, version);
+    this.coordinates = coordinates;
+    this.version = version;
   }
   
   
@@ -93,13 +95,16 @@ public record Cell(Coordinates coordinates, int version) {
     switch (tile) {
       case HabitatTile h -> { builder.append(h.toString() + " ").append(h.getAnimal()); }
       case KeystoneTile k -> { builder.append(k.toString() + " ").append(k.getAnimal()); }
-      case EmptyTile e -> { System.out.println("Empty cell:"); }
-      case StarterHabitatTile s -> { ; }
+      case EmptyTile e -> { builder.append("Empty cell"); }
+      case StarterHabitatTile s -> { }
     }
-    builder.append(" " + coordinates);
+    builder.append(" ").append(coordinates).append("\n");
     return builder.toString();
   }
 
+  public final Coordinates coordinates() {
+    return coordinates;
+  }
 
 }
   

@@ -16,13 +16,13 @@ import fr.uge.util.Constants;
 public record Environment(int version) {
 
   // private static int nature_tokens = 0;    // for player
-
-  /* environment of all placed tiles by one player */
-  private static final ArrayList<Cell> cells = new ArrayList<Cell>();
-
+  
   /* 100 - 196 total tiles to show in player's environment */
   private static final Cell[][] grid = new Cell[Constants.MAX_ROW][Constants.MAX_COL];
 
+  /* environment of all placed tiles by one player */
+  private static final ArrayList<Cell> cells = new ArrayList<>();
+  
 
   private static int nbNeighbors = 0;
 
@@ -154,7 +154,9 @@ public record Environment(int version) {
   public final boolean placeTile(Cell cell, Tile tile) {
     Objects.requireNonNull(cell);
     Objects.requireNonNull(tile);
+    // System.err.println("in function placeTile()");
     if (cell.placeTile(tile)) {
+      // System.err.println("Tile is placed inside function placeTile()");
       cells.add(cell);  /* placed and added to all player's occupied cells */
       return true;
     }
@@ -226,15 +228,16 @@ public record Environment(int version) {
     return List.copyOf(cells);
   }
   
+  @Override
   public String toString() {
-    var str = new StringBuilder();
+    var builder = new StringBuilder();
     for (var row = 0; row < Constants.MAX_ROW; ++row) {
       for (var col = 0; col < Constants.MAX_COL; ++col) {
-        str.append(grid[row][col].toString());
+        builder.append(grid[row][col].toString());
       }
-      str.append("\n");
+      builder.append("\n");
     }
-    return str.toString();
+    return builder.toString();
   }
   
   

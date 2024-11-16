@@ -1,12 +1,9 @@
 package fr.uge.environment;
 
 import java.util.Objects;
+import java.util.Arrays;
 
-
-public record HabitatTile(
-      TileType[] habitats,       /* 1-2 habitats  depends from game version */
-      WildlifeType[] animals     /* 2-3 animals   depends from game version */
-    ) implements Tile {
+public final class HabitatTile implements Tile {
 
   /*
    * configTilesWithTwoAnimals.txt
@@ -22,15 +19,21 @@ public record HabitatTile(
    * */
 
 
-  private static boolean occupiedByAnimal = false;  /* idle */
-  private static WildlifeToken placedAnimal = null;
+  private final TileType[] habitats;       /* 1-2 habitats  depends from game version */
+  private final WildlifeType[] animals;    /* 2-3 animals   depends from game version */
+  private boolean occupiedByAnimal = false;  /* idle */
+  private WildlifeToken placedAnimal = null;
 
   
-  public HabitatTile {
-    Objects.requireNonNull(habitats, "Habitats can't be null");
-    Objects.requireNonNull(animals, "Animals can't be null");
+  public HabitatTile(
+    TileType[] habitats,       /* 1-2 habitats  depends from game version */
+    WildlifeType[] animals     /* 2-3 animals   depends from game version */
+  ) {
+    this.habitats = Objects.requireNonNull(habitats, "Habitats can't be null");
+    this.animals = Objects.requireNonNull(animals, "Animals can't be null");
   }
 
+  @Override
   public final WildlifeToken getAnimal() {
     return placedAnimal;
   }
@@ -72,7 +75,7 @@ public record HabitatTile(
 
 
   /* to improve later */
-  private final String habitatsAndAnimalsAsString() {
+  private String habitatsAndAnimalsAsString() {
     var builder = new StringBuilder();
     var separator = "";
     for (var habitat : habitats) {
@@ -99,6 +102,17 @@ public record HabitatTile(
     return builder.toString();
   }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(habitats, animals);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return o instanceof HabitatTile other
+          && Arrays.equals(habitats, other.habitats)
+          && Arrays.equals(animals, other.animals);
+  }
 }
 
 

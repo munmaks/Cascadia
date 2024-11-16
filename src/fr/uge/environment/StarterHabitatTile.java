@@ -2,11 +2,7 @@ package fr.uge.environment;
 
 import java.util.Objects;
 
-public record StarterHabitatTile(
-      KeystoneTile topTile,
-      HabitatTile leftTile,
-      HabitatTile rightTile
-    ) implements Tile {
+public final class StarterHabitatTile implements Tile {
 
   /*
    * configStarterHabitatTile.txt
@@ -27,11 +23,18 @@ public record StarterHabitatTile(
    * 
    * Source: game rules
    * */
+  private final KeystoneTile topTile;
+  private final HabitatTile leftTile;
+  private final HabitatTile rightTile;
 
-  public StarterHabitatTile {
-    Objects.requireNonNull(topTile);
-    Objects.requireNonNull(leftTile);
-    Objects.requireNonNull(rightTile);
+  public StarterHabitatTile(
+    KeystoneTile topTile,
+    HabitatTile leftTile,
+    HabitatTile rightTile
+  ) {
+    this.topTile = Objects.requireNonNull(topTile);
+    this.leftTile = Objects.requireNonNull(leftTile);
+    this.rightTile = Objects.requireNonNull(rightTile);
   }
 
 

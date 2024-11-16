@@ -1,4 +1,83 @@
+<!--
 - compiler des sources (target compile) ;
 - créer le jar exécutable (target jar) ; il devra s'agir de la target par défaut ;
 - générer la javadoc, écrite en anglais, dans le répertoire docs/doc (target javadoc) ;
 - nettoyer le projet pour qu'il ne rete plus que les éléments demandés (target clean).
+-->
+<project name="Cascadia" default="jar" basedir=".">
+
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="classes"/>
+    <property name="src.dir" value="src"/>
+    <property name="docs.dir" value="docs"/>
+    <property name="main-class" value="fr.uge.main.Main"/>
+    <!-- <property name="javadoc.dir" value="${docs.dir}/doc"/> -->
+
+
+    <path id="classpath">
+        <pathelement path="lib/zen-6.0.jar"/>
+    </path>
+
+
+    <!-- Compile target -->
+    <target name="compile" depends="clean">
+    	<copy todir="${classes.dir}">
+    	  <fileset dir="resources"/>
+    	</copy>
+    	
+    	<copydir src="resources" dest="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}">
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+
+
+    <!-- Javadoc target -->
+    <!-- <target name="javadoc" depends="compile">
+        <mkdir dir="${javadoc.dir}"/>
+        <javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}">
+            <classpath refid="classpath"/>
+        </javadoc>
+    </target> -->
+
+    <!-- JAR target -->
+    <target name="jar" depends="compile">
+    	<delete file="Cascadia.jar"/>
+        <jar destfile="Cascadia.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}"/>
+            	<attribute name="Class-Path" value="lib/zen-6.0.jar"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <!-- Default target -->
+    <target name="default" depends="jar"/>
+	
+    <!-- Zip target -->
+	<target name="zip">
+		<antcall target="javadoc"/>
+		<antcall target="clean"/>
+		<mkdir dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy"/>
+		<mkdir dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy/MUNAITPASOV_MAOUCHE_Cascadia"/>
+		<copy todir="../MUNAITPASOV_MAOUCHE_Cascadia_copy/MUNAITPASOV_MAOUCHE_Cascadia">
+		  <fileset dir="." excludes=".*"/>
+		</copy>
+		
+		<zip destfile="MUNAITPASOV_MAOUCHE_Cascadia.zip">
+			<fileset dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy"/>
+		</zip>
+		
+		<delete dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy"/>
+	</target>
+    
+	<!-- Clean classes directory -->
+    <target name="clean">
+        <delete dir="${classes.dir}"/>
+    	<mkdir dir="${classes.dir}"/>
+    	<delete file="MUNAITPASOV_MAOUCHE_Cascadia.zip"/>
+    	<delete file="Cascadia.jar"/>
+    </target>
+
+
+</project>

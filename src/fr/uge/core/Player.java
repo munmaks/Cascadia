@@ -1,18 +1,15 @@
 package fr.uge.core;
 
-import java.util.Objects;
-
+import fr.uge.environment.Environment;
 import fr.uge.scoring.BearScoringCard;
 import fr.uge.scoring.ElkScoringCard;
-import fr.uge.scoring.FamilyScoringCard;
+import fr.uge.scoring.FamilyAndIntermediateScoringCards;
 import fr.uge.scoring.FoxScoringCard;
 import fr.uge.scoring.HawkScoringCard;
 import fr.uge.scoring.IntermediateScoringCard;
 import fr.uge.scoring.SalmonScoringCard;
-
-import fr.uge.environment.Environment;
-
 import fr.uge.util.Constants;
+import java.util.Objects;
 
 
 public final class Player {
@@ -84,7 +81,7 @@ public final class Player {
   
   
   
-  public final int calculateFamilyScore(FamilyScoringCard card) {
+  public final int calculateFamilyScore(FamilyAndIntermediateScoringCards card) {
     
     return 0;
   }
@@ -99,11 +96,10 @@ public final class Player {
     @Override
     public String toString() {
 
-        return "Player{" +
-                "environment=" + environment +
-                ", natureTokens=" + natureTokens +
-                ", name='" + name + '\'' +
-                '}';
+        return "Player: name: [ " + name + " ]\n" +
+                "environment=\n" + environment.toString() +
+                "\nnatureTokens=" + natureTokens +
+                '\n';
     }
 
 }

@@ -2,9 +2,7 @@ package fr.uge.environment;
 
 public record WildlifeToken(WildlifeType animal) {
 
-  public WildlifeToken {
-
-  }
+  public WildlifeToken { }
 
   @Override
   public String toString() {

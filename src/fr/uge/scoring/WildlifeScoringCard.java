@@ -1,7 +1,7 @@
 package fr.uge.scoring;
 
 public sealed interface WildlifeScoringCard permits 
-    FamilyScoringCard,
+    FamilyAndIntermediateScoringCards,
     IntermediateScoringCard,
     BearScoringCard,
     FoxScoringCard,

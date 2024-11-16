@@ -1,15 +1,13 @@
 package fr.uge.environment;
 
-public record EmptyTile() implements Tile {
+public final class EmptyTile implements Tile {
 
-  public EmptyTile {
+  public EmptyTile(){
     /* don't have any habitats and any animals */
   }
 
-  
   @Override
   public final String toString() {
-    // TODO Auto-generated method stub
     return "Empty Tile";
   }
   
