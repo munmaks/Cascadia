@@ -5,40 +5,41 @@ import java.util.List;
 import java.util.Objects;
 // import java.util.HashMap;
 
-import javax.sound.midi.SysexMessage;
 
 import fr.uge.bag.Bag;
 import fr.uge.bag.Deck;
+
+
 import fr.uge.util.Constants;
 
 /**
  * Player's environment of all tiles and placed wildlife tokens */
-public record Environment(int version) {
+public final class Environment{
 
-  // private static int nature_tokens = 0;    // for player
+  // private int nature_tokens = 0;    // for player
   
   /* 100 - 196 total tiles to show in player's environment */
-  private static final Cell[][] grid = new Cell[Constants.MAX_ROW][Constants.MAX_COL];
+  private final Cell[][] grid = new Cell[Constants.MAX_ROW][Constants.MAX_COL];
 
   /* environment of all placed tiles by one player */
-  private static final ArrayList<Cell> cells = new ArrayList<>();
-  
+  private final ArrayList<Cell> cells = new ArrayList<>();
 
-  private static int nbNeighbors = 0;
+  private final int version;
+  private int nbNeighbors = 0;
 
 
-  public Environment {
+  public Environment(int version) {
     /* class for all check and valid parameters to stop checking everytime THE SAME THING */
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException("Game Version must be 1, 2");
     }
     initializeGrid(version);
-
-    nbNeighbors = defineNbNeighbors(version); 
+    this.version = version;
+    this.nbNeighbors = defineNbNeighbors(version); 
   }
 
   
-  private static void initializeGrid(int version) {
+  private void initializeGrid(int version) {
     for (var row = 0; row < Constants.MAX_ROW; ++row) {  /* row is `y` */
       for (var col = 0; col < Constants.MAX_COL; ++col) { /* col is `x` */
         grid[row][col] = new Cell(new Coordinates(row, col), version);
@@ -46,7 +47,7 @@ public record Environment(int version) {
     }
   }
 
-  private static int defineNbNeighbors(int version) {
+  private int defineNbNeighbors(int version) {
     return (version == Constants.VERSION_HEXAGONAL) ?
             Constants.NB_NEIGHBORS_HEXAGONAL:
             Constants.NB_NEIGHBORS_SQUARE; 
@@ -54,7 +55,7 @@ public record Environment(int version) {
   
   
   /* adds a new tile to Player's environment */
-//  private static void addTile(Tile tile) {
+//  private void addTile(Tile tile) {
 //    Objects.requireNonNull(tile);
 //
 //    /* update all neighbors */
@@ -67,7 +68,7 @@ public record Environment(int version) {
    * @param from this cell we determine a neighbor
    * @param direction - 0, 1, 2, 3
    * */
-  private static Cell getNeighborSquare(Cell cell, int direction) {
+  private Cell getNeighborSquare(Cell cell, int direction) {
     var diff = Constants.SQUARE_DIRECTION_DIFFERENCES[direction];
     var neighborRow = cell.coordinates().y() + diff[1];
     var neighborCol = cell.coordinates().x() + diff[0];
@@ -79,7 +80,7 @@ public record Environment(int version) {
   }
   
 
-  public final List<Cell> getNeighborsSquare(Cell cell){
+  private List<Cell> getNeighborsSquare(Cell cell){
     Objects.requireNonNull(cell);
     var neighbors = new ArrayList<Cell>();
     /* SQUARE_DIRECTION_DIFFERENCES: (x, y) */
@@ -100,7 +101,7 @@ public record Environment(int version) {
    * @param direction An integer representing one of the six directions (0-5).
    * @return          The neighboring cell if within bounds, otherwise null.
    */
-  private static Cell oddrOffsetNeighbor(Cell cell, int direction) {
+  private Cell oddrOffsetNeighbor(Cell cell, int direction) {
     var parity = cell.coordinates().y() & 1;  /* parity: 0 - even rows, 1 - odd rows */
 
     var diff = Constants.HEXAGONE_DIRECTION_DIFFERENCES[parity][direction];
@@ -123,7 +124,7 @@ public record Environment(int version) {
    * @param cell The hex cell for which to retrieve neighbors.
    * @return     An immutable list of neighboring cells.
    */
-  public final List<Cell> getOffsetNeighbors(Cell cell) {
+  private List<Cell> getOffsetNeighbors(Cell cell) {
       var neighbors = new ArrayList<Cell>();
       for (var direction = 0; direction < Constants.MAX_ROTATIONS; ++direction) {
           var neighbor = oddrOffsetNeighbor(cell, direction);
@@ -154,9 +155,7 @@ public record Environment(int version) {
   public final boolean placeTile(Cell cell, Tile tile) {
     Objects.requireNonNull(cell);
     Objects.requireNonNull(tile);
-    // System.err.println("in function placeTile()");
     if (cell.placeTile(tile)) {
-      // System.err.println("Tile is placed inside function placeTile()");
       cells.add(cell);  /* placed and added to all player's occupied cells */
       return true;
     }
