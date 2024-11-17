@@ -21,17 +21,16 @@ public record Deck(int version) {
    * FOX    : 3
    * SALMON : 4
    */
-  private static int[] animals =  {
+  private static final int[] animals =  {
         Constants.ANIMAL_TOKENS,  /* BEAR   */
         Constants.ANIMAL_TOKENS,  /* ELK    */
         Constants.ANIMAL_TOKENS,  /* HAWK   */
         Constants.ANIMAL_TOKENS,  /* FOX    */
         Constants.ANIMAL_TOKENS   /* SALMON */
       };
-  private static final Random random = new Random();
 
   /* big number to prevent infinity loop in method drawToken() */
-  private static final int MAX_ITERATION = 1 << 15;   /* big number to prevent infinity loop */
+  private static final int MAX_ITERATION = 1 << 16;   /* big number to prevent infinity loop */
 
 
   /* compact constructor */
@@ -53,12 +52,12 @@ public record Deck(int version) {
    * @return WildlifeToken - the randomly selected token.
    */
   public final WildlifeToken getRandomToken(){
-    var index = 0;
-    var iteration = 0;
+    int index;
+    int iteration = 0;
+    var random = new Random();
 
     /* we have max iteration, to prevent infinity loop */
     while (iteration <= MAX_ITERATION) {
-
         index = random.nextInt(animals.length);   /* random integer in range [0, 5[ */
         ++iteration;
 
@@ -68,8 +67,7 @@ public record Deck(int version) {
         }
     }
     /* normally it shouldn't happen */
-    System.err.println("Maximum number of iterations exceeded in drawToken()");
-    return null;
+    throw new IllegalArgumentException("Maximum number of iterations exceeded in drawToken()");
   }
 
   
@@ -95,4 +93,5 @@ public record Deck(int version) {
       animals[i] -= Constants.ANIMALS_SQUARE;
     }
   }
+  
 }

@@ -1,40 +1,67 @@
 package fr.uge.core;
 
-import fr.uge.environment.Environment;
+import java.util.Objects;
+
 import fr.uge.scoring.BearScoringCard;
 import fr.uge.scoring.ElkScoringCard;
 import fr.uge.scoring.FamilyAndIntermediateScoringCards;
 import fr.uge.scoring.FoxScoringCard;
 import fr.uge.scoring.HawkScoringCard;
-import fr.uge.scoring.IntermediateScoringCard;
 import fr.uge.scoring.SalmonScoringCard;
-import fr.uge.util.Constants;
-import java.util.Objects;
+import fr.uge.environment.Environment;
+import fr.uge.environment.WildlifeToken;
+import fr.uge.environment.WildlifeType;
 
+import fr.uge.util.Constants;
 
 public final class Player {
+  private final String name;    // just for counting later
+  private final Environment environment;
   private int natureTokens = 0;
-  private String name = null;    // just for counting later
-  private Environment environment = null;
+
 
   /**
    * To think later how we get here all wildlife scoring card?
    * List, all in parameters or ...
    * */
-  public Player(String playerName, int version) {
+  public Player(String name, int version) {
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);
     }
-    Objects.requireNonNull(playerName, "Player name cannot be null");
-    environment = new Environment(version);
-    name = playerName;
-  }
-  
-  
-  public final Environment getEnvironment() {
-    return environment;
+    this.name = Objects.requireNonNull(name, "Player name cannot be null");
+    this.environment = new Environment(version);
   }
 
+
+  public final Environment environment() {
+    return this.environment;
+  }
+
+  public final int natureTokens() {
+    return this.natureTokens;
+  }
+
+  public final String name() {
+    return this.name;
+  }
+
+
+
+  public boolean canUseNatureTokens(){
+    return this.natureTokens > 0;
+  }
+
+  /**
+   * for later usage, 
+   * decreases the number of nature tokens
+   */
+  public final boolean useNatureTokens(){
+    if (!canUseNatureTokens()) {
+      return false; /* do nothing */
+    }
+    this.natureTokens--;
+    return true;
+  }
 
 
   /** calculates the player's based on his environment and current wildlife cards */
@@ -81,25 +108,26 @@ public final class Player {
   
   
   
-  public final int calculateFamilyScore(FamilyAndIntermediateScoringCards card) {
-    
-    return 0;
-  }
-  
-  
-  
-  public final int calculateIntermediateScore(IntermediateScoringCard card) {
-    
-    return 0;
-  }
-
-    @Override
-    public String toString() {
-
-        return "Player: name: [ " + name + " ]\n" +
-                "environment=\n" + environment.toString() +
-                "\nnatureTokens=" + natureTokens +
-                '\n';
+  public final int calculateFamilyAbdIntermediateScore(FamilyAndIntermediateScoringCards card) {
+    int score = 0;
+    var allTokens = new WildlifeToken[Constants.NB_TOKENS];
+    for (var i = 0; i < Constants.NB_TOKENS; ++i) {
+      allTokens[i] = new WildlifeToken(WildlifeType.values()[i]);
     }
+    for (var token : allTokens) {
+      var map = card.returnWildlifeTokenMap(token);
+      score += map.getOrDefault(token, 0);
+    }
+    return score;
+  }
+  
+  
+  @Override
+  public String toString() {
+      return "Player, name: [ " + name + " ]\n" +
+              "environment= " + environment.toString() +
+              "\nnatureTokens=" + natureTokens + '\n';
+  }
+
 
 }

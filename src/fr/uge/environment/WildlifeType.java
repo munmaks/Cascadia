@@ -17,5 +17,11 @@ public enum WildlifeType {
   ELK,
   HAWK,
   FOX,
-  SALMON
+  SALMON;
+
+  @Override
+  public String toString() {
+    return this.name();
+  }
+  
 }

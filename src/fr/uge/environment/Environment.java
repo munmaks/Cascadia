@@ -242,25 +242,25 @@ public record Environment(int version) {
   
   
   // for tests
-  public static void main(String[] main) {
-    var version = 3;
-    var env = new Environment(version);
-    var bag = new Bag(3, version);
-    var deck = new Deck(version);
-    var coord = new Coordinates(0, 0);
-    var tile = bag.getRandomTile();
-    var token = deck.getRandomToken();
+  // public static void main(String[] main) {
+  //   var version = 3;
+  //   var env = new Environment(version);
+  //   var bag = new Bag(3, version);
+  //   var deck = new Deck(version);
+  //   var coord = new Coordinates(0, 0);
+  //   var tile = bag.getRandomTile();
+  //   var token = deck.getRandomToken();
 
-    var cell = env.getCell(coord);
-    env.placeTile(cell, tile);
-    env.placeWildlifeToken(cell, token);
+  //   var cell = env.getCell(coord);
+  //   env.placeTile(cell, tile);
+  //   env.placeWildlifeToken(cell, token);
 
-    // cell.turnСounterСlockwise();
-    // System.out.println("rotation: " + cell.getRotation());
-    System.out.println("tile: " + tile.toString() + " token: " + token.toString());
-    System.out.println(cell);
-    System.out.println(env.getCells());
-  }
+  //   // cell.turnСounterСlockwise();
+  //   // System.out.println("rotation: " + cell.getRotation());
+  //   System.out.println("tile: " + tile.toString() + " token: " + token.toString());
+  //   System.out.println(cell);
+  //   System.out.println(env.getCells());
+  // }
   
   
 }

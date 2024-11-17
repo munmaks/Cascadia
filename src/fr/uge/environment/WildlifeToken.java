@@ -6,7 +6,7 @@ public record WildlifeToken(WildlifeType animal) {
 
   @Override
   public String toString() {
-    return animal + "";
+    return animal.toString();
   }
 
 }

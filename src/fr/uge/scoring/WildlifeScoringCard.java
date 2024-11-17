@@ -1,8 +1,7 @@
 package fr.uge.scoring;
 
 public sealed interface WildlifeScoringCard permits 
-    FamilyAndIntermediateScoringCards,
-    IntermediateScoringCard,
+    FamilyAndIntermediateScoringCards,  /* they're similair, so Family and Scoring card are in the same class */
     BearScoringCard,
     FoxScoringCard,
     SalmonScoringCard,

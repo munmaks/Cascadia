@@ -1,5 +1,9 @@
 package fr.uge.ui;
 
-public class EndScreen {
-  // TO DO
+public final class EndScreen {
+  
+  public EndScreen() {
+    
+  }
+  
 }

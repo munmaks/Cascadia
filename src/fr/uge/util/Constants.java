@@ -1,18 +1,22 @@
 package fr.uge.util;
 
-
 public final class Constants {
 
   /* prevent instantiation of this utility class */
   private Constants() { }
 
   /* Game */
-  public static final int MAX_GAME_TURNS = 20;
   public static final int NB_PLAYERS_SQUARE = 2;
+  
+  /* Turn Manager */
+  public static final int MAX_GAME_TURNS = 20;
 
   
   /* Game Board */
   public static final int TOKENS_ON_BOARD = 4;
+  public static final int TILES_ON_BOARD = 4;
+  public static final int NB_SCORING_CARDS = 5;
+
 
   /* Environment */
   // public static final int MAX_SIZE = 12;  /* grid size, 10 - 14 */
@@ -25,6 +29,8 @@ public final class Constants {
 
   public static final int VERSION_SQUARE = 1;
   public static final int VERSION_HEXAGONAL = 3;
+
+  public static final int NB_TOKENS = 5;
 
   
   
@@ -134,6 +140,11 @@ public final class Constants {
 
   public static final String IllegalSquareNbPlayers = "Square Version must have exactly 2 players";
   
+  /* Family and Intermidiate scoring cards */
+  public static final int FAMILY_THREE_AND_PLUS = 9;
+  public static final int INTERMEDIATE_FOUR_AND_PLUS = 12;
+
+
 }
 
 

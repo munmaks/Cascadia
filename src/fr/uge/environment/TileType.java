@@ -1,6 +1,5 @@
 package fr.uge.environment;
 
-
 /**
  * <p>Represents Type of Tile </p>
  * <p>Indexes for TileType `enum`:</p>
