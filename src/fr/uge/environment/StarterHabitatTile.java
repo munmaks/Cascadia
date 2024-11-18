@@ -23,7 +23,7 @@ public final class StarterHabitatTile implements Tile {
    * 
    * Source: game rules
    * */
-  private final KeystoneTile topTile;
+  private final KeystoneTile topTile;           /* we don't know if it's habitat tile or keystone, depends from game version */
   private final HabitatTile leftTile;
   private final HabitatTile rightTile;
 
@@ -37,6 +37,18 @@ public final class StarterHabitatTile implements Tile {
     this.rightTile = Objects.requireNonNull(rightTile);
   }
 
+
+  public KeystoneTile topTile() {
+    return topTile;
+  }
+
+  public HabitatTile leftTile() {
+    return leftTile;
+  }
+
+  public HabitatTile rightTile() {
+    return rightTile;
+  }
 
   @Override
   public String toString() {

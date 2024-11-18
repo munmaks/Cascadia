@@ -3,11 +3,11 @@ package fr.uge.environment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 // import java.util.HashMap;
 
 
 import fr.uge.bag.Bag;
-import fr.uge.bag.Deck;
 
 
 import fr.uge.util.Constants;
@@ -20,6 +20,7 @@ public final class Environment{
   
   /* 100 - 196 total tiles to show in player's environment */
   private final Cell[][] grid = new Cell[Constants.MAX_ROW][Constants.MAX_COL];
+
 
   /* environment of all placed tiles by one player */
   private final ArrayList<Cell> cells = new ArrayList<>();
@@ -38,7 +39,9 @@ public final class Environment{
     this.nbNeighbors = defineNbNeighbors(version); 
   }
 
+
   
+
   private void initializeGrid(int version) {
     for (var row = 0; row < Constants.MAX_ROW; ++row) {  /* row is `y` */
       for (var col = 0; col < Constants.MAX_COL; ++col) { /* col is `x` */
@@ -68,7 +71,7 @@ public final class Environment{
    * @param from this cell we determine a neighbor
    * @param direction - 0, 1, 2, 3
    * */
-  private Cell getNeighborSquare(Cell cell, int direction) {
+  public Cell getNeighborSquare(Cell cell, int direction) {
     var diff = Constants.SQUARE_DIRECTION_DIFFERENCES[direction];
     var neighborRow = cell.coordinates().y() + diff[1];
     var neighborCol = cell.coordinates().x() + diff[0];
@@ -101,7 +104,7 @@ public final class Environment{
    * @param direction An integer representing one of the six directions (0-5).
    * @return          The neighboring cell if within bounds, otherwise null.
    */
-  private Cell oddrOffsetNeighbor(Cell cell, int direction) {
+  public Cell oddrOffsetNeighbor(Cell cell, int direction) {
     var parity = cell.coordinates().y() & 1;  /* parity: 0 - even rows, 1 - odd rows */
 
     var diff = Constants.HEXAGONE_DIRECTION_DIFFERENCES[parity][direction];
@@ -116,7 +119,7 @@ public final class Environment{
     }
     return grid[neighborRow][neighborCol];
   }
-  
+
   
   /**
    * <b>gets a copy of list of all valid neighbors for a given hex cell.</b>
@@ -162,6 +165,7 @@ public final class Environment{
     return false;
   }
 
+
   /**
    * Determine possibility to placed a wildlife token on player's environment. 
    * */
@@ -204,9 +208,11 @@ public final class Environment{
 
 
 
-  public final Cell getCell(Coordinates coordinates) {
-    Objects.requireNonNull(coordinates);
-    return grid[coordinates.y()][coordinates.x()];
+  public final Cell getCell(int y, int x) {
+    if (!Constants.isValidCoordinates(y, x)) {
+      throw new IllegalArgumentException(Constants.IllegalCoordinates);
+    }
+    return grid[y][x];
   }
 
   
@@ -227,6 +233,8 @@ public final class Environment{
     return List.copyOf(cells);
   }
   
+
+
   @Override
   public String toString() {
     var builder = new StringBuilder();

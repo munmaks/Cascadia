@@ -93,15 +93,19 @@ public final class Cell {
   public final String toString() {
     var builder = new StringBuilder();
     switch (tile) {
-      case HabitatTile h -> { builder.append(h.toString() + " ").append(h.getAnimal()); }
-      case KeystoneTile k -> { builder.append(k.toString() + " ").append(k.getAnimal()); }
-      case EmptyTile e -> { builder.append("Empty cell"); }
+      case HabitatTile h -> { builder.append(h.toString()).append(" ")
+                                    .append(h.getAnimal()).append(" ")
+                                    .append(coordinates).append("\n"); }
+      case KeystoneTile k -> { builder.append(k.toString()).append(" ")
+                                    .append(k.getAnimal()).append(" ")
+                                    .append(coordinates).append("\n"); }
+      case EmptyTile e -> { /* builder.append("Empty cell"); */ }
       case StarterHabitatTile s -> { }
     }
-    builder.append(" ").append(coordinates).append("\n");
     return builder.toString();
   }
 
+  
   public final Coordinates coordinates() {
     return coordinates;
   }

@@ -156,6 +156,13 @@ public final class GameBoard {
     return token;
   }
 
+  public Bag getBag() {
+    return bag;
+  }
+
+  public Deck getDeck() {
+    return deck;
+  }
 
   // public static void main(String[] args) {
   //   GameBoard gb = new GameBoard(2, 1);

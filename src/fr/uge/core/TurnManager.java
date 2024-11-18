@@ -1,15 +1,17 @@
 package fr.uge.core;
 
-import java.util.ArrayList;
+import fr.uge.util.Constants;
 import java.util.List;
 import java.util.Objects;
-import fr.uge.util.Constants;
 
-/** to improve later this class */
+/**
+ * Only one turn manager is created for the entire game.<br>
+ * That's why we use static fields.
+*/
 public final class TurnManager {
+  private static List<Player> players;
   private static int totalTurns = 0;
   private static int currentPlayerIndex = 0;
-  private static List<Player> players;
   private static int playersLength = 0;
   private static boolean needToTurn = false;
 
@@ -18,11 +20,12 @@ public final class TurnManager {
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);
     }
-    if (Constants.isInvalidSquareNbPlayers(listOfPlayers.size(), version)) {
+    playersLength = listOfPlayers.size();
+    if (Constants.isInvalidSquareNbPlayers(playersLength, version)) {
       throw new IllegalArgumentException(Constants.IllegalSquareNbPlayers);
     }
-    players = List.copyOf(listOfPlayers);
-    playersLength = players.size();
+    /* listOfPlayers is already immutable, and we don't need to change */
+    players = listOfPlayers;
   }
 
   public final Player getCurrentPlayer() {
