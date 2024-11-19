@@ -61,4 +61,9 @@ public final class StarterHabitatTile implements Tile {
   public WildlifeToken getAnimal() {
     return null;
   }
+
+  @Override
+  public boolean canBePlaced(WildlifeToken token) {
+    return false;
+  }
 }

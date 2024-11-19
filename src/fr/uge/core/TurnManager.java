@@ -57,7 +57,7 @@ public final class TurnManager {
    * @param maxTurns Maximum turns allowed in the game.
    * @return true if the game should end, false otherwise
    */
-  public static boolean isGameEnd() {
+  public final boolean isGameEnd() {
     return totalTurns >= Constants.MAX_GAME_TURNS;
   }
 

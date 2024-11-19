@@ -1,7 +1,7 @@
 package fr.uge.environment;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
 
 public final class HabitatTile implements Tile {
 
@@ -46,6 +46,7 @@ public final class HabitatTile implements Tile {
    * @param Animal token
    * @return true - it's possible, otherwise no
    * */
+  @Override
   public final boolean canBePlaced(WildlifeToken token) {
     Objects.requireNonNull(token, "token must not be null in canBePlaced()");
     if (isOccupied()) {
@@ -90,6 +91,9 @@ public final class HabitatTile implements Tile {
       separator = ", ";
     }
     builder.append(")");
+    if (placedAnimal != null) {
+      builder.append(" ").append(placedAnimal);
+    }
     return builder.toString();
   }
 

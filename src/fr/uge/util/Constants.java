@@ -128,6 +128,10 @@ public final class Constants {
     return version != VERSION_HEXAGONAL && nbPlayers != NB_PLAYERS_SQUARE;
   }
 
+  public static boolean isValidChoice(int choice){
+    return choice >= 1 && choice <= TOKENS_ON_BOARD;
+  }
+
   public static final String IllegalCoordinates = 
       "Invalid coordinates, must be between (0, 0) and " + 
       "(" + MAX_ROW + ", " + MAX_COL + ")\n";

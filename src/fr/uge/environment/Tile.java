@@ -7,4 +7,5 @@ public sealed interface Tile permits
   StarterHabitatTile {
   /* abstract methods */
   WildlifeToken getAnimal();
+  boolean canBePlaced(WildlifeToken token);
 }

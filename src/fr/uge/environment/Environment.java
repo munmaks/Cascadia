@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import java.util.Set;
+import java.util.HashSet;
 // import java.util.HashMap;
 
 
@@ -11,6 +13,7 @@ import fr.uge.bag.Bag;
 
 
 import fr.uge.util.Constants;
+import java.util.HashSet;
 
 /**
  * Player's environment of all tiles and placed wildlife tokens */
@@ -233,6 +236,32 @@ public final class Environment{
     return List.copyOf(cells);
   }
   
+
+
+  public Set<Cell> getPossibleCells() {
+    var set = new HashSet<Cell>();
+
+    for (var cell : cells){
+      var neighbors = getNeighborsCells(cell);
+      for (var neighbor : neighbors){
+        if (!neighbor.isOccupied()) {
+          set.add(neighbor);
+        }
+      }
+    }
+    return Set.copyOf(set);
+  }
+
+
+  public void printAllNeighbors(Cell cell) {
+    var neighbors = getNeighborsCells(cell);
+    for (var neighbor : neighbors) {
+      if (neighbor.getTile() instanceof HabitatTile){
+        System.out.println(cell.coordinates() + " - " + neighbor.getTile().toString() + " "); //+ (neighbor.isOccupied() ? (neighbor.getTile().getAnimal()) : " no Animal"));
+      }
+    }
+    // System.out.println(cell.coordinates() + " : " + getNeighborsCells(cell));
+  }
 
 
   @Override
