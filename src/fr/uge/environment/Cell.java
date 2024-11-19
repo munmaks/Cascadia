@@ -31,7 +31,7 @@ public final class Cell {
   }
   
   
-  private static void validateInputs(Coordinates coordinates, int version) {
+  private void validateInputs(Coordinates coordinates, int version) {
     Objects.requireNonNull(coordinates);
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);

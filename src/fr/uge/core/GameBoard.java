@@ -1,17 +1,12 @@
 package fr.uge.core;
 
-import java.util.HashMap;
-import java.util.Objects;
-
 import fr.uge.bag.Bag;
 import fr.uge.bag.Deck;
-
-// import fr.uge.environment.WildlifeType;
 import fr.uge.environment.Tile;
 import fr.uge.environment.WildlifeToken;
-// import fr.uge.scoring.WildlifeScoringCard;
-
 import fr.uge.util.Constants;
+import java.util.HashMap;
+import java.util.Objects;
 
 
 public final class GameBoard {
@@ -63,6 +58,27 @@ public final class GameBoard {
    * This method is used to determine if the tokens on the board need to be updated.
    */
   public final boolean tokensNeedUpdate() {
+    if (areUpdated) { return false; }   /* already updated */
+    /* count the number of occurences of each token,
+       and store it in a map clear it before using it */
+    map.clear();
+    for (var i = 0; i < tokens.length; ++i) {
+      map.put(tokens[i], map.getOrDefault(tokens[i], 0) + 1);
+    }
+    /* check if there we have 3 or 4 occurences of a token */
+    for (var elem : map.entrySet()) {
+      if (elem.getValue() == 4) {
+        areUpdated = true;
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+
+
+  public final boolean tokensCanBeUpdated() {
     if (areUpdated) { return false; }   /* already updated */
     /* count the number of occurences of each token,
        and store it in a map clear it before using it */

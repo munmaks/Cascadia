@@ -9,11 +9,11 @@ import java.util.Objects;
  * That's why we use static fields.
 */
 public final class TurnManager {
-  private static List<Player> players;
-  private static int totalTurns = 0;
-  private static int currentPlayerIndex = 0;
-  private static int playersLength = 0;
-  private static boolean needToTurn = false;
+  private List<Player> players;
+  private int totalTurns = 0;
+  private int currentPlayerIndex = 0;
+  private int playersLength = 0;
+  private boolean needToTurn = false;
 
   public TurnManager(List<Player> listOfPlayers, int version) {
     Objects.requireNonNull(listOfPlayers);

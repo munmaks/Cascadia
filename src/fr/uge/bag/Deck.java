@@ -1,17 +1,12 @@
 package fr.uge.bag;
 
-import java.util.Objects;
-import java.util.Random;
-//import java.util.List;
-//import java.util.ArrayList;
-
 import fr.uge.environment.WildlifeToken;
 import fr.uge.environment.WildlifeType;
-
-
 import fr.uge.util.Constants;
+import java.util.Objects;
+import java.util.Random;
 
-public record Deck(int version) {
+public final class Deck {
 
   /**
    * Indexes from WildlifeType `enum`:
@@ -34,7 +29,7 @@ public record Deck(int version) {
 
 
   /* compact constructor */
-  public Deck {
+  public Deck(int version) {
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);
     }

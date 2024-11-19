@@ -4,6 +4,8 @@ import fr.uge.core.Game;
 import fr.uge.core.GameBoard;
 import fr.uge.core.Player;
 import fr.uge.core.TurnManager;
+import fr.uge.environment.HabitatTile;
+import fr.uge.environment.WildlifeToken;
 import fr.uge.util.Constants;
 import java.io.IO;
 import java.util.List;
@@ -78,23 +80,24 @@ public final class MainMenu {
     Objects.requireNonNull(player);
     Objects.requireNonNull(token);
     System.out.println("Here are the possible coordinates to place the token: ");
-    var setOfCells = player.environment().getPossibleCells();
-    for (var cell : setOfCells){
-      if (cell.getTile() instanceof HabitatTile){
-        System.out.println(cell.getTile().canBePlaced(token));
+    var listOfCells = player.environment().getCells();
+    for (var cell : listOfCells){
+      if (cell.getTile() instanceof HabitatTile && cell.getTile().canBePlaced(token)){
+        System.out.println( cell.toString() + " :: ");
       }
     }
   }
+
 
 
   // under test
   private void gameLoop(Game game){
     Objects.requireNonNull(game);
     int i = 0;
-    while (!game.turnManager().isGameEnd() && i < 2) {
+    while (!game.turnManager().isGameEnd() && i < 4) {
       i++;
       var currentPlayer = game.turnManager().getCurrentPlayer();
-      System.out.println("It's " + currentPlayer.name() + "'s turn!");
+      System.out.println("\n\nIt's " + currentPlayer.name() + "'s turn!");
       showEnvironment(currentPlayer);
       showPossibleCoordinates(currentPlayer);
       showGameBoard(game.board());
@@ -104,21 +107,62 @@ public final class MainMenu {
       // (MOUNTAIN) : (5, 4), (4, 5), (6, 5), (5, 6)  because Mountain in (5, 5)
       // You can choose where to place the tile
 
+      var tokensToUpdate = game.board().tokensNeedUpdate();
+      if (tokensToUpdate){
+        game.board().updateTokens();
+      }
+
+      if (game.board().tokensCanBeUpdated()){
+        // showPossibleChangeTokens(game);
+        var stringTokensToChange = IO.readln("Enter `yes` if you want to change the tokens, otherwise press enter");
+        try (Scanner s = new Scanner(stringTokensToChange)) {
+            if (s.hasNext() && s.next().equals("yes")){
+                game.board().updateTokens();
+            }
+        }
+      }
+
+      // to detect if we need to change wildlife tokens (one token has 4 occurences)
+      // propose to change the token if one token has 3 occurences (only 1 time per turn)
       int choice = Integer.parseInt(IO.readln("Please choose from 1 to 4 to take a couple: (Habitat Tile, Wildlife Token)\n"));
       if (!Constants.isValidChoice(choice)) {
         throw new IllegalArgumentException("Invalid choice");
       }
-      var chosedTile = game.board().getCopyOfTiles()[choice - 1];
+      var chosedTile = game.board().getTile(choice - 1);
       var coordiantesString = IO.readln("Please choose the coordinates to place the tile (format: \"x, y\"): ");
       Scanner s = new Scanner(coordiantesString).useDelimiter(",\\s*");
       int x = s.nextInt();
       int y = s.nextInt();
+      s.close();
 
-      var chosedToken = game.board().getCopyOfTokens()[choice - 1];
-      System.out.println("You have chosen " + chosedTile.toString() + " to place in (" + x + ", " + y + ")");
+      if (!currentPlayer.environment().getCell(y, x).placeTile(chosedTile)){
+        System.err.println("Tile wasn't placed, can't be placed");   // need to test this
+      }
+
+      
+      /* chosed token from `choice` */
+      var chosedToken = game.board().getToken(choice - 1);
+      
       System.out.println("Now you need to place the wildlife token: " + chosedToken.toString());
       showPossibleTokenPlacement(currentPlayer, chosedToken);
+      
+      var coordinatesToPlaceTokenString = IO.readln("Give me coordinates of tile, that you want to place the token on (format: \"x, y\"): ");
+      s = new Scanner(coordinatesToPlaceTokenString).useDelimiter(",\\s*");
+      x = s.nextInt();
+      y = s.nextInt();
+      
+      System.out.println("You have chosen " + chosedTile.toString() + " to place in (" + x + ", " + y + ")");
+      s.close();
 
+      var currCell = currentPlayer.environment().getCell(y, x);
+      var tokenWasPlaced = currentPlayer.environment().placeWildlifeToken(currCell, chosedToken);
+      if (!tokenWasPlaced){
+        System.err.println("Token wasn't placed");   // need to test this
+      }
+
+      IO.readln("STOP before the next turn");
+      game.turnManager().changePlayer();
+      game.turnManager().nextTurn();
       // " and " + chosedToken.toString() + 
       // System.out.println("to continue press c");
       // System.out.println("q. Quit the game");
