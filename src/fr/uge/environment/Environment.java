@@ -9,15 +9,12 @@ import java.util.HashSet;
 // import java.util.HashMap;
 
 
-import fr.uge.bag.Bag;
-
 
 import fr.uge.util.Constants;
-import java.util.HashSet;
 
 /**
  * Player's environment of all tiles and placed wildlife tokens */
-public final class Environment{
+public final class Environment {
 
   // private int nature_tokens = 0;    // for player
   
@@ -162,7 +159,7 @@ public final class Environment{
     Objects.requireNonNull(cell);
     Objects.requireNonNull(tile);
     if (cell.placeTile(tile)) {
-      cells.add(cell);  /* placed and added to all player's occupied cells */
+      this.cells.add(cell);  /* placed and added to all player's occupied cells */
       return true;
     }
     return false;
@@ -175,7 +172,7 @@ public final class Environment{
   public final boolean canBePlacedWildlifeToken(WildlifeToken token) {
     Objects.requireNonNull(token);
     boolean flag = false;
-    for (var cell : cells) {
+    for (var cell : this.cells) {
       switch (cell.getTile()) {
         case HabitatTile habitat -> { flag = habitat.canBePlaced(token);}
         case KeystoneTile keystone -> { flag = keystone.canBePlaced(token); }
@@ -233,7 +230,7 @@ public final class Environment{
 
   /* gets all tiles in the environment */
   public final List<Cell> getCells() {
-    return List.copyOf(cells);
+    return List.copyOf(this.cells);
   }
   
 
@@ -241,7 +238,7 @@ public final class Environment{
   public Set<Cell> getPossibleCells() {
     var set = new HashSet<Cell>();
 
-    for (var cell : cells){
+    for (var cell : this.cells){
       var neighbors = getNeighborsCells(cell);
       for (var neighbor : neighbors){
         if (!neighbor.isOccupied()) {

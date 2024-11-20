@@ -20,35 +20,39 @@ public final class TurnManager {
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);
     }
-    playersLength = listOfPlayers.size();
-    if (Constants.isInvalidSquareNbPlayers(playersLength, version)) {
+    this.playersLength = listOfPlayers.size();
+    if (Constants.isInvalidSquareNbPlayers(this.playersLength, version)) {
       throw new IllegalArgumentException(Constants.IllegalSquareNbPlayers);
     }
     /* listOfPlayers is already immutable, and we don't need to change */
-    players = listOfPlayers;
+    this.players = listOfPlayers;
   }
 
   public final Player getCurrentPlayer() {
-    return players.get(currentPlayerIndex);
+    return this.players.get(this.currentPlayerIndex);
   }
   
   public final void changePlayer() {
-    currentPlayerIndex++;
-    if (currentPlayerIndex == playersLength) {
+    this.currentPlayerIndex++;
+    if (this.currentPlayerIndex == this.playersLength) {
+      this.currentPlayerIndex %= this.playersLength;
       needToTurn = true;
     }
-    currentPlayerIndex %= playersLength;
   }
 
   public final void nextTurn() {
-    if (needToTurn) {
-      totalTurns++; 
-    }
-    needToTurn = false;
+    // if (needToTurn) {
+    this.totalTurns++; 
+    // }
+    this.needToTurn = false;
   }
   
+  public final boolean getNeedToTurn(){
+    return this.needToTurn;
+  }
+
   public final int getTotalTurns() {
-    return totalTurns;
+    return this.totalTurns;
   }
   
   /**
@@ -58,7 +62,7 @@ public final class TurnManager {
    * @return true if the game should end, false otherwise
    */
   public final boolean isGameEnd() {
-    return totalTurns >= Constants.MAX_GAME_TURNS;
+    return this.totalTurns >= Constants.MAX_GAME_TURNS;
   }
 
      // still need to test this class
