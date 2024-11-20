@@ -4,13 +4,15 @@ import fr.uge.core.Game;
 import fr.uge.core.GameBoard;
 import fr.uge.core.Player;
 import fr.uge.core.TurnManager;
-import fr.uge.environment.Tile;
-import fr.uge.environment.HabitatTile;
-import fr.uge.environment.WildlifeToken;
 import fr.uge.environment.Coordinates;
+import fr.uge.environment.HabitatTile;
+import fr.uge.environment.Tile;
+import fr.uge.environment.WildlifeToken;
 import fr.uge.util.Constants;
 import java.io.IO;
+
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -21,6 +23,8 @@ public final class MainMenu {
    * Main menu contains, buttoms: Play and Settings (to choose number of players and Wildlife Scoring Cards)
    * 
    * */
+  private final int version;
+
   public MainMenu(int version) {
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);
@@ -28,6 +32,7 @@ public final class MainMenu {
     if (version == Constants.VERSION_SQUARE){
       playSquareTerminal();
     }
+    this.version = version;
   }
 
   private String readName(int num){
@@ -194,6 +199,29 @@ public final class MainMenu {
     showGameBoard(board);
   }
 
+
+
+
+  private List<Integer> calculateListOfScores(Game game){
+    Objects.requireNonNull(game);
+    var listOfPlayerScores = new ArrayList<Integer>();
+    for (var i = 0; i < game.getPlayerCount(); ++i){
+      var player = game.turnManager().getPlayerByIndex(i);
+      var score = player.calculateScore();
+      listOfPlayerScores.add(score);
+    }
+    return listOfPlayerScores;
+  }
+
+
+  private void calculateAndShowScore(Game game){
+    var listOfPlayerScores = calculateListOfScores(game);
+    
+    // showPlayersScores(listOfPlayerScores);
+    // showScore(game);
+  }
+
+
   // under test
   private void gameLoopVersionSquare(Game game){
     Objects.requireNonNull(game);
@@ -213,7 +241,7 @@ public final class MainMenu {
       // IO.readln("STOP before the next turn");
       handleTurnChange(game);
     }
-    showScore(game);
+    calculateAndShowScore(game);
   }
 
 
@@ -222,18 +250,17 @@ public final class MainMenu {
     System.out.println("We have two players, please introduce yourselves.");
     String firstPlayerName = readName(1);
     String secondPlayerName = readName(2);
-    int version = Constants.VERSION_SQUARE;
     int familyOrIntermediate = chooseVersion();
     System.out.println("You have chosen " + (familyOrIntermediate == 1 ? "Family" : "Intermediate") + " Scoring Card");
 
     System.out.println("The game is starting!");
-    var player1 = new Player(firstPlayerName, version);
-    var player2 = new Player(secondPlayerName, version);
+    var player1 = new Player(firstPlayerName, this.version);
+    var player2 = new Player(secondPlayerName, this.version);
     
     var listOfPlayers = List.of(player1, player2);
-    var board = new GameBoard(Constants.NB_PLAYERS_SQUARE, version);
-    var turnManager = new TurnManager(listOfPlayers, version);
-    Game game = new Game(listOfPlayers, board, turnManager, version);
+    var board = new GameBoard(Constants.NB_PLAYERS_SQUARE, this.version);
+    var turnManager = new TurnManager(listOfPlayers, this.version);
+    Game game = new Game(board, turnManager, this.version, listOfPlayers.size());
     gameLoopVersionSquare(game);
   }
 

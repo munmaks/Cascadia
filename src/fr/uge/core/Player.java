@@ -1,18 +1,16 @@
 package fr.uge.core;
 
-import java.util.Objects;
-
+import fr.uge.environment.Environment;
+import fr.uge.environment.WildlifeToken;
+import fr.uge.environment.WildlifeType;
 import fr.uge.scoring.BearScoringCard;
 import fr.uge.scoring.ElkScoringCard;
 import fr.uge.scoring.FamilyAndIntermediateScoringCards;
 import fr.uge.scoring.FoxScoringCard;
 import fr.uge.scoring.HawkScoringCard;
 import fr.uge.scoring.SalmonScoringCard;
-import fr.uge.environment.Environment;
-import fr.uge.environment.WildlifeToken;
-import fr.uge.environment.WildlifeType;
-
 import fr.uge.util.Constants;
+import java.util.Objects;
 
 public final class Player {
   private final String name;    // just for counting later
@@ -65,7 +63,7 @@ public final class Player {
 
 
   /** calculates the player's based on his environment and current wildlife cards */
-  public int calculateScore() {
+  public final int calculateScore() {
     int score = 0;
     
     return score;

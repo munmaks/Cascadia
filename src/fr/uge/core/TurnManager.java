@@ -31,7 +31,20 @@ public final class TurnManager {
   public final Player getCurrentPlayer() {
     return this.players.get(this.currentPlayerIndex);
   }
+
+  public final Player getPlayerByIndex(int index) {
+    if (index < 0 || index >= this.playersLength) {
+      throw new IllegalArgumentException("Invalid index");  /* to improve later */
+    }
+    return this.players.get(index);
+  }
   
+  
+  public final List<Player> getAllPlayers(){
+    return this.players;
+  }
+
+
   public final void changePlayer() {
     this.currentPlayerIndex++;
     if (this.currentPlayerIndex == this.playersLength) {

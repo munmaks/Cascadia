@@ -2,37 +2,39 @@ package fr.uge.core;
 
 import fr.uge.environment.Coordinates;
 import fr.uge.util.Constants;
-import java.util.List;
 import java.util.Objects;
 
 public final class Game {
-  private final List<Player> players;     // player(-s)
   private final GameBoard board;          // available: tiles and/or tokens 
   private final TurnManager turnManager;  // 20 turns for entire game
-
+  
   private final int version;
+  private final int playerCount;     // number of players
 
 
 
   public Game(
-      List<Player> players,     /* 1 - 4 players */
-      GameBoard board,          /* 1 game board */
-      TurnManager turnManager,  /* 20 turns for entire game */
-      int version
+    GameBoard board,          /* 1 game board */
+    TurnManager turnManager,  /* 20 turns for entire game */
+    int playerCount,          /* number of players */
+    int version
     ){
-    this.players = Objects.requireNonNull(players);
     this.board = Objects.requireNonNull(board);
     this.turnManager = Objects.requireNonNull(turnManager);
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);
     }
+    if (playerCount < 1 || playerCount > 4) {
+      throw new IllegalArgumentException("Invalid number of players");
+    }
     this.version = version;
+    this.playerCount = playerCount;
     initializeGame();
   }
 
 
-  public final List<Player> players() {
-    return players;
+  public final int getPlayerCount() {
+    return playerCount;
   }
 
   public final GameBoard board() {
@@ -76,7 +78,7 @@ public final class Game {
 
   private void initializeGame() {
     Coordinates centerCoordinates = new Coordinates( (int)(Constants.MAX_ROW / 2), (int)(Constants.MAX_COL / 2) );
-    for (var i = 0; i < players.size(); ++i) {
+    for (var i = 0; i < playerCount; ++i) {
       placeStarterTiles(i, centerCoordinates);
     }
   }
@@ -107,7 +109,7 @@ public final class Game {
     var topTile = board.getBag().getRandomTile();
     var leftTile = board.getBag().getRandomTile();
     var rightTile = board.getBag().getRandomTile();
-    var playerEnvironment = players.get(playerIndex).environment();
+    var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
 
     var cell = playerEnvironment.getCell(centerCoordinates.y(), centerCoordinates.x()); /* main cell */
     playerEnvironment.placeTile(cell, topTile);
@@ -124,7 +126,7 @@ public final class Game {
 
   private void placeStarterTilesHexagonal(int playerIndex, Coordinates centerCoordinates) {
     var starter = board.getBag().getStarterHabitatTile();
-    var playerEnvironment = players.get(playerIndex).environment();
+    var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
 
     var cell = playerEnvironment.getCell(centerCoordinates.y(), centerCoordinates.x()); /* main cell */
     playerEnvironment.placeTile(cell, starter.topTile());
