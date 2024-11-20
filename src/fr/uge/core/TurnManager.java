@@ -1,51 +1,71 @@
 package fr.uge.core;
 
-import java.util.ArrayList;
+import fr.uge.util.Constants;
 import java.util.List;
 import java.util.Objects;
-import fr.uge.util.Constants;
 
-/** to improve later this class */
+/**
+ * Only one turn manager is created for the entire game.<br>
+ * That's why we use static fields.
+*/
 public final class TurnManager {
-  private static int totalTurns = 0;
-  private static int currentPlayerIndex = 0;
-  private static List<Player> players;
-  private static int playersLength = 0;
-  private static boolean needToTurn = false;
+  private List<Player> players;
+  private int totalTurns = 0;
+  private int currentPlayerIndex = 0;
+  private int playersLength = 0;
+  private boolean needToTurn = false;
 
   public TurnManager(List<Player> listOfPlayers, int version) {
     Objects.requireNonNull(listOfPlayers);
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);
     }
-    if (Constants.isInvalidSquareNbPlayers(listOfPlayers.size(), version)) {
+    this.playersLength = listOfPlayers.size();
+    if (Constants.isInvalidSquareNbPlayers(this.playersLength, version)) {
       throw new IllegalArgumentException(Constants.IllegalSquareNbPlayers);
     }
-    players = List.copyOf(listOfPlayers);
-    playersLength = players.size();
+    /* listOfPlayers is already immutable, and we don't need to change */
+    this.players = listOfPlayers;
   }
 
   public final Player getCurrentPlayer() {
-    return players.get(currentPlayerIndex);
+    return this.players.get(this.currentPlayerIndex);
+  }
+
+  public final Player getPlayerByIndex(int index) {
+    if (index < 0 || index >= this.playersLength) {
+      throw new IllegalArgumentException("Invalid index");  /* to improve later */
+    }
+    return this.players.get(index);
   }
   
+  
+  public final List<Player> getAllPlayers(){
+    return this.players;
+  }
+
+
   public final void changePlayer() {
-    currentPlayerIndex++;
-    if (currentPlayerIndex == playersLength) {
+    this.currentPlayerIndex++;
+    if (this.currentPlayerIndex == this.playersLength) {
+      this.currentPlayerIndex %= this.playersLength;
       needToTurn = true;
     }
-    currentPlayerIndex %= playersLength;
   }
 
   public final void nextTurn() {
-    if (needToTurn) {
-      totalTurns++; 
-    }
-    needToTurn = false;
+    // if (needToTurn) {
+    this.totalTurns++; 
+    // }
+    this.needToTurn = false;
   }
   
+  public final boolean getNeedToTurn(){
+    return this.needToTurn;
+  }
+
   public final int getTotalTurns() {
-    return totalTurns;
+    return this.totalTurns;
   }
   
   /**
@@ -54,8 +74,8 @@ public final class TurnManager {
    * @param maxTurns Maximum turns allowed in the game.
    * @return true if the game should end, false otherwise
    */
-  public static boolean isGameEnd() {
-    return totalTurns >= Constants.MAX_GAME_TURNS;
+  public final boolean isGameEnd() {
+    return this.totalTurns >= Constants.MAX_GAME_TURNS;
   }
 
      // still need to test this class

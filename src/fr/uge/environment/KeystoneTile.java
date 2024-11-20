@@ -24,6 +24,7 @@ public final class KeystoneTile implements Tile {
    * Place an animal on tile if it's possible 
    * @param token - New Animal
    * @return boolean */
+  @Override
   public final boolean canBePlaced(WildlifeToken token){
     if (isOccupied()) {
       return false;

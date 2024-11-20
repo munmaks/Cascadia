@@ -8,6 +8,7 @@ public final class Constants {
   /* Game */
   public static final int NB_PLAYERS_SQUARE = 2;
   
+
   /* Turn Manager */
   public static final int MAX_GAME_TURNS = 20;
 
@@ -32,11 +33,11 @@ public final class Constants {
 
   public static final int NB_TOKENS = 5;
 
-  
+
   
   /**<b>
    * Direction offsets based on "odd-r" layout<br>
-   *       (x, y)<br><br>
+   *       (x, y)</b><br><br>
    *       even rows<br>
    *      {<br>
    *       (-1, -1), (-1,  0), (-1,  1), left habitat: (left up, left, left down)<br>
@@ -64,15 +65,14 @@ public final class Constants {
 
   /**
    * <b>
-   *    (x, y) <br>
-   *   {0, -1}  down <br>
-   *   {0, 1}   up   <br>
-   *   {-1, 0}  left <br>
-   *   {1, 0}   right <br>
-   * </b>
+   *   (x, y)</b><br>
+   *   {-1, 0} left  <br>
+   *   {0, -1} down  <br>
+   *   {1, 0}  right <br>
+   *   {0, 1}  up    <br>
    * */
-  public static final int [][] SQUARE_DIRECTION_DIFFERENCES = {
-      { 0, -1}, { 0,  1}, {-1,  0}, { 1,  0}
+  public static final int[][] SQUARE_DIRECTION_DIFFERENCES = {
+      {-1,  0}, { 0, -1}, { 1,  0}, { 0,  1}
   };
   
   
@@ -123,11 +123,17 @@ public final class Constants {
     return nbPlayers >= MIN_PLAYERS && nbPlayers <= MAX_PLAYERS;
   }
 
-  
   public static boolean isInvalidSquareNbPlayers(int nbPlayers, int version) {
     return version != VERSION_HEXAGONAL && nbPlayers != NB_PLAYERS_SQUARE;
   }
 
+  public static boolean isValidChoice(int choice){
+    return choice >= 1 && choice <= TOKENS_ON_BOARD;
+  }
+
+
+
+  /* Error messages, to improve later */
   public static final String IllegalCoordinates = 
       "Invalid coordinates, must be between (0, 0) and " + 
       "(" + MAX_ROW + ", " + MAX_COL + ")\n";
@@ -143,6 +149,7 @@ public final class Constants {
   /* Family and Intermidiate scoring cards */
   public static final int FAMILY_THREE_AND_PLUS = 9;
   public static final int INTERMEDIATE_FOUR_AND_PLUS = 12;
+
 
 
 }
