@@ -123,7 +123,6 @@ public final class Constants {
     return nbPlayers >= MIN_PLAYERS && nbPlayers <= MAX_PLAYERS;
   }
 
-  
   public static boolean isInvalidSquareNbPlayers(int nbPlayers, int version) {
     return version != VERSION_HEXAGONAL && nbPlayers != NB_PLAYERS_SQUARE;
   }
@@ -132,6 +131,9 @@ public final class Constants {
     return choice >= 1 && choice <= TOKENS_ON_BOARD;
   }
 
+
+
+  /* Error messages, to improve later */
   public static final String IllegalCoordinates = 
       "Invalid coordinates, must be between (0, 0) and " + 
       "(" + MAX_ROW + ", " + MAX_COL + ")\n";

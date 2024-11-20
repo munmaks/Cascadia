@@ -29,16 +29,18 @@ public final class MainMenu {
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);
     }
-    if (version == Constants.VERSION_SQUARE){
+    this.version = version;
+    if (this.version == Constants.VERSION_SQUARE){
       playSquareTerminal();
     }
-    this.version = version;
   }
+
 
   private String readName(int num){
     return IO.readln("Player " + num + ", what's your name? ");
   }
   
+
   private int chooseVersion(){
     System.out.println("Choose scoring card: ");
     var choice = IO.readln("1 for Family\n2 for Intermediate \n");
@@ -50,11 +52,16 @@ public final class MainMenu {
     return familyOrIntermediate;
   }
 
+
   private void showEnvironment(Player player){
     Objects.requireNonNull(player);
     System.out.println("\n\nIt's " + player.name() + "'s turn!");
-    System.out.println("Here is " + player.name() + "'s environment: ");
+    System.out.println("\nHere is " + player.name() + "'s environment: ");
     var listCells = player.environment().getCells();
+    if (listCells.isEmpty()){
+      System.out.println("No cells in the environment");  /* for tests */
+    }
+
     for (var cell : listCells){
       System.out.println(cell.toString());
     }
@@ -63,7 +70,7 @@ public final class MainMenu {
 
   private void showGameBoard(GameBoard board){
     Objects.requireNonNull(board);
-    System.out.println("Here is the game board: ");
+    System.out.println("\nHere is the game board: ");
     var tiles = board.getCopyOfTiles();
     var tokens = board.getCopyOfTokens();
     for (var i = 0; i < tiles.length; ++i){
@@ -133,6 +140,7 @@ public final class MainMenu {
               game.board().updateTokens();
           }
       }
+      showGameBoard(game.board());
     }
 
   }
@@ -260,7 +268,7 @@ public final class MainMenu {
     var listOfPlayers = List.of(player1, player2);
     var board = new GameBoard(Constants.NB_PLAYERS_SQUARE, this.version);
     var turnManager = new TurnManager(listOfPlayers, this.version);
-    Game game = new Game(board, turnManager, this.version, listOfPlayers.size());
+    Game game = new Game(board, turnManager, listOfPlayers.size(), this.version);
     gameLoopVersionSquare(game);
   }
 

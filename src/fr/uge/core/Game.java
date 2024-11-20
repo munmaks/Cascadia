@@ -24,25 +24,25 @@ public final class Game {
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.IllegalVersion);
     }
+    this.version = version;
     if (playerCount < 1 || playerCount > 4) {
       throw new IllegalArgumentException("Invalid number of players");
     }
-    this.version = version;
     this.playerCount = playerCount;
     initializeGame();
   }
 
 
   public final int getPlayerCount() {
-    return playerCount;
+    return this.playerCount;
   }
 
   public final GameBoard board() {
-    return board;
+    return this.board;
   }
 
   public final TurnManager turnManager() {
-    return turnManager;
+    return this.turnManager;
   }
 
   
@@ -78,7 +78,7 @@ public final class Game {
 
   private void initializeGame() {
     Coordinates centerCoordinates = new Coordinates( (int)(Constants.MAX_ROW / 2), (int)(Constants.MAX_COL / 2) );
-    for (var i = 0; i < playerCount; ++i) {
+    for (var i = 0; i < this.playerCount; ++i) {
       placeStarterTiles(i, centerCoordinates);
     }
   }
@@ -94,7 +94,7 @@ public final class Game {
      * X
      * Y Z
     */
-    if (version == Constants.VERSION_HEXAGONAL) {
+    if (this.version == Constants.VERSION_HEXAGONAL) {
       placeStarterTilesHexagonal(playerIndex, centerCoordinates);
     } else {
       placeStarterTilesSquare(playerIndex, centerCoordinates);
