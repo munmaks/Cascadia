@@ -10,7 +10,7 @@ public final class Constants {
   
 
   /* Turn Manager */
-  public static final int MAX_GAME_TURNS = 20;
+  public static final int MAX_GAME_TURNS = 2;
 
   
   /* Game Board */
@@ -81,7 +81,7 @@ public final class Constants {
   /* Bag */
 
   /* constants for configurations */
-  private static final String CONFIG_PATH = "src/config/";
+  private static final String CONFIG_PATH = "config/";
   public static final String PATH_SQUARE_HABITAT_TILE        = CONFIG_PATH + "configSquareHabitatTile.txt";
   public static final String PATH_KEYSTONE_TILE              = CONFIG_PATH + "configKeystoneTile.txt";
   public static final String PATH_HABITAT_TILE_TWO_ANIMALS   = CONFIG_PATH + "configHabitatTileTwoAnimals.txt";

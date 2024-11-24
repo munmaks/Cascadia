@@ -1,9 +1,24 @@
 <!--
-- compiler des sources (target compile) ;
-- créer le jar exécutable (target jar) ; il devra s'agir de la target par défaut ;
-- générer la javadoc, écrite en anglais, dans le répertoire docs/doc (target javadoc) ;
-- nettoyer le projet pour qu'il ne rete plus que les éléments demandés (target clean).
--->
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project Cascadia with Jar-in-Jar Loader">
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="${dir.buildfile}/.."/>
+    <property name="dir.jarfile" value="${dir.buildfile}"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.jarfile}/Cascadia.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="fr.uge.main.Main"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ zen-6.0.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="${dir.jarfile}/bin"/>
+            <zipfileset dir="${dir.jarfile}/lib" includes="zen-6.0.jar"/>
+        </jar>
+    </target>
+</project> -->
+
 <project name="Cascadia" default="jar" basedir=".">
 
     <property name="build.dir" value="build"/>
@@ -22,12 +37,12 @@
     <!-- Compile target -->
     <target name="compile" depends="clean">
     	<copy todir="${classes.dir}">
-    	  <fileset dir="resources"/>
+    	  <fileset dir="config"/>
     	</copy>
     	
-    	<copydir src="resources" dest="${classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${classes.dir}">
-            <classpath refid="classpath"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" source="23" includeantruntime="false">
+            <compilerarg value="--enable-preview"/> <!-- -Xlint:preview -->
+        	<classpath refid="classpath"/>
         </javac>
     </target>
 
@@ -47,10 +62,13 @@
             <manifest>
                 <attribute name="Main-Class" value="${main-class}"/>
             	<attribute name="Class-Path" value="lib/zen-6.0.jar"/>
+                <attribute name="Multi-Release" value="true"/>
             </manifest>
         </jar>
     </target>
 
+	
+	
     <!-- Default target -->
     <target name="default" depends="jar"/>
 	
