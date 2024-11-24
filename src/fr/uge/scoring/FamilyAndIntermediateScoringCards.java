@@ -11,17 +11,19 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
+import fr.uge.core.Player;
 import fr.uge.environment.Cell;
 import fr.uge.environment.Environment;
 import fr.uge.environment.WildlifeToken;
+import fr.uge.environment.WildlifeType;
 import fr.uge.util.Constants;
 
 
 public final class FamilyAndIntermediateScoringCards implements WildlifeScoringCard {
 
-  private final Environment env;
+  private Environment env;
   // private final int version;
-  private final boolean isIntermediateScoringCard;
+  private final int isIntermediateScoringCard;
 
   private static final Map<Integer, Integer> FAMILY_GROUP_SIZE_TO_POINTS = Map.of(
     0, 0, /* normally we don't need */
@@ -31,7 +33,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
   );
 
   private static final Map<Integer, Integer> INTERMEDIATE_GROUP_SIZE_TO_POINTS = Map.of(
-    0, 0, /* normally, don't need */
+    0, 0, /* don't need */
     1, 0, /* don't need */
     2, 5,
     3, 8,
@@ -47,15 +49,13 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
    * @param isIntermediateScoringCard <b>true</b> if the card is an intermediate scoring card, <b>false</b> if it is a family scoring card.
    */
   public FamilyAndIntermediateScoringCards(
-      Environment env,
       // int version,
-      boolean isIntermediateScoringCard
+      int isIntermediateScoringCard
     ){
     // if (!Constants.isValidVersion(version)) {
     //   throw new IllegalArgumentException(Constants.IllegalVersion);
     // }
     // this.version = version;
-    this.env = Objects.requireNonNull(env);
     this.isIntermediateScoringCard = isIntermediateScoringCard;
   }
   
@@ -106,7 +106,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
 
 
 
-  private static boolean isValidNeighbor(Cell neighbor, WildlifeToken token ,Set<Cell> visited) {
+  private static boolean isValidNeighbor(Cell neighbor, WildlifeToken token, Set<Cell> visited) {
     return visited.contains(neighbor) && token.equals(neighbor.getTile().getAnimal());
   }
   
@@ -155,7 +155,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
       int groupSize = entry.getKey();
       int count = entry.getValue();
       int pointsForGroup;
-      if (!isIntermediateScoringCard) {
+      if (isIntermediateScoringCard == 0) {
         pointsForGroup = FAMILY_GROUP_SIZE_TO_POINTS.getOrDefault(groupSize, Constants.FAMILY_THREE_AND_PLUS);
       } else {
         pointsForGroup = INTERMEDIATE_GROUP_SIZE_TO_POINTS.getOrDefault(groupSize, Constants.INTERMEDIATE_FOUR_AND_PLUS);
@@ -166,8 +166,22 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
   }
 
 
-  public final int getScore() {
-    return 0;
+  public final int getScore(Player player) {
+    int score = 0;
+    var wildlifeTokens = new WildlifeType[] {
+        WildlifeType.BEAR,
+        WildlifeType.ELK,
+        WildlifeType.HAWK,
+        WildlifeType.FOX,
+        WildlifeType.SALMON
+    };
+    this.env = player.environment();  /* every time we define a new environment */
+    for (int i = 0; i < wildlifeTokens.length; ++i) {
+      var map = returnWildlifeTokenMap(new WildlifeToken(wildlifeTokens[i]));
+      score += calculateScore(map);
+    }
+    
+    return score;
   }
   
 }

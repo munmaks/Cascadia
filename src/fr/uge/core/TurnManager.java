@@ -54,9 +54,7 @@ public final class TurnManager {
   }
 
   public final void nextTurn() {
-    // if (needToTurn) {
     this.totalTurns++; 
-    // }
     this.needToTurn = false;
   }
   

@@ -235,7 +235,7 @@ public final class Environment {
   
 
 
-  public Set<Cell> getPossibleCells() {
+  public final Set<Cell> getPossibleCells() {
     var set = new HashSet<Cell>();
 
     for (var cell : this.cells){
@@ -249,6 +249,22 @@ public final class Environment {
     return Set.copyOf(set);
   }
 
+  
+  public final Set<Coordinates> getPossibleCoordinates() {
+    var set = new HashSet<Coordinates>();
+
+    for (var cell : this.cells){
+      var neighbors = getNeighborsCells(cell);
+      for (var neighbor : neighbors){
+        if (!neighbor.isOccupied()) {
+          set.add(neighbor.coordinates());
+        }
+      }
+    }
+    return Set.copyOf(set);
+  }
+
+  
 
   public void printAllNeighbors(Cell cell) {
     var neighbors = getNeighborsCells(cell);

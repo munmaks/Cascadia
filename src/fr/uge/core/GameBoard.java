@@ -8,7 +8,9 @@ import fr.uge.util.Constants;
 import java.util.HashMap;
 import java.util.Objects;
 
-
+/**
+ * This method is used to initialise the tiles and tokens on the board
+ */
 public final class GameBoard {
   private final Bag bag;
   private final Deck deck;

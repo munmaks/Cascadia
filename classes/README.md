@@ -1,3 +1,2 @@
-# le dossier qui contient les classes déjà compilées
+# This repository contains config file for Keystone tiles, Habitats tiles and Starter Habitat tiles (to do)
 
-TO DO
