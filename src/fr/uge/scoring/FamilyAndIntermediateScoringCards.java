@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
+import javax.sound.midi.SysexMessage;
+
 import fr.uge.core.Player;
 import fr.uge.environment.Cell;
 import fr.uge.environment.Environment;
@@ -21,7 +23,7 @@ import fr.uge.util.Constants;
 
 public final class FamilyAndIntermediateScoringCards implements WildlifeScoringCard {
 
-  private Environment env;
+  // private Environment env;
   // private final int version;
   private final int isIntermediateScoringCard;
 
@@ -66,7 +68,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
    * @param token Wildlife token to search for.
    * @return List of cells containing the given token.
    */
-  private List<Cell> getCellsWithToken(WildlifeToken token){
+  private List<Cell> getCellsWithToken(Environment env, WildlifeToken token){
     var listOfCells = env.getCells();
     var cellsWithToken = new ArrayList<Cell>();
     for (var cell : listOfCells){
@@ -86,9 +88,9 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
    * 
    * @param token The wildlife token to search for.
    */
-  public Map<Integer, Integer> returnWildlifeTokenMap(WildlifeToken token) {
+  public Map<Integer, Integer> returnWildlifeTokenMap(Environment env, WildlifeToken token) {
     // List of cells containing the given token
-    var cellsWithToken = new ArrayList<Cell>(getCellsWithToken(token));
+    var cellsWithToken = new ArrayList<Cell>(getCellsWithToken(env, token));
 
     var map = new HashMap<Integer, Integer>();
     var visited = new HashSet<Cell>();    // set to track visited cells
@@ -96,7 +98,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
     for (var cell : cellsWithToken) {
       if (visited.contains(cell)) { continue; }   // skip already processed cells
 
-      var groupSize = calculateGroupSize(cell, token, visited);   // find all connected cells in this group
+      var groupSize = calculateGroupSize(env, cell, token, visited);   // find all connected cells in this group
 
       map.put(groupSize, map.getOrDefault(groupSize, 0) + 1);     // update the map with the group size
     }
@@ -120,7 +122,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
    * @param visited A set to track visited cells.
    * @return The size of the group.
    */
-  private int calculateGroupSize(Cell start, WildlifeToken token, Set<Cell> visited){
+  private int calculateGroupSize(Environment env, Cell start, WildlifeToken token, Set<Cell> visited){
     int size = 0;
     Queue<Cell> queue = new LinkedList<>();
     visited.add(start);
@@ -155,10 +157,10 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
       int groupSize = entry.getKey();
       int count = entry.getValue();
       int pointsForGroup;
-      if (isIntermediateScoringCard == 0) {
-        pointsForGroup = FAMILY_GROUP_SIZE_TO_POINTS.getOrDefault(groupSize, Constants.FAMILY_THREE_AND_PLUS);
-      } else {
+      if (isIntermediateScoringCard == 2) {
         pointsForGroup = INTERMEDIATE_GROUP_SIZE_TO_POINTS.getOrDefault(groupSize, Constants.INTERMEDIATE_FOUR_AND_PLUS);
+      } else {
+        pointsForGroup = FAMILY_GROUP_SIZE_TO_POINTS.getOrDefault(groupSize, Constants.FAMILY_THREE_AND_PLUS);
       }
       totalScore += pointsForGroup * count;
     }
@@ -175,9 +177,10 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
         WildlifeType.FOX,
         WildlifeType.SALMON
     };
-    this.env = player.environment();  /* every time we define a new environment */
+
     for (int i = 0; i < wildlifeTokens.length; ++i) {
-      var map = returnWildlifeTokenMap(new WildlifeToken(wildlifeTokens[i]));
+      var token = new WildlifeToken(wildlifeTokens[i]);
+      var map = returnWildlifeTokenMap(player.environment(), token);
       score += calculateScore(map);
     }
     

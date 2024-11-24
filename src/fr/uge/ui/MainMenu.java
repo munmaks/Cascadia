@@ -1,8 +1,6 @@
 package fr.uge.ui;
 
 
-
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 // import java.awt.Image;
@@ -14,25 +12,20 @@ import com.github.forax.zen.*;
 //import com.github.forax.zen.Application;
 //import com.github.forax.zen.Application;
 
-import java.io.IO;
+import java.io.IO;  // enable preview
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
-// import java.util.function.Consumer;
 
-import java.util.Set;
 
-import fr.uge.environment.Cell;
 import fr.uge.environment.Coordinates;
-import fr.uge.environment.HabitatTile;
 import fr.uge.environment.Tile;
 import fr.uge.environment.WildlifeToken;
 import fr.uge.environment.WildlifeType;
 
 import fr.uge.scoring.FamilyAndIntermediateScoringCards;
 import fr.uge.scoring.WildlifeScoringCard;
-
 
 import fr.uge.core.*;
 
@@ -66,7 +59,7 @@ public final class MainMenu {
       /* playHexagonal(); */  // to do later
     }
     /* gameLoopV2();  */
-
+    
   }
 
 
@@ -82,7 +75,6 @@ public final class MainMenu {
     if (familyOrIntermediate != 1 && familyOrIntermediate != 2) {
       throw new IllegalArgumentException("Invalid choice");
     }
-    // System.out.println("You have chosen " + ( 1 == familyOrIntermediate ? "Family" : "Intermediate") + " Scoring Card");
     return familyOrIntermediate;
   }
 
@@ -92,9 +84,6 @@ public final class MainMenu {
     System.out.println("\n\nIt's " + player.name() + "'s turn!");
     System.out.println("\nHere is " + player.name() + "'s environment: ");
     var listCells = player.environment().getCells();
-    if (listCells.isEmpty()){
-      System.out.println("No cells in the environment");  /* for tests */
-    }
 
     for (var cell : listCells){
       System.out.println(cell.toString());
@@ -108,17 +97,18 @@ public final class MainMenu {
     var tiles = board.getCopyOfTiles();
     var tokens = board.getCopyOfTokens();
     for (var i = 0; i < tiles.length; ++i){
-      System.out.println((i + 1) + ") " + tiles[i].toString() + " and " + tokens[i].toString());
+      var builder = new StringBuilder();
+      builder.append(i+1).append(") ").append(tiles[i].toString()).append(" and ").append(tokens[i].toString());
+      System.out.println(builder.toString());
     }
     System.out.println("");
   }
 
   private void showPossibleCoordinates(Player player){
     Objects.requireNonNull(player);
-    System.out.println("Here are the possible coordinates:\n`empty (x, y)` - neighbor tile");
+    System.out.println("\nHere are the possible coordinates:\n`empty (x, y)` - neighbor tile");
     var setOfCells = player.environment().getPossibleCells();
     for (var cell : setOfCells){
-      // System.out.println(cell.coordinates().toString());
       player.environment().printAllNeighbors(cell);
     }
   }
@@ -131,8 +121,8 @@ public final class MainMenu {
     System.out.println("Here are the possible coordinates to place the token: ");
     var listOfCells = player.environment().getCells();
     for (var cell : listOfCells){
-      if (cell.getTile() instanceof HabitatTile && cell.getTile().canBePlaced(token)){
-        System.out.println( cell.toString() + " :: ");
+      if (cell.getTile().canBePlaced(token)){
+        System.out.println(cell.toString());
       }
     }
   }
@@ -174,13 +164,13 @@ public final class MainMenu {
       return;
     }
     if (game.board().tokensCanBeUpdated()){
-      // showPossibleChangeTokens(game);
-    
       var stringTokensToChange = IO.readln("Enter `yes` if you want to change the tokens, otherwise press enter ");
-      try (Scanner s = new Scanner(stringTokensToChange).useDelimiter("\\s*")) {
-          if (s.hasNext() && s.next().equals("yes")){
-              game.board().updateTokens();
-          }
+      
+      try (Scanner s = new Scanner(stringTokensToChange)) {
+        if (s.hasNext() && "yes".equals(s.next())){
+          System.out.println("tokens are now updated");
+          game.board().updateTokens();
+        }
       }
       showGameBoard(game.board());
     }
@@ -198,11 +188,9 @@ public final class MainMenu {
 
 
   private void handleTurnChange(Game game){
-    if (game.turnManager().getNeedToTurn()){
-      game.turnManager().nextTurn();
-      System.out.println("Turns left: " + (Constants.MAX_GAME_TURNS - game.turnManager().getTotalTurns()));
-    }
     game.turnManager().changePlayer();
+    game.turnManager().nextTurn();
+    // System.out.println("Turns left: " + (Constants.MAX_GAME_TURNS - game.turnManager().getTotalTurns()));
   }
 
 
@@ -232,16 +220,18 @@ public final class MainMenu {
     var possibleCoordinates = player.environment().getPossibleCoordinates();
     String userCoordinatesString = null;
     Coordinates userCoordinates = null;
+
+    /* player has to place tile correctly */
     do {
-      userCoordinatesString = IO.readln("Give me coordinates of tile, that you want to place the token on (format: \"x, y\"): ");
+      userCoordinatesString = IO.readln("Give me coordinates of cell, that you want to place the tile on (format: \"x, y\"): ");
       userCoordinates = getCoordinatesFromUser(userCoordinatesString);
       if (possibleCoordinates.contains(userCoordinates)) {
         break;
       }
     } while (true);
-    
+
     var currCell = player.environment().getCell(userCoordinates.y(), userCoordinates.x());
-    var tileWasPlaced = player.environment().placeTile(currCell, chosedTile);
+    player.environment().placeTile(currCell, chosedTile);
   }
 
 
@@ -253,16 +243,17 @@ public final class MainMenu {
 
 
 
-  private List<Integer> calculateListOfScores(Game game){
-    Objects.requireNonNull(game);
-    var listOfPlayerScores = new ArrayList<Integer>();
-    for (var i = 0; i < game.getPlayerCount(); ++i){
-      var player = game.turnManager().getPlayerByIndex(i);
-      var score = player.calculateScore();
-      listOfPlayerScores.add(score);
-    }
-    return listOfPlayerScores;
-  }
+//  private List<Integer> calculateListOfScores(Game game){
+//    Objects.requireNonNull(game);
+//    var listOfPlayerScores = new ArrayList<Integer>();
+//    for (var i = 0; i < game.getPlayerCount(); ++i){
+//      var player = game.turnManager().getPlayerByIndex(i);
+//      var score = player.calculateScore();
+//      listOfPlayerScores.add(score);
+//    }
+//    return listOfPlayerScores;
+//  }
+
 
   private void showPlayerScore(Player player, FamilyAndIntermediateScoringCards card) {
     System.out.println(player.name() + " your final score: " + card.getScore(player) + "\n");
@@ -270,18 +261,27 @@ public final class MainMenu {
   
 
   private void calculateAndShowScore(Game game, int familyOrIntermediate){
-    var listOfPlayerScores = calculateListOfScores(game);
+    // var listOfPlayerScores = calculateListOfScores(game);
     var scoringCard = new FamilyAndIntermediateScoringCards(familyOrIntermediate);
-    
+
     for (var i = 0; i < game.getPlayerCount(); ++i) {
       showPlayerScore(game.turnManager().getPlayerByIndex(i), scoringCard);
     }
-    
     // showPlayersScores(listOfPlayerScores);
     // showScore(game);
   }
 
+  
+  
+  private void resetForNextTurn(Game game) {
+    Objects.requireNonNull(game);
+    game.board().setDefaultAreUpdate();  // that means, next person can change
+  }
+  
 
+  /**
+   * 
+   * */
   // under test
   private void gameLoopVersionSquare(Game game){
     Objects.requireNonNull(game);
@@ -300,6 +300,7 @@ public final class MainMenu {
 
       // IO.readln("STOP before the next turn");
       handleTurnChange(game);
+      resetForNextTurn(game);
     }
 
   }
@@ -327,11 +328,14 @@ public final class MainMenu {
 
   
   
-  
-  /* Medhi part */
+  /**********************************************************
+   **********************************************************
+   ************************ GRAPHICS ************************
+   **********************************************************
+   **********************************************************/
 
 
-  public void displayVersion1(Graphics2D graphics, int buttonX, int buttonY) {
+  private void displayVersion1(Graphics2D graphics, int buttonX, int buttonY) {
     graphics.setColor(Color.WHITE);
     graphics.fillRect(buttonX / 2, buttonY, 300, 300);
     graphics.setColor(Color.BLACK);
@@ -339,7 +343,7 @@ public final class MainMenu {
     graphics.drawString("With square and terminal display", (int) (buttonX / 1.74), (int) (buttonY * 1.2));
   }
 
-  public void displayVersion2(Graphics2D graphics, int buttonX, int buttonY) {
+  private void displayVersion2(Graphics2D graphics, int buttonX, int buttonY) {
     graphics.setColor(Color.WHITE);
     graphics.fillRect(buttonX, buttonY, 300, 300);
     graphics.setColor(Color.RED);
@@ -347,7 +351,7 @@ public final class MainMenu {
     graphics.drawString("With square and graphic display", (int) (buttonX * 1.075), (int) (buttonY * 1.2));
   }
 
-  public void displayVersion3(Graphics2D graphics, int buttonX, int buttonY) {
+  private void displayVersion3(Graphics2D graphics, int buttonX, int buttonY) {
     graphics.setColor(Color.WHITE);
     graphics.fillRect((int) (buttonX * 1.5), buttonY, 300, 300);
     graphics.setColor(Color.BLUE);
@@ -355,49 +359,49 @@ public final class MainMenu {
     graphics.drawString("With hexagon and graphic display", (int) (buttonX * 1.57), (int) (buttonY * 1.2));
   }
 
-  public void displayNumberPlayer2(Graphics2D graphics, int buttonX, int buttonY) {
+  private void displayNumberPlayer2(Graphics2D graphics, int buttonX, int buttonY) {
     graphics.setColor(Color.WHITE);
     graphics.fillRect(buttonX / 2, buttonY, 300, 300);
     graphics.setColor(Color.BLACK);
     graphics.drawString("2 Players", (int) (buttonX / 1.53), (int) (buttonY * 1.1));
   }
 
-  public void displayNumberPlayer3(Graphics2D graphics, int buttonX, int buttonY) {
+  private void displayNumberPlayer3(Graphics2D graphics, int buttonX, int buttonY) {
     graphics.setColor(Color.WHITE);
     graphics.fillRect(buttonX, buttonY, 300, 300);
     graphics.setColor(Color.RED);
     graphics.drawString("3 Players", (int) (buttonX * 1.15), (int) (buttonY * 1.1));
   }
 
-  public void displayNumberPlayer4(Graphics2D graphics, int buttonX, int buttonY) {
+  private void displayNumberPlayer4(Graphics2D graphics, int buttonX, int buttonY) {
     graphics.setColor(Color.WHITE);
     graphics.fillRect((int) (buttonX * 1.5), buttonY, 300, 300);
     graphics.setColor(Color.BLUE);
     graphics.drawString("4 Players", (int) (buttonX * 1.65), (int) (buttonY * 1.1));
   }
 
-  public void displayVariantsChoice1(Graphics2D graphics, int buttonX, int buttonY) {
+  private void displayVariantsChoice1(Graphics2D graphics, int buttonX, int buttonY) {
     graphics.setColor(Color.GRAY);
     graphics.fillRect(buttonX / 2, buttonY, 300, 300);
     graphics.setColor(Color.BLACK);
     graphics.drawString("Family Variants", (int) (buttonX / 1.57), (int) (buttonY * 1.1));
   }
 
-  public void displayVariantsChoice2(Graphics2D graphics, int buttonX, int buttonY) {
+  private void displayVariantsChoice2(Graphics2D graphics, int buttonX, int buttonY) {
     graphics.setColor(Color.GRAY);
     graphics.fillRect(buttonX, buttonY, 300, 300);
     graphics.setColor(Color.RED);
     graphics.drawString("Card Variants", (int) (buttonX * 1.14), (int) (buttonY * 1.1));
   }
 
-  public void displayVariantsChoice3(Graphics2D graphics, int buttonX, int buttonY) {
+  private void displayVariantsChoice3(Graphics2D graphics, int buttonX, int buttonY) {
     graphics.setColor(Color.GRAY);
     graphics.fillRect((int) (buttonX * 1.5), buttonY, 300, 300);
     graphics.setColor(Color.WHITE);
     graphics.drawString("Intermediate Variants", (int) (buttonX * 1.62), (int) (buttonY * 1.1));
   }
 
-  public void displayCardA(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
+  private void displayCardA(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
     graphics.setColor(Color.DARK_GRAY);
     graphics.fillRect(buttonX / 3, buttonY, 300, 300);
     graphics.setColor(Color.BLACK);
@@ -416,7 +420,7 @@ public final class MainMenu {
 
   
   
-  public void displayCardB(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
+  private void displayCardB(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
     graphics.setColor(Color.DARK_GRAY);
     graphics.fillRect((int) (buttonX * 0.8), buttonY, 300, 300);
     graphics.setColor(Color.RED);
@@ -433,7 +437,7 @@ public final class MainMenu {
     graphics.drawString("" + animal, (int) (buttonX * 1.17), (int) (buttonY /1.9));
   }
 
-  public void displayCardC(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
+  private void displayCardC(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
     graphics.setColor(Color.DARK_GRAY);
     graphics.fillRect((int) (buttonX * 1.23), buttonY, 300, 300);
     graphics.setColor(Color.BLUE);
@@ -450,7 +454,7 @@ public final class MainMenu {
     graphics.drawString("" + animal, (int) (buttonX * 1.17), (int) (buttonY /1.9));
   }
 
-  public void displayCardD(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
+  private void displayCardD(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
     graphics.setColor(Color.DARK_GRAY);
     graphics.fillRect((int) (buttonX * 1.7), buttonY, 300, 300);
     graphics.setColor(Color.WHITE);
@@ -469,7 +473,7 @@ public final class MainMenu {
   
   
 
-  public void checkCardA(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
+  private void checkCardA(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX / 3 && location.x() <= buttonX / 3 + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -486,7 +490,7 @@ public final class MainMenu {
   
   
 
-  public void checkCardB(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
+  private void checkCardB(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX * 0.8 && location.x() <= buttonX * 0.8 + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -501,7 +505,7 @@ public final class MainMenu {
     }
   }
 
-  public void checkCardC(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
+  private void checkCardC(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX * 1.23 && location.x() <= buttonX * 1.23 + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -516,7 +520,7 @@ public final class MainMenu {
     }
   }
 
-  public void checkCardD(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
+  private void checkCardD(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX * 1.7 && location.x() <= buttonX * 1.7 + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -531,7 +535,7 @@ public final class MainMenu {
     }
   }
 
-  public void checkClickFamilyVariants(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, boolean player) {
+  private void checkClickFamilyVariants(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, boolean player) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX / 2 && location.x() <= buttonX / 2 + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -540,7 +544,7 @@ public final class MainMenu {
     }
   }
 
-  public void checkClickCardVariants(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
+  private void checkClickCardVariants(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX && location.x() <= buttonX + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -553,7 +557,7 @@ public final class MainMenu {
     }
   }
 
-  public void checkClickIntermediateVariants(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, boolean player) {
+  private void checkClickIntermediateVariants(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, boolean player) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX * 1.5 && location.x() <= buttonX * 1.5 + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -562,7 +566,7 @@ public final class MainMenu {
     }
   }
 
-  public void checkClickVersion1(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
+  private void checkClickVersion1(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX / 2 && location.x() <= buttonX / 2 + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -571,7 +575,7 @@ public final class MainMenu {
     }
   }
 
-  public void checkClickVersion2(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
+  private void checkClickVersion2(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX && location.x() <= buttonX + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -580,7 +584,7 @@ public final class MainMenu {
     }
   }
 
-  public void checkClickVersion3(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
+  private void checkClickVersion3(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX * 1.5 && location.x() <= buttonX * 1.5 + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -589,7 +593,7 @@ public final class MainMenu {
     }
   }
 
-  public void checkClickPlayer2(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
+  private void checkClickPlayer2(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX / 2 && location.x() <= buttonX / 2 + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -597,7 +601,7 @@ public final class MainMenu {
     }
   }
 
-  public void checkClickPlayer3(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
+  private void checkClickPlayer3(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX && location.x() <= buttonX + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -605,280 +609,7 @@ public final class MainMenu {
     }
   }
 
-=======
-  /* Medhi part */
-
-
-  public void displayVersion1(Graphics2D graphics, int buttonX, int buttonY) {
-    graphics.setColor(Color.WHITE);
-    graphics.fillRect(buttonX / 2, buttonY, 300, 300);
-    graphics.setColor(Color.BLACK);
-    graphics.drawString("Version 1", (int) (buttonX / 1.53), (int) (buttonY * 1.1));
-    graphics.drawString("With square and terminal display", (int) (buttonX / 1.74), (int) (buttonY * 1.2));
-  }
-
-  public void displayVersion2(Graphics2D graphics, int buttonX, int buttonY) {
-    graphics.setColor(Color.WHITE);
-    graphics.fillRect(buttonX, buttonY, 300, 300);
-    graphics.setColor(Color.RED);
-    graphics.drawString("Version 2", (int) (buttonX * 1.15), (int) (buttonY * 1.1));
-    graphics.drawString("With square and graphic display", (int) (buttonX * 1.075), (int) (buttonY * 1.2));
-  }
-
-  public void displayVersion3(Graphics2D graphics, int buttonX, int buttonY) {
-    graphics.setColor(Color.WHITE);
-    graphics.fillRect((int) (buttonX * 1.5), buttonY, 300, 300);
-    graphics.setColor(Color.BLUE);
-    graphics.drawString("Version 3", (int) (buttonX * 1.65), (int) (buttonY * 1.1));
-    graphics.drawString("With hexagon and graphic display", (int) (buttonX * 1.57), (int) (buttonY * 1.2));
-  }
-
-  public void displayNumberPlayer2(Graphics2D graphics, int buttonX, int buttonY) {
-    graphics.setColor(Color.WHITE);
-    graphics.fillRect(buttonX / 2, buttonY, 300, 300);
-    graphics.setColor(Color.BLACK);
-    graphics.drawString("2 Players", (int) (buttonX / 1.53), (int) (buttonY * 1.1));
-  }
-
-  public void displayNumberPlayer3(Graphics2D graphics, int buttonX, int buttonY) {
-    graphics.setColor(Color.WHITE);
-    graphics.fillRect(buttonX, buttonY, 300, 300);
-    graphics.setColor(Color.RED);
-    graphics.drawString("3 Players", (int) (buttonX * 1.15), (int) (buttonY * 1.1));
-  }
-
-  public void displayNumberPlayer4(Graphics2D graphics, int buttonX, int buttonY) {
-    graphics.setColor(Color.WHITE);
-    graphics.fillRect((int) (buttonX * 1.5), buttonY, 300, 300);
-    graphics.setColor(Color.BLUE);
-    graphics.drawString("4 Players", (int) (buttonX * 1.65), (int) (buttonY * 1.1));
-  }
-
-  public void displayVariantsChoice1(Graphics2D graphics, int buttonX, int buttonY) {
-    graphics.setColor(Color.GRAY);
-    graphics.fillRect(buttonX / 2, buttonY, 300, 300);
-    graphics.setColor(Color.BLACK);
-    graphics.drawString("Family Variants", (int) (buttonX / 1.57), (int) (buttonY * 1.1));
-  }
-
-  public void displayVariantsChoice2(Graphics2D graphics, int buttonX, int buttonY) {
-    graphics.setColor(Color.GRAY);
-    graphics.fillRect(buttonX, buttonY, 300, 300);
-    graphics.setColor(Color.RED);
-    graphics.drawString("Card Variants", (int) (buttonX * 1.14), (int) (buttonY * 1.1));
-  }
-
-  public void displayVariantsChoice3(Graphics2D graphics, int buttonX, int buttonY) {
-    graphics.setColor(Color.GRAY);
-    graphics.fillRect((int) (buttonX * 1.5), buttonY, 300, 300);
-    graphics.setColor(Color.WHITE);
-    graphics.drawString("Intermediate Variants", (int) (buttonX * 1.62), (int) (buttonY * 1.1));
-  }
-
-  public void displayCardA(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
-    graphics.setColor(Color.DARK_GRAY);
-    graphics.fillRect(buttonX / 3, buttonY, 300, 300);
-    graphics.setColor(Color.BLACK);
-    graphics.drawString("Card A", (int) (buttonX * 0.48), (int) (buttonY * 1.1));
-    switch (animal) {
-      case WildlifeType.SALMON -> graphics.setColor(Color.PINK);
-      case WildlifeType.BEAR -> graphics.setColor(Color.CYAN);
-      case WildlifeType.ELK -> graphics.setColor(Color.RED);
-      case WildlifeType.HAWK -> graphics.setColor(Color.BLUE);
-      default -> graphics.setColor(Color.ORANGE);
-    }
-    graphics.fillRect((int) (buttonX*1.01), (int) (buttonY /2.5), 300, 100);
-    graphics.setColor(Color.BLACK);
-    graphics.drawString("" + animal, (int) (buttonX * 1.17), (int) (buttonY /1.9));
-  }
-
-  public void displayCardB(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
-    graphics.setColor(Color.DARK_GRAY);
-    graphics.fillRect((int) (buttonX * 0.8), buttonY, 300, 300);
-    graphics.setColor(Color.RED);
-    graphics.drawString("Card B", (int) (buttonX * 0.96), (int) (buttonY * 1.1));
-    switch (animal) {
-      case WildlifeType.SALMON -> graphics.setColor(Color.PINK);
-      case WildlifeType.BEAR -> graphics.setColor(Color.CYAN);
-      case WildlifeType.ELK -> graphics.setColor(Color.RED);
-      case WildlifeType.HAWK -> graphics.setColor(Color.BLUE);
-      default -> graphics.setColor(Color.ORANGE);
-    }
-    graphics.fillRect((int) (buttonX*1.01), (int) (buttonY /2.5), 300, 100);
-    graphics.setColor(Color.BLACK);
-    graphics.drawString("" + animal, (int) (buttonX * 1.17), (int) (buttonY /1.9));
-  }
-
-  public void displayCardC(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
-    graphics.setColor(Color.DARK_GRAY);
-    graphics.fillRect((int) (buttonX * 1.23), buttonY, 300, 300);
-    graphics.setColor(Color.BLUE);
-    graphics.drawString("Card C", (int) (buttonX * 1.38), (int) (buttonY * 1.1));
-    switch (animal) {
-      case WildlifeType.SALMON -> graphics.setColor(Color.PINK);
-      case WildlifeType.BEAR -> graphics.setColor(Color.CYAN);
-      case WildlifeType.ELK -> graphics.setColor(Color.RED);
-      case WildlifeType.HAWK -> graphics.setColor(Color.BLUE);
-      default -> graphics.setColor(Color.ORANGE);
-    }
-    graphics.fillRect((int) (buttonX*1.01), (int) (buttonY /2.5), 300, 100);
-    graphics.setColor(Color.BLACK);
-    graphics.drawString("" + animal, (int) (buttonX * 1.17), (int) (buttonY /1.9));
-  }
-
-  public void displayCardD(Graphics2D graphics, int buttonX, int buttonY, WildlifeType animal) {
-    graphics.setColor(Color.DARK_GRAY);
-    graphics.fillRect((int) (buttonX * 1.7), buttonY, 300, 300);
-    graphics.setColor(Color.WHITE);
-    graphics.drawString("Card D", (int) (buttonX * 1.86), (int) (buttonY * 1.1));
-    switch (animal) {
-      case WildlifeType.SALMON -> graphics.setColor(Color.PINK);
-      case WildlifeType.BEAR -> graphics.setColor(Color.CYAN);
-      case WildlifeType.ELK -> graphics.setColor(Color.RED);
-      case WildlifeType.HAWK -> graphics.setColor(Color.BLUE);
-      default -> graphics.setColor(Color.ORANGE);
-    }
-    graphics.fillRect((int) (buttonX*1.01), (int) (buttonY /2.5), 300, 100);
-    graphics.setColor(Color.BLACK);
-    graphics.drawString("" + animal, (int) (buttonX * 1.17), (int) (buttonY /1.9));
-  }
-
-  public void checkCardA(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX / 3 && location.x() <= buttonX / 3 + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("Card A " + animal);
-      switch (animal) {
-        case WildlifeType.SALMON -> CardsBearChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.BEAR -> CardsElkChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.ELK -> CardsHawkChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.HAWK -> CardsFoxChoiceMenu(action, location, buttonX, buttonY);
-        default -> PlayersChoiceMenu(action, location, buttonX, buttonY);
-      }
-    }
-  }
-
-  public void checkCardB(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX * 0.8 && location.x() <= buttonX * 0.8 + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("Card B " + animal);
-      switch (animal) {
-        case WildlifeType.SALMON -> CardsBearChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.BEAR -> CardsElkChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.ELK -> CardsHawkChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.HAWK -> CardsFoxChoiceMenu(action, location, buttonX, buttonY);
-        default -> PlayersChoiceMenu(action, location, buttonX, buttonY);
-      }
-    }
-  }
-
-  public void checkCardC(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX * 1.23 && location.x() <= buttonX * 1.23 + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("Card C " + animal);
-      switch (animal) {
-        case WildlifeType.SALMON -> CardsBearChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.BEAR -> CardsElkChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.ELK -> CardsHawkChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.HAWK -> CardsFoxChoiceMenu(action, location, buttonX, buttonY);
-        default -> PlayersChoiceMenu(action, location, buttonX, buttonY);
-      }
-    }
-  }
-
-  public void checkCardD(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, WildlifeType animal) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX * 1.7 && location.x() <= buttonX * 1.7 + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("Card D " + animal);
-      switch (animal) {
-        case WildlifeType.SALMON -> CardsBearChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.BEAR -> CardsElkChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.ELK -> CardsHawkChoiceMenu(action, location, buttonX, buttonY);
-        case WildlifeType.HAWK -> CardsFoxChoiceMenu(action, location, buttonX, buttonY);
-        default -> PlayersChoiceMenu(action, location, buttonX, buttonY);
-      }
-    }
-  }
-
-  public void checkClickFamilyVariants(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, boolean player) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX / 2 && location.x() <= buttonX / 2 + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("Family Variants");
-      if(player) PlayersChoiceMenu(action, location, buttonX, buttonY);
-    }
-  }
-
-  public void checkClickCardVariants(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX && location.x() <= buttonX + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("Card Variants");
-      CardsSalmonChoiceMenu(action, location, buttonX, buttonY);
-      CardsBearChoiceMenu(action, location, buttonX, buttonY);
-      CardsElkChoiceMenu(action, location, buttonX, buttonY);
-      CardsHawkChoiceMenu(action, location, buttonX, buttonY);
-      CardsFoxChoiceMenu(action, location, buttonX, buttonY);
-    }
-  }
-
-  public void checkClickIntermediateVariants(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY, boolean player) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX * 1.5 && location.x() <= buttonX * 1.5 + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("Intermediate Variants");
-      if(player) PlayersChoiceMenu(action, location, buttonX, buttonY);
-    }
-  }
-
-  public void checkClickVersion1(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX / 2 && location.x() <= buttonX / 2 + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("Version 1");
-      VariantChoiceMenuVersion1And2(action, location,buttonX,buttonY );
-    }
-  }
-
-  public void checkClickVersion2(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX && location.x() <= buttonX + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("Version 2");
-      VariantChoiceMenuVersion1And2(action, location,buttonX,buttonY );
-    }
-  }
-
-  public void checkClickVersion3(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX * 1.5 && location.x() <= buttonX * 1.5 + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("Version 3");
-      VariantChoiceMenuVersion3(action, location,buttonX,buttonY );
-    }
-  }
-
-  public void checkClickPlayer2(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX / 2 && location.x() <= buttonX / 2 + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("2 Players");
-    }
-  }
-
-  public void checkClickPlayer3(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
-    if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= buttonX && location.x() <= buttonX + 300 &&
-            location.y() >= buttonY && location.y() <= buttonY + 300) {
-      System.out.println("3 Players");
-    }
-  }
-
-
-  public void checkClickPlayer4(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
+  private void checkClickPlayer4(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
     if (action == PointerEvent.Action.POINTER_UP &&
             location.x() >= buttonX * 1.5 && location.x() <= buttonX * 1.5 + 300 &&
             location.y() >= buttonY && location.y() <= buttonY + 300) {
@@ -886,7 +617,7 @@ public final class MainMenu {
     }
   }
 
-  public void VariantChoiceMenuVersion1And2(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
+  private void VariantChoiceMenuVersion1And2(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY) {
     Application.run(Color.BLACK, context -> {
       context.renderFrame(graphics -> {
         graphics.setColor(Color.BLACK);
@@ -903,7 +634,7 @@ public final class MainMenu {
           checkClickIntermediateVariants(action2, location2,buttonX,buttonY, false);
         }}});}
 
-  public void VariantChoiceMenuVersion3(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
+  private void VariantChoiceMenuVersion3(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
     Application.run(Color.BLACK, context -> {
       context.renderFrame(graphics -> {
         graphics.setColor(Color.BLACK);
@@ -922,7 +653,7 @@ public final class MainMenu {
           checkClickIntermediateVariants(action2, location2,buttonX,buttonY, true);
         }}});}
 
-  public void PlayersChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
+  private void PlayersChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
     Application.run(Color.BLACK, context -> {
       context.renderFrame(graphics -> {
         graphics.setColor(Color.BLACK);
@@ -941,7 +672,7 @@ public final class MainMenu {
           checkClickPlayer4(action3, location3,buttonX,buttonY);
         }}});}
 
-  public void CardsSalmonChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
+  private void CardsSalmonChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
     Application.run(Color.BLACK, context -> {
       context.renderFrame(graphics -> {
         graphics.setColor(Color.BLACK);
@@ -962,7 +693,7 @@ public final class MainMenu {
           checkCardD(action4, location4,buttonX,buttonY, WildlifeType.SALMON);
         }}});}
 
-  public void CardsBearChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
+  private void CardsBearChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
     Application.run(Color.BLACK, context -> {
       context.renderFrame(graphics -> {
         graphics.setColor(Color.BLACK);
@@ -983,7 +714,7 @@ public final class MainMenu {
           checkCardD(action4, location4,buttonX,buttonY, WildlifeType.BEAR);
         }}});}
 
-  public void CardsElkChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
+  private void CardsElkChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
     Application.run(Color.BLACK, context -> {
       context.renderFrame(graphics -> {
         graphics.setColor(Color.BLACK);
@@ -1004,7 +735,7 @@ public final class MainMenu {
           checkCardD(action4, location4,buttonX,buttonY, WildlifeType.ELK);
         }}});}
 
-  public void CardsHawkChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
+  private void CardsHawkChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
     Application.run(Color.BLACK, context -> {
       context.renderFrame(graphics -> {
         graphics.setColor(Color.BLACK);
@@ -1025,7 +756,7 @@ public final class MainMenu {
           checkCardD(action4, location4,buttonX,buttonY, WildlifeType.HAWK);
         }}});}
 
-  public void CardsFoxChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
+  private void CardsFoxChoiceMenu(PointerEvent.Action action, PointerEvent.Location location, int buttonX, int buttonY){
     Application.run(Color.BLACK, context -> {
       context.renderFrame(graphics -> {
         graphics.setColor(Color.BLACK);

@@ -12,12 +12,11 @@ public final class Game {
   private final int playerCount;     // number of players
 
 
-
   public Game(
-    GameBoard board,          /* 1 game board */
-    TurnManager turnManager,  /* 20 turns for entire game */
-    int playerCount,          /* number of players */
-    int version
+      GameBoard board,          /* 1 game board */
+      TurnManager turnManager,  /* 20 turns for entire game */
+      int playerCount,          /* number of players */
+      int version
     ){
     this.board = Objects.requireNonNull(board);
     this.turnManager = Objects.requireNonNull(turnManager);
