@@ -1,34 +1,31 @@
 package fr.uge.bag;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import java.util.ArrayList;
-// import java.util.List;
-// import java.util.Objects;
-import java.util.Random;
-import java.util.Collections;
-
-import fr.uge.environment.KeystoneTile;
 import fr.uge.environment.HabitatTile;
+import fr.uge.environment.KeystoneTile;
 import fr.uge.environment.StarterHabitatTile;
 import fr.uge.environment.Tile;
 import fr.uge.environment.TileType;
 import fr.uge.environment.WildlifeType;
-// import fr.uge.environment.WildlifeToken;
-
 import fr.uge.util.Constants;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
-
-public final class Bag{
+/**
+ * Bag class contains all tiles needed for a game.
+ * @author MUNAITPASOV_MAOUCHE 
+ */
+public final class Bag {
 
   /* fill tiles with needed number of tiles for a game */
-  private static final ArrayList<Tile> tiles = new ArrayList<Tile>();
+  private static final ArrayList<Tile> tiles = new ArrayList<>();
 
   private int indexStarterHabitatTile = -1;
 
-//  private final integer MAX_STARTER_HABITATS = 5;
+  //  private final integer MAX_STARTER_HABITATS = 5;
   private StarterHabitatTile[] starterHabitats = new StarterHabitatTile[Constants.MAX_STARTER_HABITATS];
   private int maxTilesForGame = 0;
   private int maxTilesTotal = 0;
@@ -51,7 +48,11 @@ public final class Bag{
     decreaseNumberOfTiles();
   }
 
-
+  /**
+   * Validate inputs for Bag constructor
+   * @param nbPlayers number of players
+   * @param version game version
+   */
   private void validateInputs(int nbPlayers, int version) {
     if (!Constants.isValidNbPlayers(nbPlayers)) {
       throw new IllegalArgumentException(Constants.IllegalNbPlayers);
@@ -64,7 +65,9 @@ public final class Bag{
     }
   }
 
-  
+  /**
+   * Decrease number of tiles in bag to maxTilesForGame
+   */
   private void decreaseNumberOfTiles() {
     int currentNumberOfTiles = maxTilesTotal;
     while (currentNumberOfTiles > maxTilesForGame) {
@@ -75,13 +78,9 @@ public final class Bag{
 
 
   /**
-   * TO IMPROVE LATER, COMMENT JUST FOR YOU MEHDI ;)
-   * Calculate max tiles that bag going contains for different versions
-   * Expression (20 * 2) + 3 + (3 * 2) means:
-   * (tiles per players * nbPlayers) + constant for tiles on board + (starter tile * nbPlayers) 
-   * P.S. starter tile contains 3 tiles
-   * @param nbPlayers ...
-   * @param version ...
+   * Calculate maximum number of tiles for a game
+   * @param nbPlayers number of players
+   * @param version game version
    * */
   private int calculateMaxTiles(int nbPlayers, int version) {
     return (version == Constants.VERSION_HEXAGONAL) ?
@@ -89,24 +88,32 @@ public final class Bag{
            (Constants.MAX_TILES_SQUARE - 1);    /* (20 * 2) + 3 + (3 * 2) = 49 */
   }
   
-  
+  /**
+   * Initialize tiles for Hexagonal version
+   * throws IOException if file not found or can't be read
+   */
   private void initializeVersionHexagonal() throws IOException {
     readHabitatTilesThreeAnimals();   /* 15 tiles */
     readHabitatTilesTwoAnimals();     /* 45 tiles */
     readKeystoneTiles();              /* 25 tiles */
     readStarterHabitatTiles();        /* 15 tiles (5 * 3) */
-}
+  }
   
+  /**
+   * Initialize tiles for Square version
+   * throws IOException if file not found or can't be read
+   */
   private void initializeVersionSquare() throws IOException {
     readSquareTiles();
   }
  
   /**
-   * add all habitats tiles in `tiles`.
-   * */
+   * read all square tiles in `tiles`.
+   * throws IOException if file not found or can't be read
+  */
   private void readSquareTiles() throws IOException {
     try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_SQUARE_HABITAT_TILE))) {
-      String line = "";
+      String line;
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
                                        /* tile   animal  animal */
@@ -118,11 +125,12 @@ public final class Bag{
   
   
   /**
-   * add all habitats tiles in `tiles`.
+   * read all habitat tiles with three animals in `tiles`.
+   * throws IOException if file not found or can't be read
    * */
   private void readHabitatTilesThreeAnimals() throws IOException {
     try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_HABITAT_TILE_THREE_ANIMALS))) {
-      String line = "";
+      String line;
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
         var habitatTile = getHabitatTileThreeAnimals(
@@ -135,7 +143,8 @@ public final class Bag{
 
 
   /**
-   * add all habitats tiles in `tiles`.
+   * read all habitat tiles with two animals in `tiles`.
+   * throws IOException if file not found or can't be read
    * */
   private void readHabitatTilesTwoAnimals() throws IOException {
     try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_HABITAT_TILE_TWO_ANIMALS))) {
@@ -152,7 +161,8 @@ public final class Bag{
 
 
   /**
-   * add all keystone tiles in `tiles`.
+   * read all keystone tiles in `tiles`.
+   * throws IOException if file not found or can't be read
    * */
   private void readKeystoneTiles() throws IOException {
     try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_KEYSTONE_TILE))) {
@@ -167,16 +177,18 @@ public final class Bag{
 
 
   /**
-   * add all starter habitat tiles in `tiles`.
-   * source: github/Cascadia/docs/Cascadia_rules_english.pdf
-   * KeystoneTile topTile  - 1 habitat, 1 animal
-   * HabitatTile leftTile  - 2 habitats, 3 animals
-   * HabitatTile rightTile - 2 habitats, 2 animals
+   * <p>add all starter habitat tiles in `tiles`.</p>
+   * <p>throws IOException if file not found or can't be read</p>
+   * <p>StarterHabitatTile has 3 tiles:</p>
+   * <p>KeystoneTile topTile  - 1 habitat, 1 animal</p>
+   * <p>HabitatTile leftTile  - 2 habitats, 3 animals</p>
+   * <p>HabitatTile rightTile - 2 habitats, 2 animals</p>
+   * <p>source: github/Cascadia/docs/Cascadia_rules_english.pdf</p>
    * */
   private void readStarterHabitatTiles() throws IOException {
     int index = 0;
     try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_STARTER_HABITAT_TILE))) {
-      String line = "";
+      String line;
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
         var topTile = getKeystoneTile(row[0], row[1]);  /* tile,  animal */
@@ -209,7 +221,8 @@ public final class Bag{
 
 
   /**
-   * User can get one starter habitat tile
+   * Gives random StarterHabitatTile
+   * @return one StarterHabitatTile from array `starterHabitats`
    * */
   public StarterHabitatTile getStarterHabitatTile() {
     if (indexStarterHabitatTile >= Constants.MAX_STARTER_HABITATS) {  /* prevent overflow ... */
@@ -221,7 +234,10 @@ public final class Bag{
 
 
 
-
+  /**
+   * Gives random KeystoneTile
+   * @return one KeystoneTile from array `tiles`
+   */
   private KeystoneTile getKeystoneTile(
       String tile,
       String animal
@@ -232,7 +248,10 @@ public final class Bag{
         );
   }
 
-  
+  /**
+   * Gives random HabitatTile with two animals
+   * @return one HabitatTile from array `tiles`
+   */
   private HabitatTile getHabitatTileTwoAnimals(
       String firstTile, String secondTile,
       String firstAnimal, String secondAnimal
@@ -248,7 +267,10 @@ public final class Bag{
     return new HabitatTile(twoTiles, twoAnimals);
   }
 
-
+  /**
+   * Gives random HabitatTile with three animals
+   * @return one HabitatTile from array `tiles`
+   */
   private HabitatTile getHabitatTileThreeAnimals(
       String firstTile, String secondTile,
       String firstAnimal, String secondAnimal, String thirdAnimal
@@ -265,7 +287,10 @@ public final class Bag{
     return new HabitatTile(twoTiles, threeAnimals);
   }
 
-
+  /**
+   * Gives random HabitatTile with one tile and two animals
+   * @return one HabitatTile from array `tiles`
+   */
   private HabitatTile getSquareTiles(
       String oneTile,
       String firstAnimal, String secondAnimal
@@ -278,7 +303,10 @@ public final class Bag{
     return new HabitatTile(tile, tokens);
   }
   
-  
+  /**
+   * Shuffle starter habitats tiles for more random game
+   * @param starterHabitats array of StarterHabitatTile
+   */
   private void shuffleStarterHabitats(StarterHabitatTile[] starterHabitats) {
     var random = new Random();
     for (var i = starterHabitats.length - 1; i > 0; --i) {
@@ -292,23 +320,14 @@ public final class Bag{
 
 
 
-  /* to delete i later */
   @Override
   public String toString() {
     var builder = new StringBuilder();
-    var i = 1;
     for (var tile : tiles) {
-      builder.append(i++).append(" ").append(tile.toString()).append("\n");
+      builder.append(" ").append(tile.toString()).append("\n");
     }
     //builder.append(starterHabitats.toString());
     return builder.toString();
   }
-
-
-  // for tests
-//  public static void main(String[] args) throws IOException {
-//    var bag = new Bag(4, 3);
-//    System.out.println(bag.toString());
-//  }
 
 }

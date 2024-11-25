@@ -6,6 +6,11 @@ import fr.uge.util.Constants;
 import java.util.Objects;
 import java.util.Random;
 
+/**
+ * The `Deck` class represents the deck of WildlifeTokens in the game.
+ * It is responsible for drawing random tokens from the deck and updating the deck
+ * when a token is replaced on the game board.
+ */
 public final class Deck {
 
   /**
@@ -39,11 +44,10 @@ public final class Deck {
   }
 
   /**
-   * Draws a random WildlifeToken from the deck.
-   * If the selected type has no tokens left,
-   * it retries until a type with available tokens is found.
+   * Draws a random WildlifeToken from the deck.<br>
+   * If the selected type has no tokens left,<br>
+   * it retries until a type with available tokens is found. <br>
    *
-   * @param void
    * @return WildlifeToken - the randomly selected token.
    */
   public final WildlifeToken getRandomToken(){
@@ -81,7 +85,10 @@ public final class Deck {
     return getRandomToken();
   }
   
-  
+  /**
+   * Decrease the number of animals in the deck by half.
+   * This method is called when the game is played in the square version.
+   */
   private static void decreaseAnimals() {
     for (var i = 0; i < animals.length; ++i) {
       /* if we play square version, so we need only a half of hexagonal version */
