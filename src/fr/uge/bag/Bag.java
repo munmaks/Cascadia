@@ -310,11 +310,11 @@ public final class Bag {
   private void shuffleStarterHabitats(StarterHabitatTile[] starterHabitats) {
     var random = new Random();
     for (var i = starterHabitats.length - 1; i > 0; --i) {
-        var randomIndex = random.nextInt(i + 1);
-        /* swap two starter habitats tiles */
-        var tmp = starterHabitats[randomIndex];
-        starterHabitats[randomIndex] = starterHabitats[i];
-        starterHabitats[i] = tmp;
+      var randomIndex = random.nextInt(i + 1);
+      /* swap two starter habitats tiles */
+      var tmp = starterHabitats[randomIndex];
+      starterHabitats[randomIndex] = starterHabitats[i];
+      starterHabitats[i] = tmp;
     }
   }
 

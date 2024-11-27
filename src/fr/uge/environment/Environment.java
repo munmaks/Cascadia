@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import java.util.Set;
 import java.util.HashSet;
-// import java.util.HashMap;
+import java.util.HashMap;
 
 
 
@@ -22,8 +22,12 @@ public final class Environment {
   private final Cell[][] grid = new Cell[Constants.MAX_ROW][Constants.MAX_COL];
 
 
-  /* environment of all placed tiles by one player */
+  /* environment of all placed tiles by one player
+   * deprecated, to delete later */
   private final ArrayList<Cell> cells = new ArrayList<>();
+
+  /* environment of all placed tiles by one player */
+  private final HashMap<Cell, Tile> cellsMap = new HashMap<>();
 
   private final int version;
   private int nbNeighbors = 0;
@@ -52,8 +56,8 @@ public final class Environment {
 
   private int defineNbNeighbors(int version) {
     return (version == Constants.VERSION_HEXAGONAL) ?
-            Constants.NB_NEIGHBORS_HEXAGONAL:
-            Constants.NB_NEIGHBORS_SQUARE; 
+            Constants.NB_NEIGHBORS_HEXAGONAL :
+            Constants.NB_NEIGHBORS_SQUARE ;
   }
   
   
@@ -128,14 +132,14 @@ public final class Environment {
    * @return     An immutable list of neighboring cells.
    */
   private List<Cell> getOffsetNeighbors(Cell cell) {
-      var neighbors = new ArrayList<Cell>();
-      for (var direction = 0; direction < Constants.MAX_ROTATIONS; ++direction) {
-          var neighbor = oddrOffsetNeighbor(cell, direction);
-          if (null != neighbor) {
-              neighbors.add(neighbor);
-          }
+    var neighbors = new ArrayList<Cell>();
+    for (var direction = 0; direction < Constants.MAX_ROTATIONS; ++direction) {
+      var neighbor = oddrOffsetNeighbor(cell, direction);
+      if (null != neighbor) {
+        neighbors.add(neighbor);
       }
-      return List.copyOf(neighbors);
+    }
+    return List.copyOf(neighbors);
   }
   
   
