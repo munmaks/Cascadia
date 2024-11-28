@@ -10,7 +10,7 @@ public final class EmptyTile implements Tile {
   public final String toString() {
     return "Empty Tile";
   }
-  
+
   @Override
   public WildlifeToken getAnimal() {
     return null;

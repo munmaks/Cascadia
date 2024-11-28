@@ -36,7 +36,7 @@ public final class Environment {
   public Environment(int version) {
     /* class for all check and valid parameters to stop checking everytime THE SAME THING */
     if (!Constants.isValidVersion(version)) {
-      throw new IllegalArgumentException("Game Version must be 1, 2");
+      throw new IllegalArgumentException("Game Version must be 1, 2 or 3");
     }
     initializeGrid(version);
     this.version = version;
@@ -182,7 +182,6 @@ public final class Environment {
         case KeystoneTile keystone -> { flag = keystone.canBePlaced(token); }
         /* normally shouldn't happen */
         case EmptyTile empty -> { System.err.println("Can't be placed wildlife token on empty tile"); }
-        case StarterHabitatTile s -> { System.err.println("Can't be placed wildlife token on starter tile"); }
       }
       if (flag) { /* found */
         return flag;
@@ -205,7 +204,6 @@ public final class Environment {
       case KeystoneTile keystone -> { flag = keystone.placeAnimal(token); }
       /* normally shouldn't happen */
       case EmptyTile empty -> { System.err.println("Can't place wildlife token on empty tile"); }
-      case StarterHabitatTile starter -> { System.err.println("Can't place wildlife token on starter tile"); }
     }
     return flag;
   }
@@ -214,7 +212,7 @@ public final class Environment {
 
   public final Cell getCell(int y, int x) {
     if (!Constants.isValidCoordinates(y, x)) {
-      throw new IllegalArgumentException(Constants.IllegalCoordinates);
+      throw new IllegalArgumentException(Constants.ILLEGAL_COORDINATES);
     }
     return grid[y][x];
   }

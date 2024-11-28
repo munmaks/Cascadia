@@ -2,7 +2,6 @@ package fr.uge.bag;
 
 import fr.uge.environment.HabitatTile;
 import fr.uge.environment.KeystoneTile;
-import fr.uge.environment.StarterHabitatTile;
 import fr.uge.environment.Tile;
 import fr.uge.environment.TileType;
 import fr.uge.environment.WildlifeType;
@@ -25,8 +24,8 @@ public final class Bag {
 
   private int indexStarterHabitatTile = -1;
 
-  //  private final integer MAX_STARTER_HABITATS = 5;
-  private StarterHabitatTile[] starterHabitats = new StarterHabitatTile[Constants.MAX_STARTER_HABITATS];
+  /* 3 tiles for each starter habitat tile (top, left, right), total 5 occurences */
+  private final Tile[][] starters = new Tile[Constants.MAX_STARTER_HABITATS][Constants.MAX_TILES_ON_STARTER];
   private int maxTilesForGame = 0;
   private int maxTilesTotal = 0;
 
@@ -55,13 +54,13 @@ public final class Bag {
    */
   private void validateInputs(int nbPlayers, int version) {
     if (!Constants.isValidNbPlayers(nbPlayers)) {
-      throw new IllegalArgumentException(Constants.IllegalNbPlayers);
+      throw new IllegalArgumentException(Constants.ILLEGAL_NUMBER_OF_PLAYERS);
     }
     if (!Constants.isValidVersion(version)) {
-      throw new IllegalArgumentException(Constants.IllegalVersion);
+      throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     if (Constants.isInvalidSquareNbPlayers(nbPlayers, version)) {   /* invalid nbPlayers for Square version*/
-      throw new IllegalArgumentException(Constants.IllegalSquareNbPlayers);
+      throw new IllegalArgumentException(Constants.ILLEGAL_SQUARE_NUMBER_OF_PLAYERS);
     }
   }
 
@@ -87,7 +86,8 @@ public final class Bag {
            ((Constants.TILE_PER_PLAYER * nbPlayers) + Constants.THREE):
            (Constants.MAX_TILES_SQUARE - 1);    /* (20 * 2) + 3 + (3 * 2) = 49 */
   }
-  
+
+
   /**
    * Initialize tiles for Hexagonal version
    * throws IOException if file not found or can't be read
@@ -98,7 +98,8 @@ public final class Bag {
     readKeystoneTiles();              /* 25 tiles */
     readStarterHabitatTiles();        /* 15 tiles (5 * 3) */
   }
-  
+
+
   /**
    * Initialize tiles for Square version
    * throws IOException if file not found or can't be read
@@ -191,21 +192,20 @@ public final class Bag {
       String line;
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
-        var topTile = getKeystoneTile(row[0], row[1]);  /* tile,  animal */
-
-        var leftTile = getHabitatTileThreeAnimals(
-              row[2], row[3], row[4], row[5], row[6]    /* tile, tile, animal, animal, animal */
-            );
-        var rightTile = getHabitatTileTwoAnimals(
-              row[7], row[8], row[9], row[10]           /* tile, tile, animal, animal */
-            );
-        starterHabitats[index] = new StarterHabitatTile(topTile, leftTile, rightTile);
+                                   /* tile,  animal */
+        var topTile = getKeystoneTile(row[0], row[1]);
+                                                /* tile,  tile,  animal, animal, animal */
+        var leftTile = getHabitatTileThreeAnimals(row[2], row[3], row[4], row[5], row[6]);
+                                                /* tile, tile, animal, animal */
+        var rightTile = getHabitatTileTwoAnimals(row[7], row[8], row[9], row[10]);
+        starters[index][0] = topTile;
+        starters[index][1] = leftTile;
+        starters[index][2] = rightTile;
         index++;
       }
     }
-    shuffleStarterHabitats(starterHabitats);  /* shuffle them for more random game */
+    shuffleStarterHabitats(starters);  /* shuffle them for more random game */
   }
-
 
 
 
@@ -224,14 +224,22 @@ public final class Bag {
    * Gives random StarterHabitatTile
    * @return one StarterHabitatTile from array `starterHabitats`
    * */
-  public StarterHabitatTile getStarterHabitatTile() {
+  // public StarterHabitatTile getStarterHabitatTile() {
+  //   if (indexStarterHabitatTile >= Constants.MAX_STARTER_HABITATS) {  /* prevent overflow ... */
+  //     return null;
+  //   }
+  //   ++indexStarterHabitatTile;
+  //   return starterHabitats[indexStarterHabitatTile];
+  // }
+
+
+  public final Tile[] getStarter(){
     if (indexStarterHabitatTile >= Constants.MAX_STARTER_HABITATS) {  /* prevent overflow ... */
       return null;
     }
     ++indexStarterHabitatTile;
-    return starterHabitats[indexStarterHabitatTile];
+    return starters[indexStarterHabitatTile];
   }
-
 
 
   /**
@@ -307,7 +315,7 @@ public final class Bag {
    * Shuffle starter habitats tiles for more random game
    * @param starterHabitats array of StarterHabitatTile
    */
-  private void shuffleStarterHabitats(StarterHabitatTile[] starterHabitats) {
+  private void shuffleStarterHabitats(Tile[][] starterHabitats) {
     var random = new Random();
     for (var i = starterHabitats.length - 1; i > 0; --i) {
       var randomIndex = random.nextInt(i + 1);

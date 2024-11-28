@@ -34,10 +34,10 @@ public final class Cell {
   private void validateInputs(Coordinates coordinates, int version) {
     Objects.requireNonNull(coordinates);
     if (!Constants.isValidVersion(version)) {
-      throw new IllegalArgumentException(Constants.IllegalVersion);
+      throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     if (!Constants.isValidCoordinates(coordinates.y(), coordinates.x())) {
-      throw new IllegalArgumentException(Constants.IllegalCoordinates);
+      throw new IllegalArgumentException(Constants.ILLEGAL_COORDINATES);
     }
   }
   
@@ -102,7 +102,6 @@ public final class Cell {
                                       .append((k.getAnimal() != null) ? (" ") : ("empty"));
                              }
       case EmptyTile e -> { /* builder.append("Empty cell"); */ }
-      case StarterHabitatTile s -> { }
     }
     // builder.append("\n");
     return builder.toString();

@@ -1,11 +1,8 @@
 package fr.uge.core;
 
 import fr.uge.environment.Environment;
-import fr.uge.environment.WildlifeToken;
-import fr.uge.environment.WildlifeType;
 import fr.uge.scoring.BearScoringCard;
 import fr.uge.scoring.ElkScoringCard;
-import fr.uge.scoring.FamilyAndIntermediateScoringCards;
 import fr.uge.scoring.FoxScoringCard;
 import fr.uge.scoring.HawkScoringCard;
 import fr.uge.scoring.SalmonScoringCard;
@@ -24,7 +21,7 @@ public final class Player {
    * */
   public Player(String name, int version) {
     if (!Constants.isValidVersion(version)) {
-      throw new IllegalArgumentException(Constants.IllegalVersion);
+      throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     this.name = Objects.requireNonNull(name, "Player name cannot be null");
     this.environment = new Environment(version);

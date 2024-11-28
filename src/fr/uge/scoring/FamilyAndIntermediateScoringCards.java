@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
-import javax.sound.midi.SysexMessage;
 
 import fr.uge.core.Player;
 import fr.uge.environment.Cell;

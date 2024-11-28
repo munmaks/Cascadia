@@ -47,7 +47,7 @@ public final class MainMenu {
 
   public MainMenu(int version) {
     if (!Constants.isValidVersion(version)) {
-      throw new IllegalArgumentException(Constants.IllegalVersion);
+      throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     this.version = version;
     this.nbPlayers = 0;   // to do later

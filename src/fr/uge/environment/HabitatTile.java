@@ -48,7 +48,7 @@ public final class HabitatTile implements Tile {
    * */
   @Override
   public final boolean canBePlaced(WildlifeToken token) {
-    Objects.requireNonNull(token, "token must not be null in canBePlaced()");
+    Objects.requireNonNull(token, "token must not be null in HabitatTile.canBePlaced()");
     if (isOccupied()) {
       return false;
     }
@@ -69,8 +69,8 @@ public final class HabitatTile implements Tile {
     if (!canBePlaced(token)) {
       return false;
     }
-    placedAnimal = token;
-    occupiedByAnimal = true;
+    this.placedAnimal = token;
+    this.occupiedByAnimal = true;
     return occupiedByAnimal;    /* we placed animal */
   }
 

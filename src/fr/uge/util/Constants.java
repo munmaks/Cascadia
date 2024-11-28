@@ -91,6 +91,7 @@ public final class Constants {
   public static final int MAX_TILES_SQUARE = 50;
   public static final int MAX_TILES_HEXAGONAL = 85;      /* 100 - 15 starter tiles */
   public static final int MAX_STARTER_HABITATS = 5;      /* 15 = 5 * 3 (starter tiles) */
+  public static final int MAX_TILES_ON_STARTER = 3;      /* 3 animals on each starter habitat tiles */
 
   public static final int TILE_PER_PLAYER = 20;
 
@@ -134,23 +135,21 @@ public final class Constants {
 
 
   /* Error messages, to improve later */
-  public static final String IllegalCoordinates = 
-      "Invalid coordinates, must be between (0, 0) and " + 
-      "(" + MAX_ROW + ", " + MAX_COL + ")\n";
+  public static final String ILLEGAL_COORDINATES = 
+    "Invalid coordinates, must be between (0, 0) and " + 
+    "(" + MAX_ROW + ", " + MAX_COL + ")\n";
 
-  public static final String IllegalNbPlayers = "nbPlayers must be between " + 
-      MIN_PLAYERS + " and " + MAX_PLAYERS + "\n";
+  public static final String ILLEGAL_NUMBER_OF_PLAYERS = 
+    "Number of Players must be between " + MIN_PLAYERS + " and " + MAX_PLAYERS + "\n";
 
-  public static final String IllegalVersion = "Version must be between "   + 
-      Constants.VERSION_SQUARE + " and " + Constants.VERSION_HEXAGONAL + "\n";
+  public static final String ILLEGAL_VERSION = "Version must be between "   + 
+    VERSION_SQUARE + " and " + VERSION_HEXAGONAL + "\n";
 
-  public static final String IllegalSquareNbPlayers = "Square Version must have exactly 2 players";
+  public static final String ILLEGAL_SQUARE_NUMBER_OF_PLAYERS = "Square Version must have exactly 2 players";
   
   /* Family and Intermidiate scoring cards */
   public static final int FAMILY_THREE_AND_PLUS = 9;
   public static final int INTERMEDIATE_FOUR_AND_PLUS = 12;
-
-
 
 }
 

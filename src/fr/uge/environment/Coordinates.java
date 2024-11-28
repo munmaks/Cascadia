@@ -12,7 +12,7 @@ public record Coordinates(int y, int x){
 
   public Coordinates {
     if (!Constants.isValidCoordinates(y, x)) {
-      throw new IllegalArgumentException(Constants.IllegalCoordinates);
+      throw new IllegalArgumentException(Constants.ILLEGAL_COORDINATES);
     }
   }
 

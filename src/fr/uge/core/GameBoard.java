@@ -41,10 +41,10 @@ public final class GameBoard {
 
   public GameBoard(int nbPlayers, int version) {
     if (!Constants.isValidVersion(version)) {
-      throw new IllegalArgumentException(Constants.IllegalVersion);
+      throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     if (Constants.isInvalidSquareNbPlayers(nbPlayers, version)) {
-      throw new IllegalArgumentException(Constants.IllegalSquareNbPlayers);
+      throw new IllegalArgumentException(Constants.ILLEGAL_SQUARE_NUMBER_OF_PLAYERS);
     }
     this.bag = new Bag(nbPlayers, version);
     this.deck = new Deck(version);

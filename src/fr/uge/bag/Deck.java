@@ -36,7 +36,7 @@ public final class Deck {
   /* compact constructor */
   public Deck(int version) {
     if (!Constants.isValidVersion(version)) {
-      throw new IllegalArgumentException(Constants.IllegalVersion);
+      throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     if (version != Constants.VERSION_HEXAGONAL) {
       decreaseAnimals();
@@ -84,7 +84,7 @@ public final class Deck {
 
     return getRandomToken();
   }
-  
+
   /**
    * Decrease the number of animals in the deck by half.
    * This method is called when the game is played in the square version.

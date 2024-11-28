@@ -16,7 +16,7 @@ public enum TileType {
   WETLAND,
   MOUNTAIN,
   RIVER,
-  PRARIE
+  PRAIRIE
 }
 
   

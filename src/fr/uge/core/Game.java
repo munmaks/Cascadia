@@ -25,7 +25,7 @@ public final class Game {
     this.board = Objects.requireNonNull(board);
     this.turnManager = Objects.requireNonNull(turnManager);
     if (!Constants.isValidVersion(version)) {
-      throw new IllegalArgumentException(Constants.IllegalVersion);
+      throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     this.version = version;
     if (playerCount < 1 || playerCount > 4) {
@@ -137,17 +137,17 @@ public final class Game {
 
 
   private void placeStarterTilesHexagonal(int playerIndex, Coordinates centerCoordinates) {
-    var starter = board.getBag().getStarterHabitatTile();
+    var starter = board.getBag().getStarter();
     var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
 
     var cell = playerEnvironment.getCell(centerCoordinates.y(), centerCoordinates.x()); /* main cell */
-    playerEnvironment.placeTile(cell, starter.topTile());
+    playerEnvironment.placeTile(cell, starter[0]);
 
     var neighborCell = playerEnvironment.getNeighborSquare(cell, 2);    /* left down cell */
-    playerEnvironment.placeTile(neighborCell, starter.leftTile());
+    playerEnvironment.placeTile(neighborCell, starter[1]);
 
     neighborCell = playerEnvironment.getNeighborSquare(cell, 3);
-    playerEnvironment.placeTile(neighborCell, starter.rightTile());     /* right down cell */
+    playerEnvironment.placeTile(neighborCell, starter[2]);     /* right down cell */
 
   }
 
