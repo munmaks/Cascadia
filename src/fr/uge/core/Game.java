@@ -133,8 +133,6 @@ public final class Game {
     playerEnvironment.placeTile(neighborCell, rightTile);
   }
 
-  
-
 
   private void placeStarterTilesHexagonal(int playerIndex, Coordinates centerCoordinates) {
     var starter = board.getBag().getStarter();

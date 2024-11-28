@@ -1,6 +1,5 @@
 package fr.uge.environment;
 
-
 /**
  * <p>Represents Type of Animal </p>
  * <p>Indexes for WildlifeType `enum`:</p>

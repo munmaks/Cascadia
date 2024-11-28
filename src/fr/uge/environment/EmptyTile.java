@@ -7,17 +7,17 @@ public final class EmptyTile implements Tile {
   }
 
   @Override
-  public final String toString() {
-    return "Empty Tile";
-  }
-
-  @Override
   public WildlifeToken getAnimal() {
     return null;
   }
-
+  
   @Override
   public boolean canBePlaced(WildlifeToken token) {
     return false;
+  }
+
+  @Override
+  public final String toString() {
+    return "Empty Tile";
   }
 }

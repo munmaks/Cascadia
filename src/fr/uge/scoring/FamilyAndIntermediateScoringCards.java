@@ -182,7 +182,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
       var map = returnWildlifeTokenMap(player.environment(), token);
       score += calculateScore(map);
     }
-    
+
     return score;
   }
   

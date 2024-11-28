@@ -5,8 +5,10 @@ import fr.uge.bag.Deck;
 import fr.uge.environment.Tile;
 import fr.uge.environment.WildlifeToken;
 import fr.uge.util.Constants;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * This method is used to initialise the tiles and tokens on the board
@@ -18,8 +20,8 @@ public final class GameBoard {
   private static final HashMap<WildlifeToken, Integer> map = new HashMap<>();
   private boolean areUpdated = false;   /* update only once per player's turn */
   
-  private final Tile[] tiles = new Tile[Constants.TOKENS_ON_BOARD];
-  private final WildlifeToken[] tokens = new WildlifeToken[Constants.TOKENS_ON_BOARD];
+  private static final Tile[] tiles = new Tile[Constants.TOKENS_ON_BOARD];
+  private static final WildlifeToken[] tokens = new WildlifeToken[Constants.TOKENS_ON_BOARD];
 
   // private int indexOfTokenToUpdate = 0;
 
@@ -49,10 +51,10 @@ public final class GameBoard {
     this.bag = new Bag(nbPlayers, version);
     this.deck = new Deck(version);
     for (var i = 0; i < Constants.TILES_ON_BOARD; ++i) {
-      this.tiles[i] = bag.getRandomTile();
+      GameBoard.tiles[i] = bag.getRandomTile();
     }
     for (var i = 0; i < Constants.TOKENS_ON_BOARD; ++i) {
-      this.tokens[i] = deck.getRandomToken();
+      GameBoard.tokens[i] = deck.getRandomToken();
     }
   }
   
@@ -60,45 +62,55 @@ public final class GameBoard {
    * This method is used to determine if the tokens on the board need to be updated.
    */
   public final boolean tokensNeedUpdate() {
-    if (areUpdated) { return false; }   /* already updated */
-    /* count the number of occurences of each token,
-       and store it in a map clear it before using it */
-    map.clear();
-    for (var i = 0; i < tokens.length; ++i) {
-      map.put(tokens[i], map.getOrDefault(tokens[i], 0) + 1);
-    }
-    /* check if there we have 3 or 4 occurences of a token */
-    for (var elem : map.entrySet()) {
-      if (elem.getValue() == 4) {
-        areUpdated = true;
-        return true;
-      }
-    }
-    return false;
+    if (this.areUpdated) { return false; }   /* already updated */
+    resetAndFillMap();
+    return Arrays.stream(GameBoard.tokens)
+                 .anyMatch(token -> GameBoard.map.get(token) == 4);
   }
 
 
+    private void resetAndFillMap(){
+      GameBoard.map.clear();
+      Arrays.stream(GameBoard.tokens)
+            .forEach(token -> GameBoard.map.merge(token, 1, Integer::sum));
+    }
 
 
-  public final boolean tokensCanBeUpdated() {
-    if (areUpdated) { return false; }   /* already updated */
-    /* count the number of occurences of each token,
-       and store it in a map clear it before using it */
-    map.clear();
-    for (var i = 0; i < tokens.length; ++i) {
-      map.put(tokens[i], map.getOrDefault(tokens[i], 0) + 1);
-    }
-    /* check if there we have 3 or 4 occurences of a token */
-    for (var elem : map.entrySet()) {
-      if (elem.getValue() >= 3) { return true; }
-    }
-    return false;
+    public final boolean tokensCanBeUpdated() {
+      if (this.areUpdated) { return false; }   /* already updated */
+      resetAndFillMap();
+      return GameBoard.map.values()
+                          .stream()
+                          .anyMatch(count -> count >= 3);
+    // GameBoard.map.clear();
+    // for (var i = 0; i < tokens.length; ++i) {
+    //   GameBoard.map.put(tokens[i], GameBoard.map.getOrDefault(tokens[i], 0) + 1);
+    // }
+    // /* check if there we have 3 or 4 occurences of a token */
+    // for (var elem : GameBoard.map.entrySet()) {
+    //   if (elem.getValue() >= 3) { return true; }
+    // }
+    // return false;
   }
 
 
   /* to add later: using nature tokens for every player */
   
-  
+  // public final boolean tokensCanBeUpdated() {
+  //   /* count the number of occurences of each token,
+  //      and store it in a map clear it before using it */
+  //   if (this.areUpdated) { return false; }   /* already updated */
+  //   return Arrays.stream(GameBoard.tokens)
+  //         .filter(token -> {
+  //             GameBoard.map.clear();
+  //             for (var i = 0; i < tokens.length; ++i) {
+  //               GameBoard.map.merge(tokens[i], 1, Integer::sum);
+  //             }
+  //             return GameBoard.map.get(token) >= 3;
+  //           }
+  //         )
+  //         .findFirst()
+  //         .isPresent();
   public final boolean areTokensUpdated() {
     return areUpdated;
   }
@@ -110,6 +122,11 @@ public final class GameBoard {
     areUpdated = false;
   }
   
+
+  public final void setTrueAreUpdate() {
+    areUpdated = true;
+  }
+
   
   private WildlifeToken updateToken(WildlifeToken token) {
     Objects.requireNonNull(token);
@@ -122,6 +139,14 @@ public final class GameBoard {
   //     tokens[i] = updateToken(tokens[i]);
   //   }
   // }
+
+
+  private WildlifeToken getTokenToUpdate() {
+    return Arrays.stream(tokens)
+                 .filter(token -> GameBoard.map.get(token) >= 3)
+                 .findFirst()
+                 .orElse(null);
+  }
   
   
   public final void updateTokens(){
@@ -129,20 +154,15 @@ public final class GameBoard {
       System.err.println("Tokens are already updated, wait next turn please");
       return;
     }
+    /* there will be always only one token with 3 or more occurences */
+    WildlifeToken tokenToChange = getTokenToUpdate();
 
-    // there will be always only one token with 3 or more occurences
-    WildlifeToken tokenToChange = map.entrySet().stream()
-          .filter(entry -> entry.getValue() >= 3)
-          .map(entry -> entry.getKey())
-          .findFirst()
-          .orElse(null);
-
-    // if there's no token with 3 or more occurrences, no update is needed
+    /* if there's no token with 3 or more occurrences, no update is needed  */
     if (tokenToChange == null) { return; }
 
-    for (var i = 0; i < tokens.length; ++i) {
-      if (tokens[i].equals(tokenToChange)) { tokens[i] = updateToken(tokens[i]); }
-    }
+    IntStream.range(0, tokens.length)
+             .filter(i -> GameBoard.tokens[i].equals(tokenToChange))
+             .forEach(i -> GameBoard.tokens[i] = updateToken(GameBoard.tokens[i]));
     areUpdated = true;
   }
 
@@ -158,7 +178,7 @@ public final class GameBoard {
 
   public Tile getTile(int index){
     if (index < 0 || index >= Constants.TILES_ON_BOARD) {
-      throw new IllegalArgumentException("Index out of bounds");
+      throw new IllegalArgumentException("Index of tile out of bounds");
     }
     // System.err.println(tiles[index]);
     var tile = tiles[index];
@@ -169,7 +189,7 @@ public final class GameBoard {
 
   public WildlifeToken getToken(int index){
     if (index < 0 || index >= Constants.TOKENS_ON_BOARD) {
-      throw new IllegalArgumentException("Index out of bounds");
+      throw new IllegalArgumentException("Index of wildlife token out of bounds");
     }
     // System.err.println(tokens[index]);
     var token = tokens[index];
@@ -177,9 +197,11 @@ public final class GameBoard {
     return token;
   }
 
+
   public Bag getBag() {
     return bag;
   }
+
 
   public Deck getDeck() {
     return deck;
@@ -196,7 +218,7 @@ public final class GameBoard {
   //     System.out.println(tokens[i]);
   //   }
   //   System.out.println("Tokens need update: " + gb.tokensNeedUpdate());
-    
+
   //   gb.updateTokens();
   //   System.out.println("Tokens after update:");
   //   for (var i = 0; i < Constants.TOKENS_ON_BOARD; ++i) {
