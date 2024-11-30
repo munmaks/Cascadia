@@ -96,9 +96,9 @@ public final class MainMenu {
     System.out.println("\nHere is the game board: ");
     var tiles = board.getCopyOfTiles();
     var tokens = board.getCopyOfTokens();
-    for (var i = 0; i < tiles.length; ++i){
+    for (var i = 0; i < tiles.size(); ++i){
       var builder = new StringBuilder();
-      builder.append(i+1).append(") ").append(tiles[i].toString()).append(" and ").append(tokens[i].toString());
+      builder.append(i+1).append(") ").append(tiles.get(i).toString()).append(" and ").append(tokens.get(i).toString());
       System.out.println(builder.toString());
     }
     System.out.println("");
@@ -218,8 +218,8 @@ public final class MainMenu {
     Objects.requireNonNull(player);
     Objects.requireNonNull(chosedTile);
     var possibleCoordinates = player.environment().getPossibleCoordinates();
-    String userCoordinatesString = null;
-    Coordinates userCoordinates = null;
+    String userCoordinatesString;
+    Coordinates userCoordinates;
 
     /* player has to place tile correctly */
     do {
@@ -275,7 +275,7 @@ public final class MainMenu {
   
   private void resetForNextTurn(Game game) {
     Objects.requireNonNull(game);
-    game.board().setDefaultAreUpdate();  // that means, next person can change
+    game.board().setDefaultTokensAreUpdated();  // that means, next person can change
   }
   
 

@@ -27,7 +27,7 @@ public final class Environment {
   private final ArrayList<Cell> cells = new ArrayList<>();
 
   /* environment of all placed tiles by one player */
-  private final HashMap<Cell, Tile> cellsMap = new HashMap<>();
+  private final HashMap<Coordinates, Cell> cellsMap;
 
   private final int version;
   private int nbNeighbors = 0;
@@ -39,6 +39,7 @@ public final class Environment {
       throw new IllegalArgumentException("Game Version must be 1, 2 or 3");
     }
     initializeGrid(version);
+    this.cellsMap = new HashMap<>();
     this.version = version;
     this.nbNeighbors = defineNbNeighbors(version); 
   }
@@ -81,7 +82,8 @@ public final class Environment {
     var neighborCol = cell.coordinates().x() + diff[0];
     /* validate neighbor coordinates */
     if (Constants.isValidCoordinates(neighborRow, neighborCol)) {
-      return grid[neighborRow][neighborCol];
+      return cellsMap.get(new Coordinates(neighborRow, neighborCol));
+      // return grid[neighborRow][neighborCol];
     }
     return null;
   }
@@ -121,7 +123,8 @@ public final class Environment {
         neighborCol < 0 || neighborCol >= Constants.MAX_COL) {
       return null;
     }
-    return grid[neighborRow][neighborCol];
+    return cellsMap.get(new Coordinates(neighborRow, neighborCol));
+    // return grid[neighborRow][neighborCol];
   }
 
   
@@ -214,7 +217,8 @@ public final class Environment {
     if (!Constants.isValidCoordinates(y, x)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_COORDINATES);
     }
-    return grid[y][x];
+    return cellsMap.get(new Coordinates(y, x));
+    // return grid[y][x];
   }
 
   
@@ -284,7 +288,7 @@ public final class Environment {
     var builder = new StringBuilder();
     for (var row = 0; row < Constants.MAX_ROW; ++row) {
       for (var col = 0; col < Constants.MAX_COL; ++col) {
-        builder.append(grid[row][col].toString());
+        builder.append(cellsMap.get(new Coordinates(row, col)).toString());
       }
       builder.append("\n");
     }

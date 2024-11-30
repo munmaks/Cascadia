@@ -10,7 +10,7 @@ import fr.uge.util.Constants;
 import java.util.Objects;
 
 public final class Player {
-  private final String name;    // just for counting later
+  private final String name;    /* just for counting later */
   private final Environment environment;
   private int natureTokens = 0;
 
@@ -45,6 +45,7 @@ public final class Player {
   public boolean canUseNatureTokens(){
     return this.natureTokens > 0;
   }
+
 
   /**
    * for later usage, 

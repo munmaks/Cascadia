@@ -220,18 +220,6 @@ public final class Bag {
   }
 
 
-  /**
-   * Gives random StarterHabitatTile
-   * @return one StarterHabitatTile from array `starterHabitats`
-   * */
-  // public StarterHabitatTile getStarterHabitatTile() {
-  //   if (indexStarterHabitatTile >= Constants.MAX_STARTER_HABITATS) {  /* prevent overflow ... */
-  //     return null;
-  //   }
-  //   ++indexStarterHabitatTile;
-  //   return starterHabitats[indexStarterHabitatTile];
-  // }
-
 
   public final Tile[] getStarter(){
     if (indexStarterHabitatTile >= Constants.MAX_STARTER_HABITATS) {  /* prevent overflow ... */
