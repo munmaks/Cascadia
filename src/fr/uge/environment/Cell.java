@@ -66,18 +66,18 @@ public final class Cell {
   /**
    * Only in Hexagonal version
    * */
-  public final void turnСlockwise() {
+  public final void turnСounterСlockwise() {
     if (version == Constants.VERSION_HEXAGONAL) {
-      currentRotation = (currentRotation + 1) % Constants.MAX_ROTATIONS;
+      this.currentRotation = (this.currentRotation + 1) % Constants.MAX_ROTATIONS;
     }
   }
 
   /**
    * Only in Hexagonal version
    * */
-  public final void turnСounterСlockwise() {
+  public final void turnСlockwise() {
     if (version == Constants.VERSION_HEXAGONAL) {
-      currentRotation = (currentRotation - 1 + Constants.MAX_ROTATIONS) % Constants.MAX_ROTATIONS;
+      this.currentRotation = (this.currentRotation - 1 + Constants.MAX_ROTATIONS) % Constants.MAX_ROTATIONS;
     }
   }
 
@@ -85,7 +85,7 @@ public final class Cell {
    * Only in Hexagonal version
    * */
   public final int getRotation() {
-    return (version == Constants.VERSION_HEXAGONAL) ? (currentRotation) : (0) ;
+    return (version == Constants.VERSION_HEXAGONAL) ? (this.currentRotation) : (0) ;
   }
 
 

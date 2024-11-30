@@ -184,7 +184,7 @@ public final class Environment {
         case HabitatTile habitat -> { flag = habitat.canBePlaced(token);}
         case KeystoneTile keystone -> { flag = keystone.canBePlaced(token); }
         /* normally shouldn't happen */
-        case EmptyTile empty -> { System.err.println("Can't be placed wildlife token on empty tile"); }
+        case EmptyTile e -> { System.err.println("Can't be placed wildlife token on empty tile"); }
       }
       if (flag) { /* found */
         return flag;
