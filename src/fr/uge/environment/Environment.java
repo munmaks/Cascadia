@@ -19,7 +19,7 @@ public final class Environment {
   // private int nature_tokens = 0;    // for player
   
   /* 100 - 196 total tiles to show in player's environment */
-  private final Cell[][] grid = new Cell[Constants.MAX_ROW][Constants.MAX_COL];
+  // private final Cell[][] grid = new Cell[Constants.MAX_ROW][Constants.MAX_COL];
 
 
   /* environment of all placed tiles by one player
@@ -30,7 +30,6 @@ public final class Environment {
   private final HashMap<Coordinates, Cell> cellsMap;
 
   private final int version;
-  private int nbNeighbors = 0;
 
 
   public Environment(int version) {
@@ -38,29 +37,22 @@ public final class Environment {
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException("Game Version must be 1, 2 or 3");
     }
-    initializeGrid(version);
+    // initializeGrid(version);
     this.cellsMap = new HashMap<>();
     this.version = version;
-    this.nbNeighbors = defineNbNeighbors(version); 
   }
 
 
   
 
-  private void initializeGrid(int version) {
-    for (var row = 0; row < Constants.MAX_ROW; ++row) {  /* row is `y` */
-      for (var col = 0; col < Constants.MAX_COL; ++col) { /* col is `x` */
-        grid[row][col] = new Cell(new Coordinates(row, col), version);
-      }
-    }
-  }
+  // private void initializeGrid(int version) {
+  //   for (var row = 0; row < Constants.MAX_ROW; ++row) {  /* row is `y` */
+  //     for (var col = 0; col < Constants.MAX_COL; ++col) { /* col is `x` */
+  //       grid[row][col] = new Cell(new Coordinates(row, col), version);
+  //     }
+  //   }
+  // }
 
-  private int defineNbNeighbors(int version) {
-    return (version == Constants.VERSION_HEXAGONAL) ?
-            Constants.NB_NEIGHBORS_HEXAGONAL :
-            Constants.NB_NEIGHBORS_SQUARE ;
-  }
-  
   
   /* adds a new tile to Player's environment */
 //  private void addTile(Tile tile) {
@@ -78,8 +70,8 @@ public final class Environment {
    * */
   public Cell getNeighborSquare(Cell cell, int direction) {
     var diff = Constants.SQUARE_DIRECTION_DIFFERENCES[direction];
-    var neighborRow = cell.coordinates().y() + diff[1];
-    var neighborCol = cell.coordinates().x() + diff[0];
+    var neighborRow = cell.getCoordinates().y() + diff[1];
+    var neighborCol = cell.getCoordinates().x() + diff[0];
     /* validate neighbor coordinates */
     if (Constants.isValidCoordinates(neighborRow, neighborCol)) {
       return cellsMap.get(new Coordinates(neighborRow, neighborCol));
@@ -111,12 +103,12 @@ public final class Environment {
    * @return          The neighboring cell if within bounds, otherwise null.
    */
   public Cell oddrOffsetNeighbor(Cell cell, int direction) {
-    var parity = cell.coordinates().y() & 1;  /* parity: 0 - even rows, 1 - odd rows */
+    var parity = cell.getCoordinates().y() & 1;  /* parity: 0 - even rows, 1 - odd rows */
 
     var diff = Constants.HEXAGONE_DIRECTION_DIFFERENCES[parity][direction];
 
-    var neighborRow = cell.coordinates().y() + diff[1];
-    var neighborCol = cell.coordinates().x() + diff[0];
+    var neighborRow = cell.getCoordinates().y() + diff[1];
+    var neighborCol = cell.getCoordinates().x() + diff[0];
 
     /* validate neighbor coordinates */
     if (neighborRow < 0 || neighborRow >= Constants.MAX_ROW ||
@@ -152,10 +144,10 @@ public final class Environment {
    * */
   public final List<Cell> getNeighborsCells(Cell cell){
     Objects.requireNonNull(cell);
-    if (version == Constants.VERSION_HEXAGONAL) {
-      return getOffsetNeighbors(cell);
-    }
-    return getNeighborsSquare(cell);
+    return switch (cell){
+      case CellSquare square -> getNeighborsSquare(square);
+      case CellHexagonal hexagonal -> getOffsetNeighbors(hexagonal);
+    };
   }
   
 
@@ -263,7 +255,7 @@ public final class Environment {
       var neighbors = getNeighborsCells(cell);
       for (var neighbor : neighbors){
         if (!neighbor.isOccupied()) {
-          set.add(neighbor.coordinates());
+          set.add(neighbor.getCoordinates());
         }
       }
     }
@@ -276,7 +268,7 @@ public final class Environment {
     var neighbors = getNeighborsCells(cell);
     for (var neighbor : neighbors) {
       if (neighbor.getTile() instanceof HabitatTile){
-        System.out.println(cell.coordinates() + " - " + neighbor.getTile().toString() + " "); //+ (neighbor.isOccupied() ? (neighbor.getTile().getAnimal()) : " no Animal"));
+        System.out.println(cell.getCoordinates() + " - " + neighbor.getTile().toString() + " "); //+ (neighbor.isOccupied() ? (neighbor.getTile().getAnimal()) : " no Animal"));
       }
     }
     // System.out.println(cell.coordinates() + " : " + getNeighborsCells(cell));

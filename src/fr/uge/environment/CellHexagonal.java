@@ -1,17 +1,29 @@
 package fr.uge.environment;
 
 import fr.uge.util.Constants;
-
 import java.util.Objects;
 
-
-public final class CellSquare implements Cell {
+/**
+ * Cell class for represent a cell where a tile can be placed */
+public final class CellHexagonal implements Cell {
 
   private final Coordinates coordinates;
-  private Tile tile;
+  /**
+   *  Occupation status of tile represented by the cell.
+   */
   private boolean occupied;
 
-  public CellSquare(Coordinates coordinates) {
+  /* by default it's empty type of tile on this cell */
+  private Tile tile;
+
+  /**<p>for version 1 - 2, we needn't rotation</p>
+   * <p>for version 3:</p>
+   * <p>1 turn clockwise = 60 degrees, 6 turns clockwise = 360 == 0 degrees.<br>
+   * 1 turn counter clockwise = 300 degrees, 6 turns clockwise 360 == 0 degrees</p>
+   * */
+  private int currentRotation = 0;
+
+  public CellHexagonal(Coordinates coordinates) {
     this.coordinates = Objects.requireNonNull(coordinates);
     if (!Constants.isValidCoordinates(this.coordinates.y(), this.coordinates.x())) {
       throw new IllegalArgumentException(Constants.ILLEGAL_COORDINATES);
@@ -19,14 +31,13 @@ public final class CellSquare implements Cell {
     this.occupied = false;
     this.tile = null;
   }
-
-
+  
   @Override
   public final int getNumberOfNeighbors() {
-    return Constants.NB_NEIGHBORS_SQUARE;
-  } 
-
-
+    return Constants.NB_NEIGHBORS_HEXAGONAL;
+  }
+  
+  
   @Override
   public final boolean isOccupied() {
     return this.occupied;
@@ -38,26 +49,48 @@ public final class CellSquare implements Cell {
     if (isOccupied()) {
       return false;
     }
-    this.tile = tileToPlace;
+    tile = tileToPlace;
     this.occupied = true;
     return this.occupied;
   }
   
   @Override
   public final Tile getTile() {
-    return this.tile;
+    return tile;
+  }
+
+
+  /**
+   * Only in Hexagonal version
+   * */
+  public final void turnСounterСlockwise() {
+    this.currentRotation = (this.currentRotation + 1) % Constants.MAX_ROTATIONS;
+  }
+
+  /**
+   * Only in Hexagonal version
+   * */
+  public final void turnСlockwise() {
+    this.currentRotation = (this.currentRotation - 1 + Constants.MAX_ROTATIONS) % Constants.MAX_ROTATIONS;
+  }
+
+  /**
+   * Only in Hexagonal version
+   * */
+  public final int getRotation() {
+    return this.currentRotation;
   }
 
 
   @Override
   public final String toString() {
     var builder = new StringBuilder();
-    switch (this.tile) {
-      case HabitatTile h -> { builder.append(this.coordinates).append(" ")
+    switch (tile) {
+      case HabitatTile h -> { builder.append(coordinates).append(" ")
                                      .append(h.toString()).append(" ")
                                      .append((h.getAnimal() != null) ? (" ") : ("empty"));
                             }
-      case KeystoneTile k -> { builder.append(this.coordinates).append(" ")
+      case KeystoneTile k -> { builder.append(coordinates).append(" ")
                                       .append(k.toString()).append(" ")
                                       .append((k.getAnimal() != null) ? (" ") : ("empty"));
                              }
@@ -69,8 +102,8 @@ public final class CellSquare implements Cell {
 
   @Override
   public final Coordinates getCoordinates() {
-    return this.coordinates;
+    return coordinates;
   }
 
-
 }
+  
