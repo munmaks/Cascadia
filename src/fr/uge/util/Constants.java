@@ -10,7 +10,7 @@ public final class Constants {
   
 
   /* Turn Manager */
-  public static final int MAX_GAME_TURNS = 2;
+  public static final int MAX_GAME_TURNS = 20;
 
   
   /* Game Board */

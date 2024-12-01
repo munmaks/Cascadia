@@ -125,7 +125,10 @@ public final class GameBoard {
   
   
   public final void updateTokens(){
-    if (areUpdated) { return;  }
+    if (areUpdated) {
+      System.err.println("Tokens are already updated, wait next turn please");
+      return;
+    }
 
     // there will be always only one token with 3 or more occurences
     WildlifeToken tokenToChange = map.entrySet().stream()

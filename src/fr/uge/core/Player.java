@@ -106,20 +106,6 @@ public final class Player {
   
   
   
-  public final int calculateFamilyAbdIntermediateScore(FamilyAndIntermediateScoringCards card) {
-    int score = 0;
-    var allTokens = new WildlifeToken[Constants.NB_TOKENS];
-    for (var i = 0; i < Constants.NB_TOKENS; ++i) {
-      allTokens[i] = new WildlifeToken(WildlifeType.values()[i]);
-    }
-    for (var token : allTokens) {
-      var map = card.returnWildlifeTokenMap(token);
-      score += map.getOrDefault(token, 0);
-    }
-    return score;
-  }
-  
-  
   @Override
   public String toString() {
       return "Player, name: [ " + name + " ]\n" +

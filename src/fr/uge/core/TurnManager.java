@@ -47,15 +47,18 @@ public final class TurnManager {
 
   public final void changePlayer() {
     this.currentPlayerIndex++;
-    if (this.currentPlayerIndex == this.playersLength) {
-      this.currentPlayerIndex %= this.playersLength;
-      needToTurn = true;
-    }
+//    if (this.currentPlayerIndex == this.playersLength - 1) {
+//      this.currentPlayerIndex = 0;
+//      needToTurn = true;
+//    }
   }
 
   public final void nextTurn() {
-    this.totalTurns++; 
-    this.needToTurn = false;
+    if (this.currentPlayerIndex == this.playersLength) {
+      this.currentPlayerIndex %= this.playersLength;
+      this.totalTurns++;
+      needToTurn = false;
+    }
   }
   
   public final boolean getNeedToTurn(){

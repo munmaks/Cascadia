@@ -95,11 +95,11 @@ public final class Cell {
     switch (tile) {
       case HabitatTile h -> { builder.append(coordinates).append(" ")
                                      .append(h.toString()).append(" ")
-                                     .append((h.getAnimal() != null) ? (h.getAnimal()) : ("empty"));
+                                     .append((h.getAnimal() != null) ? (" ") : ("empty"));
                             }
       case KeystoneTile k -> { builder.append(coordinates).append(" ")
                                       .append(k.toString()).append(" ")
-                                      .append((k.getAnimal() != null) ? (k.getAnimal()) : ("empty"));
+                                      .append((k.getAnimal() != null) ? (" ") : ("empty"));
                              }
       case EmptyTile e -> { /* builder.append("Empty cell"); */ }
       case StarterHabitatTile s -> { }

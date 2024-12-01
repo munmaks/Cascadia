@@ -4,6 +4,10 @@ import fr.uge.environment.Coordinates;
 import fr.uge.util.Constants;
 import java.util.Objects;
 
+/**
+ * Game class represents the main game object that contains the game board and the turn manager.<br>
+ * It is responsible for initializing the game components and starting the game loop.
+ */
 public final class Game {
   private final GameBoard board;          // available: tiles and/or tokens 
   private final TurnManager turnManager;  // 20 turns for entire game
@@ -12,12 +16,11 @@ public final class Game {
   private final int playerCount;     // number of players
 
 
-
   public Game(
-    GameBoard board,          /* 1 game board */
-    TurnManager turnManager,  /* 20 turns for entire game */
-    int playerCount,          /* number of players */
-    int version
+      GameBoard board,          /* 1 game board */
+      TurnManager turnManager,  /* 20 turns for entire game */
+      int playerCount,          /* number of players */
+      int version
     ){
     this.board = Objects.requireNonNull(board);
     this.turnManager = Objects.requireNonNull(turnManager);
@@ -32,35 +35,36 @@ public final class Game {
     initializeGame();
   }
 
-
+  /**
+   * @return number of players in the game.
+   */
   public final int getPlayerCount() {
     return this.playerCount;
   }
 
+  /**
+   * @return the game board.
+   */
   public final GameBoard board() {
     return this.board;
   }
 
+  /**
+   * @return the turn manager.
+   */
   public final TurnManager turnManager() {
     return this.turnManager;
   }
 
   
 
-  /* we need to read first of all their names as String
-  * we have only two players, so for each player we need to
-  * ask if they want to change their name from Player 1 and Player 2 to
-  * their own name.
-  */
-
   public void startGame() {
-    // Initialize game components and start the game loop
+    /* Initialize game components and start the game loop */
   }
 
   public void endGame() {
-    // Ends the game and performs final scoring
-  }
     /* ends the game and performs final scoring */ 
+  }
 
   public int performCalculations() {
     /* for every player we calculate their score
@@ -75,7 +79,11 @@ public final class Game {
     return 0;
   }
 
-
+  /**
+   * Initializes the game by placing the starter tiles for each player.
+   * The starter tiles are placed in the center of the board.
+   * The placement of starter tiles depends on the version of the game.
+   */
   private void initializeGame() {
     Coordinates centerCoordinates = new Coordinates( (int)(Constants.MAX_ROW / 2), (int)(Constants.MAX_COL / 2) );
     for (var i = 0; i < this.playerCount; ++i) {
@@ -83,7 +91,11 @@ public final class Game {
     }
   }
 
-
+  /**
+   * Places the starter tiles for a player at the center of the board.
+   * @param playerIndex the index of the player.
+   * @param centerCoordinates the center coordinates of the board.
+   */
   private void placeStarterTiles(int playerIndex, Coordinates centerCoordinates) {
     /**
      * Hexagonal version:
