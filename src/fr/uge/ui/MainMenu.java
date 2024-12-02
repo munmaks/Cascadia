@@ -1,35 +1,22 @@
 package fr.uge.ui;
 
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-// import java.awt.Image;
-// import java.awt.Toolkit;
-
-import com.github.forax.zen.*;
-//import com.github.forax.zen.Application;
-//import com.github.forax.zen.PointerEvent;
-//import com.github.forax.zen.Application;
-//import com.github.forax.zen.Application;
-
-import java.io.IO;  // enable preview
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Scanner;
-
-
-import fr.uge.environment.Coordinates;
+import fr.uge.core.*;
+import fr.uge.environment.Cell;
+import fr.uge.environment.Coordinates;  // enable preview
+import fr.uge.environment.EmptyTile;
+import fr.uge.environment.HabitatTile;
+import fr.uge.environment.KeystoneTile;
 import fr.uge.environment.Tile;
 import fr.uge.environment.WildlifeToken;
-import fr.uge.environment.WildlifeType;
-
 import fr.uge.scoring.FamilyAndIntermediateScoringCards;
 import fr.uge.scoring.WildlifeScoringCard;
-
-import fr.uge.core.*;
-
 import fr.uge.util.Constants;
+import java.io.IO;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
 
 
 
@@ -47,7 +34,7 @@ public final class MainMenu {
 
   public MainMenu(int version) {
     if (!Constants.isValidVersion(version)) {
-      throw new IllegalArgumentException(Constants.IllegalVersion);
+      throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     this.version = version;
     this.nbPlayers = 0;   // to do later
@@ -56,10 +43,9 @@ public final class MainMenu {
     if (this.version == Constants.VERSION_SQUARE){
       playSquareTerminal();
     } else if (this.version == Constants.VERSION_HEXAGONAL) {
-      /* playHexagonal(); */  // to do later
+      // playHexagonal();  // to do later
     }
-    /* gameLoopV2();  */
-    
+    // gameLoopV2();
   }
 
 
@@ -79,14 +65,39 @@ public final class MainMenu {
   }
 
 
+  private void testPrintAllCells(List<Cell> listCells){
+    Objects.requireNonNull(listCells);
+    for (var cell : listCells){
+      // switch(cell.getTile()){
+      //   case HabitatTile h -> { /* */ }
+      //   case KeystoneTile k -> { /* */ }
+      //   case EmptyTile e -> { /* */ }
+      // }
+      System.out.println(cell.toString());
+    }
+  }
+
+
   private void showEnvironment(Player player){
     Objects.requireNonNull(player);
     System.out.println("\n\nIt's " + player.name() + "'s turn!");
     System.out.println("\nHere is " + player.name() + "'s environment: ");
     var listCells = player.environment().getCells();
 
+    System.err.println("Size of list : " + listCells.size());
+
+    System.err.println("\nbefore testPrintAllCells\n");
+    testPrintAllCells(listCells);
+    System.err.println("\nafter testPrintAllCells\n");
     for (var cell : listCells){
-      System.out.println(cell.toString());
+      // if (cell.getTile() == null){  /* for tests */
+      //   throw new IllegalArgumentException("tile in Cell is null! be aware\n");
+      // }
+      switch(cell.getTile()){
+        case HabitatTile h -> { System.out.println(cell.toString()); }
+        case KeystoneTile k -> { System.out.println(cell.toString()); }
+        case EmptyTile e -> { /* */}
+      }
     }
   }
 
@@ -96,13 +107,14 @@ public final class MainMenu {
     System.out.println("\nHere is the game board: ");
     var tiles = board.getCopyOfTiles();
     var tokens = board.getCopyOfTokens();
-    for (var i = 0; i < tiles.length; ++i){
+    for (var i = 0; i < tiles.size(); ++i){
       var builder = new StringBuilder();
-      builder.append(i+1).append(") ").append(tiles[i].toString()).append(" and ").append(tokens[i].toString());
+      builder.append(i+1).append(") ").append(tiles.get(i).toString()).append(" and ").append(tokens.get(i).toString());
       System.out.println(builder.toString());
     }
     System.out.println("");
   }
+
 
   private void showPossibleCoordinates(Player player){
     Objects.requireNonNull(player);
@@ -119,13 +131,15 @@ public final class MainMenu {
     Objects.requireNonNull(player);
     Objects.requireNonNull(token);
     System.out.println("Here are the possible coordinates to place the token: ");
-    var listOfCells = player.environment().getCells();
-    for (var cell : listOfCells){
-      if (cell.getTile().canBePlaced(token)){
-        System.out.println(cell.toString());
+    var setOfCoordinates = player.environment().getPossibleCells();
+    for (var coordinates : setOfCoordinates){
+      var currCell = player.environment().getCellOrCreate(coordinates);
+      if (currCell.getTile().canBePlaced(token)){
+        System.out.println(currCell.toString());
       }
     }
   }
+
 
   /**
    * to do later
@@ -205,11 +219,12 @@ public final class MainMenu {
     var userCoordinatesString = IO.readln("Give me coordinates of tile, that you want to place the token on (format: \"x, y\"): ");
 
     var userCoordinates = getCoordinatesFromUser(userCoordinatesString);
-    var currCell = player.environment().getCell(userCoordinates.y(), userCoordinates.x());
-    var tokenWasPlaced = player.environment().placeWildlifeToken(currCell, chosedToken);
+    var currCell = player.environment().getCellOrCreate(userCoordinates);
+    var tokenWasPlaced = player.environment().placeAnimal(currCell, chosedToken);
 
+    /* for tests, to delete later */
     if (!tokenWasPlaced){
-      System.err.println("Token wasn't placed");   // need to test this
+      System.err.println("Token wasn't placed");
     }
   }
 
@@ -217,21 +232,22 @@ public final class MainMenu {
   private void handleTilePlacement(Player player, Tile chosedTile){
     Objects.requireNonNull(player);
     Objects.requireNonNull(chosedTile);
-    var possibleCoordinates = player.environment().getPossibleCoordinates();
-    String userCoordinatesString = null;
-    Coordinates userCoordinates = null;
+    var possibleCoordinates = player.environment().getPossibleCells();
 
     /* player has to place tile correctly */
     do {
-      userCoordinatesString = IO.readln("Give me coordinates of cell, that you want to place the tile on (format: \"x, y\"): ");
-      userCoordinates = getCoordinatesFromUser(userCoordinatesString);
-      if (possibleCoordinates.contains(userCoordinates)) {
-        break;
+      var userCoordinatesString = IO.readln("Give me coordinates of cell, that you want to place the tile on (format: \"x, y\"): ");
+      var userCoordinates = getCoordinatesFromUser(userCoordinatesString);
+
+      if (possibleCoordinates.stream()
+                             .anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
+        var currCell = player.environment().getCellOrCreate(userCoordinates);
+        if (player.environment().placeTile(currCell, chosedTile)){
+          System.out.println("Tile was placed successfully (for test Main Menu)");
+          break;
+        }
       }
     } while (true);
-
-    var currCell = player.environment().getCell(userCoordinates.y(), userCoordinates.x());
-    player.environment().placeTile(currCell, chosedTile);
   }
 
 
@@ -275,7 +291,7 @@ public final class MainMenu {
   
   private void resetForNextTurn(Game game) {
     Objects.requireNonNull(game);
-    game.board().setDefaultAreUpdate();  // that means, next person can change
+    game.board().setDefaultTokensAreUpdated();  // that means, next person can change
   }
   
 
@@ -334,7 +350,7 @@ public final class MainMenu {
    **********************************************************
    **********************************************************/
 
-
+/*
   private void displayVersion1(Graphics2D graphics, int buttonX, int buttonY) {
     graphics.setColor(Color.WHITE);
     graphics.fillRect(buttonX / 2, buttonY, 300, 300);
@@ -804,7 +820,7 @@ public final class MainMenu {
   public static void main(String[] args) {
     MainMenu test = new MainMenu(1);
   }
-
+ */
 
 
 

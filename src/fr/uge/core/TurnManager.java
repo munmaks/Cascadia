@@ -18,11 +18,11 @@ public final class TurnManager {
   public TurnManager(List<Player> listOfPlayers, int version) {
     Objects.requireNonNull(listOfPlayers);
     if (!Constants.isValidVersion(version)) {
-      throw new IllegalArgumentException(Constants.IllegalVersion);
+      throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     this.playersLength = listOfPlayers.size();
     if (Constants.isInvalidSquareNbPlayers(this.playersLength, version)) {
-      throw new IllegalArgumentException(Constants.IllegalSquareNbPlayers);
+      throw new IllegalArgumentException(Constants.ILLEGAL_SQUARE_NUMBER_OF_PLAYERS);
     }
     /* listOfPlayers is already immutable, and we don't need to change */
     this.players = listOfPlayers;

@@ -3,11 +3,10 @@ package fr.uge.environment;
 import java.util.Objects;
 
 public final class KeystoneTile implements Tile {
-    
+
   private final TileType habitat;          /* habitat type */
   private final WildlifeType animal;       /* animal type  */
   private boolean occupied = false;
-
   private WildlifeToken placedAnimal = null; 
 
   public KeystoneTile(TileType habitat, WildlifeType animal) {
@@ -26,6 +25,7 @@ public final class KeystoneTile implements Tile {
    * @return boolean */
   @Override
   public final boolean canBePlaced(WildlifeToken token){
+    Objects.requireNonNull(token);
     if (isOccupied()) {
       return false;
     }
