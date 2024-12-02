@@ -24,12 +24,11 @@ public final class CellHexagonal implements Cell {
   private int currentRotation = 0;
 
   public CellHexagonal(Coordinates coordinates) {
+
     this.coordinates = Objects.requireNonNull(coordinates);
-    if (!Constants.isValidCoordinates(this.coordinates.y(), this.coordinates.x())) {
-      throw new IllegalArgumentException(Constants.ILLEGAL_COORDINATES);
-    }
+
     this.occupied = false;
-    this.tile = null;
+    this.tile = new EmptyTile();
   }
   
   @Override
@@ -86,11 +85,11 @@ public final class CellHexagonal implements Cell {
   public final String toString() {
     var builder = new StringBuilder();
     switch (tile) {
-      case HabitatTile h -> { builder.append(coordinates).append(" ")
+      case HabitatTile h -> { builder.append(this.coordinates).append(" ")
                                      .append(h.toString()).append(" ")
                                      .append((h.getAnimal() != null) ? (" ") : ("empty"));
                             }
-      case KeystoneTile k -> { builder.append(coordinates).append(" ")
+      case KeystoneTile k -> { builder.append(this.coordinates).append(" ")
                                       .append(k.toString()).append(" ")
                                       .append((k.getAnimal() != null) ? (" ") : ("empty"));
                              }
@@ -102,7 +101,7 @@ public final class CellHexagonal implements Cell {
 
   @Override
   public final Coordinates getCoordinates() {
-    return coordinates;
+    return this.coordinates;
   }
 
 }

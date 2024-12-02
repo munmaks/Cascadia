@@ -1,6 +1,8 @@
 package fr.uge.core;
 
 import fr.uge.environment.Environment;
+import fr.uge.environment.EnvironmentHexagonal;
+import fr.uge.environment.EnvironmentSquare;
 import fr.uge.scoring.BearScoringCard;
 import fr.uge.scoring.ElkScoringCard;
 import fr.uge.scoring.FoxScoringCard;
@@ -24,7 +26,10 @@ public final class Player {
       throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     this.name = Objects.requireNonNull(name, "Player name cannot be null");
-    this.environment = new Environment(version);
+
+    this.environment = (version == Constants.VERSION_HEXAGONAL) ?
+                        new EnvironmentHexagonal() :
+                        new EnvironmentSquare();
   }
 
 

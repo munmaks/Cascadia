@@ -128,7 +128,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
     queue.add(start);
     while (!queue.isEmpty()) { // Cell current = queue.poll();
       ++size;
-      var neighbors = env.getNeighborsCells(queue.poll());  // get neighbors with the same token
+      var neighbors = env.getNeighbors(queue.poll());  // get neighbors with the same token
       var validNeighbors = new ArrayList<Cell>();
       for (var neighbor : neighbors) {
         if (isValidNeighbor(neighbor, token, visited)) { validNeighbors.add(neighbor); }

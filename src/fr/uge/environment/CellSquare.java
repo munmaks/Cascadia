@@ -1,7 +1,6 @@
 package fr.uge.environment;
 
 import fr.uge.util.Constants;
-
 import java.util.Objects;
 
 
@@ -12,12 +11,11 @@ public final class CellSquare implements Cell {
   private boolean occupied;
 
   public CellSquare(Coordinates coordinates) {
+
     this.coordinates = Objects.requireNonNull(coordinates);
-    if (!Constants.isValidCoordinates(this.coordinates.y(), this.coordinates.x())) {
-      throw new IllegalArgumentException(Constants.ILLEGAL_COORDINATES);
-    }
+    
+    this.tile = new EmptyTile();
     this.occupied = false;
-    this.tile = null;
   }
 
 
@@ -34,7 +32,7 @@ public final class CellSquare implements Cell {
   
   @Override
   public final boolean placeTile(Tile tileToPlace) {
-    Objects.requireNonNull(tileToPlace);
+    Objects.requireNonNull(tileToPlace, "tileToPlace is null in CellSquare.placeTile()");
     if (isOccupied()) {
       return false;
     }
@@ -43,6 +41,7 @@ public final class CellSquare implements Cell {
     return this.occupied;
   }
   
+
   @Override
   public final Tile getTile() {
     return this.tile;
@@ -51,21 +50,23 @@ public final class CellSquare implements Cell {
 
   @Override
   public final String toString() {
+    Objects.requireNonNull(this.tile, "tile is null in CellSquare.toString()");
     var builder = new StringBuilder();
     switch (this.tile) {
       case HabitatTile h -> { builder.append(this.coordinates).append(" ")
                                      .append(h.toString()).append(" ")
-                                     .append((h.getAnimal() != null) ? (" ") : ("empty"));
+                                     .append((h.getAnimal() != null) ? ("") : ("empty"));
                             }
       case KeystoneTile k -> { builder.append(this.coordinates).append(" ")
                                       .append(k.toString()).append(" ")
-                                      .append((k.getAnimal() != null) ? (" ") : ("empty"));
+                                      .append((k.getAnimal() != null) ? ("") : ("empty"));
                              }
-      case EmptyTile e -> { /* builder.append("Empty cell"); */ }
+      case EmptyTile e -> { /* builder.append(e.toString()); */ }
     }
     // builder.append("\n");
     return builder.toString();
   }
+  
 
   @Override
   public final Coordinates getCoordinates() {

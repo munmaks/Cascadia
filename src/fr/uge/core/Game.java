@@ -85,7 +85,7 @@ public final class Game {
    * The placement of starter tiles depends on the version of the game.
    */
   private void initializeGame() {
-    Coordinates centerCoordinates = new Coordinates( (int)(Constants.MAX_ROW / 2), (int)(Constants.MAX_COL / 2) );
+    Coordinates centerCoordinates = new Coordinates(0, 0);
     for (var i = 0; i < this.playerCount; ++i) {
       placeStarterTiles(i, centerCoordinates);
     }
@@ -107,9 +107,9 @@ public final class Game {
      * Y Z
     */
     if (this.version == Constants.VERSION_HEXAGONAL) {
-      placeStarterTilesHexagonal(playerIndex, centerCoordinates);
+      placeStarterTilesHexagonal(playerIndex, centerCoordinates, 2, 3);
     } else {
-      placeStarterTilesSquare(playerIndex, centerCoordinates);
+      placeStarterTilesSquare(playerIndex, centerCoordinates, 1, 2);
     }
 
     // cells.add(new Cell(centerCoordinates, topTile));
@@ -117,36 +117,44 @@ public final class Game {
     // placeTile(cell, tile);
   }
 
-  private void placeStarterTilesSquare(int playerIndex, Coordinates centerCoordinates) {
-    var topTile = board.getBag().getRandomTile();
-    var leftTile = board.getBag().getRandomTile();
-    var rightTile = board.getBag().getRandomTile();
-    var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
 
-    var cell = playerEnvironment.getCell(centerCoordinates.y(), centerCoordinates.x()); /* main cell */
-    playerEnvironment.placeTile(cell, topTile);
-
-    var neighborCell = playerEnvironment.getNeighborSquare(cell, 1);     /* on down from current cell */
-    playerEnvironment.placeTile(neighborCell, leftTile);
-
-    neighborCell = playerEnvironment.getNeighborSquare(neighborCell, 2); /* on right from neighbor cell*/
-    playerEnvironment.placeTile(neighborCell, rightTile);
-  }
-
-
-  private void placeStarterTilesHexagonal(int playerIndex, Coordinates centerCoordinates) {
+  private void placeStarterTilesSquare(
+      int playerIndex,
+      Coordinates centerCoordinates,
+      int leftNeighborNumber,
+      int rightNeighborNumber
+    ) {
     var starter = board.getBag().getStarter();
     var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
 
-    var cell = playerEnvironment.getCell(centerCoordinates.y(), centerCoordinates.x()); /* main cell */
+    var cell = playerEnvironment.getCellOrCreate(centerCoordinates); /* main cell */
     playerEnvironment.placeTile(cell, starter[0]);
 
-    var neighborCell = playerEnvironment.getNeighborSquare(cell, 2);    /* left down cell */
+    var neighborCell = playerEnvironment.getOneNeighbor(cell, leftNeighborNumber);     /* on down from current cell - 1 */
     playerEnvironment.placeTile(neighborCell, starter[1]);
 
-    neighborCell = playerEnvironment.getNeighborSquare(cell, 3);
-    playerEnvironment.placeTile(neighborCell, starter[2]);     /* right down cell */
+    neighborCell = playerEnvironment.getOneNeighbor(neighborCell, rightNeighborNumber); /* on right from neighbor cell - 3*/
+    playerEnvironment.placeTile(neighborCell, starter[2]);
+  }
 
+
+  private void placeStarterTilesHexagonal(
+      int playerIndex,
+      Coordinates centerCoordinates,
+      int leftNeighborNumber,
+      int rightNeighborNumber
+    ) {
+    var starter = board.getBag().getStarter();
+    var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
+
+    var cell = playerEnvironment.getCellOrCreate(centerCoordinates); /* main cell */
+    playerEnvironment.placeTile(cell, starter[0]);
+
+    var neighborCell = playerEnvironment.getOneNeighbor(cell, leftNeighborNumber);    /* left down cell - 2*/
+    playerEnvironment.placeTile(neighborCell, starter[1]);
+
+    neighborCell = playerEnvironment.getOneNeighbor(cell, rightNeighborNumber);
+    playerEnvironment.placeTile(neighborCell, starter[2]);     /* right down cell - 3*/
   }
 
 

@@ -1,6 +1,8 @@
 package fr.uge.core;
 
 import fr.uge.bag.Bag;
+import fr.uge.bag.BagHexagonal;
+import fr.uge.bag.BagSquare;
 import fr.uge.bag.Deck;
 import fr.uge.environment.Tile;
 import fr.uge.environment.WildlifeToken;
@@ -53,7 +55,7 @@ public final class GameBoard {
     if (Constants.isInvalidSquareNbPlayers(nbPlayers, version)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_SQUARE_NUMBER_OF_PLAYERS);
     }
-    this.bag = new Bag(nbPlayers, version);
+    this.bag = (version == Constants.VERSION_HEXAGONAL) ? new BagHexagonal(nbPlayers) : new BagSquare(nbPlayers);
     this.deck = new Deck(version);
     for (int i = 0; i < Constants.TILES_ON_BOARD; ++i) {
       GameBoard.tiles.add(bag.getRandomTile());
@@ -67,9 +69,7 @@ public final class GameBoard {
    */
   public final boolean tokensNeedUpdate() {
     if (this.tokensAreUpdated) { return false; }   /* already updated */
-    return GameBoard.tokens.stream()
-                           .distinct()
-                           .count() == 1;
+    return GameBoard.tokens.stream().distinct().count() == 1;
   }
 
   /**
@@ -79,9 +79,9 @@ public final class GameBoard {
   private WildlifeToken getTokenToUpdate() {
     map.clear();
     return GameBoard.tokens.stream()
-                 .filter(token -> GameBoard.map.get(token) >= 3)
-                 .findFirst()
-                 .orElse(null);
+                           .filter(token -> map.merge(token, 1, Integer::sum) >= 3)
+                           .findFirst()
+                           .orElse(null);
   }
 
 
@@ -98,7 +98,7 @@ public final class GameBoard {
   /* to add later: using nature tokens for every player */
   
   public final boolean areTokensUpdated() {
-    return tokensAreUpdated;
+    return this.tokensAreUpdated;
   }
 
 
@@ -106,12 +106,12 @@ public final class GameBoard {
    * Turn Manager switch 
    * */
   public final void setDefaultTokensAreUpdated() {
-    tokensAreUpdated = false;
+    this.tokensAreUpdated = false;
   }
   
 
   public final void setTrueTokensAreUpdated() {
-    tokensAreUpdated = true;
+    this.tokensAreUpdated = true;
   }
 
 

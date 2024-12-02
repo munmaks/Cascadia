@@ -10,7 +10,7 @@ public final class Constants {
   
 
   /* Turn Manager */
-  public static final int MAX_GAME_TURNS = 20;
+  public static final int MAX_GAME_TURNS = 5;
 
   
   /* Game Board */
@@ -20,9 +20,8 @@ public final class Constants {
 
 
   /* Environment */
-  // public static final int MAX_SIZE = 12;  /* grid size, 10 - 14 */
-  public static final int MAX_ROW = 12;
-  public static final int MAX_COL = 12;
+  // public static final int MAX_ROW = 12;
+  // public static final int MAX_COL = 12;
   
   public static final int NB_NEIGHBORS_SQUARE = 4;
   public static final int NB_NEIGHBORS_HEXAGONAL = 6;
@@ -116,8 +115,9 @@ public final class Constants {
   }
 
   public static boolean isValidCoordinates(int y, int x) {
-    return y >= 0 && y < MAX_ROW &&
-           x >= 0 && x < MAX_COL;
+    return true;
+    // return y >= 0 && y < MAX_ROW &&
+    //        x >= 0 && x < MAX_COL;
   }
 
   public static boolean isValidNbPlayers(int nbPlayers) {
@@ -135,9 +135,9 @@ public final class Constants {
 
 
   /* Error messages, to improve later */
-  public static final String ILLEGAL_COORDINATES = 
-    "Invalid coordinates, must be between (0, 0) and " + 
-    "(" + MAX_ROW + ", " + MAX_COL + ")\n";
+  // public static final String ILLEGAL_COORDINATES = 
+  //   "Invalid coordinates, must be between (0, 0) and " + 
+  //   "(" + MAX_ROW + ", " + MAX_COL + ")\n";
 
   public static final String ILLEGAL_NUMBER_OF_PLAYERS = 
     "Number of Players must be between " + MIN_PLAYERS + " and " + MAX_PLAYERS + "\n";
