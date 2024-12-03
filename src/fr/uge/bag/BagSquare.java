@@ -18,25 +18,17 @@ public final class BagSquare implements Bag {
   /* fill tiles with needed number of tiles for a game */
   private static final ArrayList<Tile> tiles = new ArrayList<>();
 
-  private int indexStarterHabitatTile = -1;
-
-  /* 3 tiles for each starter habitat tile (top, left, right), total 5 occurences */
-  private final Tile[][] starters = new Tile[Constants.MAX_STARTER_HABITATS][Constants.MAX_TILES_ON_STARTER];
-  private int maxTilesForGame = 0;
-  private int maxTilesTotal = 0;
-
+  private static final int MAX_TILES_FOR_GAME = Constants.MAX_TILES_SQUARE - 1;  /* (20 * 2) + 3 + (3 * 2) = 49 */
+  private static final int MAX_TILES_TOTAL = Constants.MAX_TILES_SQUARE;
 
   public BagSquare(int numberOfPlayers) {
-    if (numberOfPlayers < 1 || numberOfPlayers > 4) {
-      throw new IllegalArgumentException("Invalid number of players");
+    if (Constants.isValidVersion(numberOfPlayers)) {
+      throw new IllegalArgumentException(Constants.ILLEGAL_NUMBER_OF_PLAYERS);
     }
-    this.maxTilesForGame = Constants.MAX_TILES_SQUARE - 1;  /* (20 * 2) + 3 + (3 * 2) = 49 */
-    this.maxTilesTotal = Constants.MAX_TILES_SQUARE;
     try {
-        // initializeVersionHexagonal();
-        initializeVersionSquare();
+      initializeVersionSquare();
     } catch (IOException e) {
-        System.err.println("Error initializing tiles: " + e.getMessage());
+      System.err.println("Error initializing tiles: " + e.getMessage());
     }
     Collections.shuffle(BagSquare.tiles);
     decreaseNumberOfTiles();
@@ -47,8 +39,8 @@ public final class BagSquare implements Bag {
    * Decrease number of tiles in bag to maxTilesForGame
    */
   private void decreaseNumberOfTiles() {
-    int currentNumberOfTiles = maxTilesTotal;
-    while (currentNumberOfTiles > maxTilesForGame) {
+    int currentNumberOfTiles = BagSquare.MAX_TILES_FOR_GAME;
+    while (currentNumberOfTiles > BagSquare.MAX_TILES_TOTAL) {
       --currentNumberOfTiles;
       BagSquare.tiles.remove(0);
     }
@@ -100,15 +92,15 @@ public final class BagSquare implements Bag {
   @Override
   public Tile getRandomTile() {
     var random = new Random();
-    var randomIndex = random.nextInt(tiles.size()); /* in [0, tiles.size()[ */
-    return tiles.remove(randomIndex);
+    var randomIndex = random.nextInt(BagSquare.tiles.size()); /* in [0, tiles.size()[ */
+    return BagSquare.tiles.remove(randomIndex);
   }
 
 
   @Override
   public Tile[] getStarter(){
-                       /*  topTile          leftTile         rightTile  */
-    return new Tile[] { getRandomTile(), getRandomTile(), getRandomTile() };
+                      /*  topTile          leftTile         rightTile  */
+    return new Tile[]{ getRandomTile(), getRandomTile(), getRandomTile() };
   }
 
 }

@@ -26,7 +26,7 @@ public final class BagHexagonal implements Bag {
   private int indexStarterHabitatTile = -1;
 
   /* 3 tiles for each starter habitat tile (top, left, right), total 5 occurences */
-  private final Tile[][] starters = new Tile[Constants.MAX_STARTER_HABITATS][Constants.MAX_TILES_ON_STARTER];
+  private static final Tile[][] starters = new Tile[Constants.MAX_STARTER_HABITATS][Constants.MAX_TILES_ON_STARTER];
   private int maxTilesForGame = 0;
   private int maxTilesTotal = 0;
 
@@ -38,30 +38,22 @@ public final class BagHexagonal implements Bag {
     this.maxTilesForGame = (Constants.TILE_PER_PLAYER * numberOfPlayers) + Constants.THREE;
     this.maxTilesTotal = Constants.MAX_TILES_HEXAGONAL;
     try {
-        initializeVersionHexagonal();
+      initializeVersionHexagonal();
     } catch (IOException e) {
-        System.err.println("Error initializing tiles: " + e.getMessage());
+      System.err.println("Error initializing tiles: " + e.getMessage());
     }
     Collections.shuffle(BagHexagonal.tiles);
     decreaseNumberOfTiles();
   }
 
-  /**
-   * Validate inputs for Bag constructor
-   * @param numberOfPlayers number of players
-   * @param version game version
-   */
-  private void validateInputs(int numberOfPlayers) {
-
-  }
 
 
   /**
    * Decrease number of tiles in bag to maxTilesForGame
    */
   private void decreaseNumberOfTiles() {
-    int currentNumberOfTiles = maxTilesTotal;
-    while (currentNumberOfTiles > maxTilesForGame) {
+    int currentNumberOfTiles = this.maxTilesTotal;
+    while (currentNumberOfTiles > this.maxTilesForGame) {
       --currentNumberOfTiles;
       tiles.remove(0);
     }
@@ -92,10 +84,9 @@ public final class BagHexagonal implements Bag {
       String line;
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
-        var habitatTile = getHabitatTileThreeAnimals(
-              row[0], row[1], row[2], row[3], row[4]
-            );
-        tiles.add(habitatTile);
+        tiles.add(                /* tile,   tile,   animal, animal, animal */
+          getHabitatTileThreeAnimals(row[0], row[1], row[2], row[3], row[4])
+        );
       }
     }
   }
@@ -110,10 +101,9 @@ public final class BagHexagonal implements Bag {
       String line;
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
-        var habitatTile = getHabitatTileTwoAnimals(
-              row[0], row[1], row[2], row[3]
-            );
-        tiles.add(habitatTile);
+        tiles.add(                /* tile,   tile,   animal, animal */
+          getHabitatTileTwoAnimals(row[0], row[1], row[2], row[3])
+        );
       }
     }
   }
@@ -128,8 +118,9 @@ public final class BagHexagonal implements Bag {
       String line;
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
-        var keystone = getKeystoneTile(row[0], row[1]);
-        tiles.add(keystone);
+        tiles.add(      /* tile,  animal */
+          getKeystoneTile(row[0], row[1])
+        );
       }
     }
   }
@@ -150,19 +141,16 @@ public final class BagHexagonal implements Bag {
       String line;
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
-                                   /* tile,  animal */
-        var topTile = getKeystoneTile(row[0], row[1]);
-                                                /* tile,  tile,  animal, animal, animal */
-        var leftTile = getHabitatTileThreeAnimals(row[2], row[3], row[4], row[5], row[6]);
-                                                /* tile, tile, animal, animal */
-        var rightTile = getHabitatTileTwoAnimals(row[7], row[8], row[9], row[10]);
-        starters[index][0] = topTile;
-        starters[index][1] = leftTile;
-        starters[index][2] = rightTile;
+        /* toptile */                         /* tile,  animal */
+        BagHexagonal.starters[index][0] = getKeystoneTile(row[0], row[1]);
+        /* leftTile */                                /* tile,   tile,   animal, animal, animal */
+        BagHexagonal.starters[index][1] = getHabitatTileThreeAnimals(row[2], row[3], row[4], row[5], row[6]);
+        /* rightTile */                            /* tile,   tile,   animal, animal */
+        BagHexagonal.starters[index][2] = getHabitatTileTwoAnimals(row[7], row[8], row[9], row[10]);
         index++;
       }
     }
-    shuffleStarterHabitats(starters);  /* shuffle them for more random game */
+    shuffleStarterHabitats(BagHexagonal.starters);  /* shuffle them for more random game */
   }
 
 
@@ -174,18 +162,18 @@ public final class BagHexagonal implements Bag {
   @Override
   public Tile getRandomTile() {
     var random = new Random();
-    var randomIndex = random.nextInt(tiles.size()); /* in [0, tiles.size()[ */
-    return tiles.remove(randomIndex);
+    var randomIndex = random.nextInt(BagHexagonal.tiles.size()); /* in [0, tiles.size()[ */
+    return BagHexagonal.tiles.remove(randomIndex);
   }
 
 
   @Override
   public Tile[] getStarter(){
-    if (indexStarterHabitatTile >= Constants.MAX_STARTER_HABITATS) {  /* prevent overflow ... */
+    if (this.indexStarterHabitatTile >= Constants.MAX_STARTER_HABITATS) {  /* prevent overflow ... */
       return null;
     }
-    ++indexStarterHabitatTile;
-    return starters[indexStarterHabitatTile];
+    this.indexStarterHabitatTile++;
+    return starters[this.indexStarterHabitatTile];
   }
 
 
@@ -193,7 +181,7 @@ public final class BagHexagonal implements Bag {
    * Gives random KeystoneTile
    * @return one KeystoneTile from array `tiles`
    */
-  private KeystoneTile getKeystoneTile(
+  private static KeystoneTile getKeystoneTile(
       String tile,
       String animal
     ) {
@@ -207,7 +195,7 @@ public final class BagHexagonal implements Bag {
    * Gives random HabitatTile with two animals
    * @return one HabitatTile from array `tiles`
    */
-  private HabitatTile getHabitatTileTwoAnimals(
+  private  HabitatTile getHabitatTileTwoAnimals(
       String firstTile, String secondTile,
       String firstAnimal, String secondAnimal
     ) {
@@ -226,7 +214,7 @@ public final class BagHexagonal implements Bag {
    * Gives random HabitatTile with three animals
    * @return one HabitatTile from array `tiles`
    */
-  private HabitatTile getHabitatTileThreeAnimals(
+  private  HabitatTile getHabitatTileThreeAnimals(
       String firstTile, String secondTile,
       String firstAnimal, String secondAnimal, String thirdAnimal
     ) {
@@ -247,7 +235,7 @@ public final class BagHexagonal implements Bag {
    * Shuffle starter habitats tiles for more random game
    * @param starterHabitats array of StarterHabitatTile
    */
-  private void shuffleStarterHabitats(Tile[][] starterHabitats) {
+  private  void shuffleStarterHabitats(Tile[][] starterHabitats) {
     var random = new Random();
     for (var i = starterHabitats.length - 1; i > 0; --i) {
       var randomIndex = random.nextInt(i + 1);

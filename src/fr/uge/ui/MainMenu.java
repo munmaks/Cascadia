@@ -92,16 +92,11 @@ public final class MainMenu {
   }
 
 
-  private void testPrintAllCells(List<Cell> listCells){
+  private long countEmptyTiles(List<Cell> listCells){
     Objects.requireNonNull(listCells);
-    for (var cell : listCells){
-      // switch(cell.getTile()){
-      //   case HabitatTile h -> { /* */ }
-      //   case KeystoneTile k -> { /* */ }
-      //   case EmptyTile e -> { /* */ }
-      // }
-      System.out.println(cell.toString());
-    }
+    return listCells.stream()
+                    .filter(cell -> cell.getTile() instanceof EmptyTile)
+                    .count();
   }
 
 
@@ -112,10 +107,7 @@ public final class MainMenu {
     var listCells = player.environment().getCells();
 
     System.err.println("Size of list : " + listCells.size());
-
-    System.err.println("\nbefore testPrintAllCells\n");
-    testPrintAllCells(listCells);
-    System.err.println("\nafter testPrintAllCells\n");
+    System.err.println("Number of empty tiles: " + countEmptyTiles(listCells));
     for (var cell : listCells){
       // if (cell.getTile() == null){  /* for tests */
       //   throw new IllegalArgumentException("tile in Cell is null! be aware\n");
@@ -195,18 +187,16 @@ public final class MainMenu {
   // don't forget to check if already was changed and if so we don't change it
   // setToDefault in `src/fr/uge/core/TurnManager.java`
   /**
-   * java doc ...
    * */
   private void handleTokenChange(Game game){
     Objects.requireNonNull(game);
     if (game.board().tokensNeedUpdate()){
       game.board().updateTokens();
       System.out.println("Tokens were updated, because one token had 4 occurences");
-      return;
+      showGameBoard(game.board());
     }
-    if (game.board().tokensCanBeUpdated()){
+    else if (game.board().tokensCanBeUpdated()){
       var stringTokensToChange = IO.readln("Enter `yes` if you want to change the tokens, otherwise press enter ");
-      
       try (Scanner s = new Scanner(stringTokensToChange)) {
         if (s.hasNext() && "yes".equals(s.next())){
           System.out.println("tokens are now updated");
@@ -229,6 +219,7 @@ public final class MainMenu {
 
 
   private void handleTurnChange(Game game){
+    game.board().setDefaultTokensAreUpdated();  // that means, next person can change tokens (if needed)
     game.turnManager().changePlayer();
     game.turnManager().nextTurn();
     // System.out.println("Turns left: " + (Constants.MAX_GAME_TURNS - game.turnManager().getTotalTurns()));

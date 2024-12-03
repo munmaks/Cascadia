@@ -5,16 +5,13 @@ import java.util.Objects;
 
 
 public final class CellSquare implements Cell {
-
-  private final Coordinates coordinates;
+  private final Coordinates coordinates;  /* immutable, once created can not be changed */
   private Tile tile;
   private boolean occupied;
 
   public CellSquare(Coordinates coordinates) {
-
-    this.coordinates = Objects.requireNonNull(coordinates);
-    
-    this.tile = new EmptyTile();
+    this.coordinates = Objects.requireNonNull(coordinates, "coordinates are null in CellSquare()");    
+    this.tile = new EmptyTile();  /* default tile */
     this.occupied = false;
   }
 
@@ -43,7 +40,7 @@ public final class CellSquare implements Cell {
   
 
   @Override
-  public final Tile getTile() {
+  public final Tile getTile(){
     return this.tile;
   }
 

@@ -124,7 +124,7 @@ public final class Game {
       int leftNeighborNumber,
       int rightNeighborNumber
     ) {
-    var starter = board.getBag().getStarter();
+    var starter = board.getBag().getStarter();  /* 3 tiles */
     var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
 
     var cell = playerEnvironment.getCellOrCreate(centerCoordinates); /* main cell */
@@ -144,7 +144,7 @@ public final class Game {
       int leftNeighborNumber,
       int rightNeighborNumber
     ) {
-    var starter = board.getBag().getStarter();
+    var starter = board.getBag().getStarter();  /* 3 tiles */
     var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
 
     var cell = playerEnvironment.getCellOrCreate(centerCoordinates); /* main cell */
