@@ -7,12 +7,12 @@ public final class EmptyTile implements Tile {
   }
 
   @Override
-  public WildlifeToken getAnimal() {
+  public WildlifeType getAnimal() {
     return null;
   }
   
   @Override
-  public boolean canBePlaced(WildlifeToken token) {
+  public boolean canBePlaced(WildlifeType token) {
     return false;
   }
 

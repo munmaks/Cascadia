@@ -5,6 +5,6 @@ public sealed interface Tile permits
   HabitatTile, 
   EmptyTile {
   /* abstract methods */
-  WildlifeToken getAnimal();
-  boolean canBePlaced(WildlifeToken token);
+  WildlifeType getAnimal();
+  boolean canBePlaced(WildlifeType token);
 }

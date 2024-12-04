@@ -14,12 +14,12 @@ import java.util.Random;
 public final class Deck {
 
   /**
-   * Indexes from WildlifeType `enum`:
-   * BEAR   : 0
-   * ELK    : 1
-   * HAWK   : 2
-   * FOX    : 3
-   * SALMON : 4
+   * Indexes from WildlifeType `enum`: <br>
+   * BEAR   : 0 <br>
+   * ELK    : 1 <br>
+   * HAWK   : 2 <br>
+   * FOX    : 3 <br>
+   * SALMON : 4 <br>
    */
   private static final int[] animals =  {
         Constants.ANIMAL_TOKENS,  /* BEAR   */
@@ -56,7 +56,7 @@ public final class Deck {
     var random = new Random();
 
     /* we have max iteration, to prevent infinity loop */
-    while (iteration <= MAX_ITERATION) {
+    while (iteration <= Deck.MAX_ITERATION) {
         index = random.nextInt(animals.length);   /* random integer in range [0, 5[ */
         ++iteration;
 
@@ -69,7 +69,7 @@ public final class Deck {
     throw new IllegalArgumentException("Maximum number of iterations exceeded in drawToken()");
   }
 
-  
+
   /**
    * This method is called when we need to replace a token on the game board with a new one.
    * @param token token to change
@@ -95,5 +95,5 @@ public final class Deck {
       animals[i] -= Constants.ANIMALS_SQUARE;
     }
   }
-  
+
 }

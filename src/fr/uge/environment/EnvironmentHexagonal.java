@@ -166,7 +166,7 @@ public final class EnvironmentHexagonal implements Environment {
    * Determine possibility to placed a wildlife token on player's environment. 
    * */
   @Override
-  public final boolean canBePlacedWildlifeToken(WildlifeToken token) {
+  public final boolean canBePlacedWildlifeToken(WildlifeType token) {
     Objects.requireNonNull(token);
     boolean flag = false;
 
@@ -185,7 +185,7 @@ public final class EnvironmentHexagonal implements Environment {
   }
 
   @Override
-  public final boolean placeAnimal(Cell cell, WildlifeToken token) {
+  public final boolean placeAnimal(Cell cell, WildlifeType token) {
     Objects.requireNonNull(cell);
     Objects.requireNonNull(token);
     if (!cell.isOccupied()) {

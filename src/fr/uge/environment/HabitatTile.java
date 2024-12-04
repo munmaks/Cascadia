@@ -22,7 +22,7 @@ public final class HabitatTile implements Tile {
   private final TileType[] habitats;       /* 1-2 habitats  depends from game version */
   private final WildlifeType[] animals;    /* 2-3 animals   depends from game version */
   private boolean occupiedByAnimal = false;  /* idle */
-  private WildlifeToken placedAnimal = null;
+  private WildlifeType placedAnimal = null;
 
   
   public HabitatTile(
@@ -34,7 +34,7 @@ public final class HabitatTile implements Tile {
   }
 
   @Override
-  public final WildlifeToken getAnimal() {
+  public final WildlifeType getAnimal() {
     return placedAnimal;
   }
 
@@ -47,13 +47,13 @@ public final class HabitatTile implements Tile {
    * @return true - it's possible, otherwise no
    * */
   @Override
-  public final boolean canBePlaced(WildlifeToken token) {
+  public final boolean canBePlaced(WildlifeType token) {
     Objects.requireNonNull(token, "token must not be null in HabitatTile.canBePlaced()");
     if (isOccupied()) {
       return false;
     }
     for (var authorisedAnimal : animals) {
-      if (authorisedAnimal.equals(token.animal())) {
+      if (authorisedAnimal.equals(token)) {
         return true;
       }
     }
@@ -61,7 +61,7 @@ public final class HabitatTile implements Tile {
   }
 
 
-  public final boolean placeAnimal(WildlifeToken token) {
+  public final boolean placeAnimal(WildlifeType token) {
     Objects.requireNonNull(token, "animal must not be null in placeToken()");
     if (isOccupied()) {
       return false;     /* we don't place animal, and return false (it wasn't placed) */

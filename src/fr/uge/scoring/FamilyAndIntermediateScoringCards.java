@@ -15,7 +15,7 @@ import java.util.Set;
 import fr.uge.core.Player;
 import fr.uge.environment.Cell;
 import fr.uge.environment.Environment;
-import fr.uge.environment.WildlifeToken;
+// import fr.uge.environment.WildlifeToken;
 import fr.uge.environment.WildlifeType;
 import fr.uge.util.Constants;
 
@@ -67,7 +67,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
    * @param token Wildlife token to search for.
    * @return List of cells containing the given token.
    */
-  private List<Cell> getCellsWithToken(Environment env, WildlifeToken token){
+  private List<Cell> getCellsWithToken(Environment env, WildlifeType token){
     var listOfCells = env.getCells();
     var cellsWithToken = new ArrayList<Cell>();
     for (var cell : listOfCells){
@@ -87,7 +87,9 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
    * 
    * @param token The wildlife token to search for.
    */
-  public Map<Integer, Integer> returnWildlifeTokenMap(Environment env, WildlifeToken token) {
+  public Map<Integer, Integer> returnWildlifeTokenMap(Environment env, WildlifeType token) {
+    Objects.requireNonNull(env);
+    Objects.requireNonNull(token);
     // List of cells containing the given token
     var cellsWithToken = new ArrayList<Cell>(getCellsWithToken(env, token));
 
@@ -107,7 +109,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
 
 
 
-  private static boolean isValidNeighbor(Cell neighbor, WildlifeToken token, Set<Cell> visited) {
+  private static boolean isValidNeighbor(Cell neighbor, WildlifeType token, Set<Cell> visited) {
     return visited.contains(neighbor) && token.equals(neighbor.getTile().getAnimal());
   }
   
@@ -121,7 +123,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
    * @param visited A set to track visited cells.
    * @return The size of the group.
    */
-  private int calculateGroupSize(Environment env, Cell start, WildlifeToken token, Set<Cell> visited){
+  private int calculateGroupSize(Environment env, Cell start, WildlifeType token, Set<Cell> visited){
     int size = 0;
     Queue<Cell> queue = new LinkedList<>();
     visited.add(start);
@@ -169,16 +171,10 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
 
   public final int getScore(Player player) {
     int score = 0;
-    var wildlifeTokens = new WildlifeType[] {
-        WildlifeType.BEAR,
-        WildlifeType.ELK,
-        WildlifeType.HAWK,
-        WildlifeType.FOX,
-        WildlifeType.SALMON
-    };
+    var wildlifeTokens = WildlifeType.values();  /* get all wildlife tokens */
 
     for (int i = 0; i < wildlifeTokens.length; ++i) {
-      var token = new WildlifeToken(wildlifeTokens[i]);
+      var token = wildlifeTokens[i];
       var map = returnWildlifeTokenMap(player.environment(), token);
       score += calculateScore(map);
     }

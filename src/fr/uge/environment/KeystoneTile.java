@@ -7,7 +7,7 @@ public final class KeystoneTile implements Tile {
   private final TileType habitat;          /* habitat type */
   private final WildlifeType animal;       /* animal type  */
   private boolean occupied = false;
-  private WildlifeToken placedAnimal = null; 
+  private WildlifeType placedAnimal = null; 
 
   public KeystoneTile(TileType habitat, WildlifeType animal) {
     this.habitat = Objects.requireNonNull(habitat);
@@ -24,16 +24,16 @@ public final class KeystoneTile implements Tile {
    * @param token - New Animal
    * @return boolean */
   @Override
-  public final boolean canBePlaced(WildlifeToken token){
-    Objects.requireNonNull(token);
+  public final boolean canBePlaced(WildlifeType token){
+    // Objects.requireNonNull(token);
     if (isOccupied()) {
       return false;
     }
-    return animal.equals(token.animal());
+    return animal.equals(token);
   }
 
 
-  public final boolean placeAnimal(WildlifeToken token) {
+  public final boolean placeAnimal(WildlifeType token) {
     if (canBePlaced(token)) {
       occupied = true;
       placedAnimal = token;            
@@ -42,7 +42,7 @@ public final class KeystoneTile implements Tile {
   }
   
   @Override
-  public final WildlifeToken getAnimal() { 
+  public final WildlifeType getAnimal() { 
     return placedAnimal;
   }
   

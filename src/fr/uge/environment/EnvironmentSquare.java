@@ -211,8 +211,8 @@ public final class EnvironmentSquare implements Environment {
    * Determine possibility to placed a wildlife token on player's environment. 
    * */
   @Override
-  public final boolean canBePlacedWildlifeToken(WildlifeToken token) {
-    Objects.requireNonNull(token);
+  public final boolean canBePlacedWildlifeToken(WildlifeType token) {
+    // Objects.requireNonNull(token);
     boolean flag = false;
 
     for (var cell : this.cellsMap.values()) {
@@ -231,9 +231,9 @@ public final class EnvironmentSquare implements Environment {
 
 
   @Override
-  public final boolean placeAnimal(Cell cell, WildlifeToken token) {
+  public final boolean placeAnimal(Cell cell, WildlifeType token) {
     Objects.requireNonNull(cell);
-    Objects.requireNonNull(token);
+    // Objects.requireNonNull(token);
     if (!cell.isOccupied()) {
       return false;
     }

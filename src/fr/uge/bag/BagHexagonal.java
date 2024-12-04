@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.Objects;
 
 
 /**
@@ -20,25 +21,40 @@ import java.util.Random;
  */
 public final class BagHexagonal implements Bag {
 
+  /**
+   * Indexes from WildlifeType `enum`: <br>
+   * BEAR   : 0 <br>
+   * ELK    : 1 <br>
+   * HAWK   : 2 <br>
+   * FOX    : 3 <br>
+   * SALMON : 4 <br>
+   */
+  private static final int[] animals =  {
+    Constants.ANIMALS_HEXAGONAL,  /* BEAR   */
+    Constants.ANIMALS_HEXAGONAL,  /* ELK    */
+    Constants.ANIMALS_HEXAGONAL,  /* HAWK   */
+    Constants.ANIMALS_HEXAGONAL,  /* FOX    */
+    Constants.ANIMALS_HEXAGONAL   /* SALMON */
+  };
+
   /* fill tiles with needed number of tiles for a game */
   private static final ArrayList<Tile> tiles = new ArrayList<>();
-
-  private int indexStarterHabitatTile = -1;
 
   /* 3 tiles for each starter habitat tile (top, left, right), total 5 occurences */
   private static final Tile[][] starters = new Tile[Constants.MAX_STARTER_HABITATS][Constants.MAX_TILES_ON_STARTER];
   private int maxTilesForGame = 0;
   private int maxTilesTotal = 0;
-
+  
+  private int indexStarterHabitatTile = -1;
 
   public BagHexagonal(int numberOfPlayers){
     if (!Constants.isValidNbPlayers(numberOfPlayers)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_NUMBER_OF_PLAYERS);
     }
-    this.maxTilesForGame = (Constants.TILE_PER_PLAYER * numberOfPlayers) + Constants.THREE;
+    this.maxTilesForGame = (Constants.TILES_PER_PLAYER * numberOfPlayers) + Constants.THREE;
     this.maxTilesTotal = Constants.MAX_TILES_HEXAGONAL;
     try {
-      initializeVersionHexagonal();
+      initializeGame();
     } catch (IOException e) {
       System.err.println("Error initializing tiles: " + e.getMessage());
     }
@@ -50,12 +66,13 @@ public final class BagHexagonal implements Bag {
 
   /**
    * Decrease number of tiles in bag to maxTilesForGame
+   * Result: it takes only needed number of tiles for a game (depends on number of players)
    */
   private void decreaseNumberOfTiles() {
     int currentNumberOfTiles = this.maxTilesTotal;
     while (currentNumberOfTiles > this.maxTilesForGame) {
       --currentNumberOfTiles;
-      tiles.remove(0);
+      BagHexagonal.tiles.remove(0);   /* remove first element */
     }
   }
 
@@ -65,7 +82,7 @@ public final class BagHexagonal implements Bag {
    * Initialize tiles for Hexagonal version
    * throws IOException if file not found or can't be read
    */
-  private void initializeVersionHexagonal() throws IOException {
+  private void initializeGame() throws IOException {
     readHabitatTilesThreeAnimals();   /* 15 tiles */
     readHabitatTilesTwoAnimals();     /* 45 tiles */
     readKeystoneTiles();              /* 25 tiles */
@@ -257,5 +274,53 @@ public final class BagHexagonal implements Bag {
     //builder.append(starterHabitats.toString());
     return builder.toString();
   }
+
+
+  /************************ TOKENS ****************************/
+
+
+  /**
+   * This method is called when we need to replace a token on the game board with a new one.
+   * @param token token to change
+   * @return new token.
+   */
+  @Override
+  public final WildlifeType updateToken(WildlifeType token) {
+
+    /* return into deck current token */
+    var index = token.ordinal();
+    animals[index]++;
+
+    return getRandomToken();
+  }
+
+
+  /**
+   * Draws a random WildlifeType from the deck.<br>
+   * If the selected type has no tokens left,<br>
+   * it retries until a type with available tokens is found. <br>
+   *
+   * @return WildlifeType - the randomly selected token.
+   */
+  @Override
+  public final WildlifeType getRandomToken(){
+    int index;
+    int iteration = 0;
+    var random = new Random();
+
+    /* we have max iteration, to prevent infinity loop */
+    while (iteration <= Constants.MAX_ITERATION) {
+        index = random.nextInt(animals.length);   /* random integer in range [0, 5[ */
+        ++iteration;
+
+        if (animals[index] > 0) {   /* if tokens of this animals are still available */
+            animals[index]--;
+            return WildlifeType.values()[index];
+        }
+    }
+    /* normally it shouldn't happen */
+    throw new IllegalArgumentException("Maximum number of iterations exceeded in drawToken()");
+  }
+
 
 }

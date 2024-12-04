@@ -8,8 +8,8 @@ import fr.uge.environment.EmptyTile;
 import fr.uge.environment.HabitatTile;
 import fr.uge.environment.KeystoneTile;
 import fr.uge.environment.Tile;
-import fr.uge.environment.WildlifeToken;
-// import fr.uge.environment.WildlifeType;
+// import fr.uge.environment.WildlifeToken;
+import fr.uge.environment.WildlifeType;
 import fr.uge.scoring.FamilyAndIntermediateScoringCards;
 import fr.uge.scoring.WildlifeScoringCard;
 import fr.uge.util.Constants;
@@ -146,7 +146,7 @@ public final class MainMenu {
 
 
 
-  private void showPossibleTokenPlacement(Player player, WildlifeToken token){
+  private void showPossibleTokenPlacement(Player player, WildlifeType token){
     Objects.requireNonNull(player);
     Objects.requireNonNull(token);
     System.out.println("Here are the possible coordinates to place the token: ");
@@ -226,7 +226,7 @@ public final class MainMenu {
   }
 
 
-  private void handleTokenPlacement(Player player, WildlifeToken chosedToken){
+  private void handleTokenPlacement(Player player, WildlifeType chosedToken){
     Objects.requireNonNull(player);
     Objects.requireNonNull(chosedToken);
 
