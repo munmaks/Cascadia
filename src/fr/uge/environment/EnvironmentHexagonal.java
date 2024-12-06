@@ -205,7 +205,7 @@ public final class EnvironmentHexagonal implements Environment {
 
   /* DEPRECATED, TO DELETE LATER, DONT FORGET */
   @Override
-  public final Cell getCellOrCreate(Coordinates coordinates) {
+  public final Cell getCell(Coordinates coordinates) {
     // if (!Constants.isValidCoordinates(coordinates.y(), coordinates.x())) {
     //   throw new IllegalArgumentException(Constants.ILLEGAL_COORDINATES);
     // }

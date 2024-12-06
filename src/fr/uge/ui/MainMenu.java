@@ -17,6 +17,7 @@ import fr.uge.util.Constants;
 import java.io.IO;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Objects;
 import java.util.Scanner;
 // import java.util.Arrays;
@@ -92,14 +93,6 @@ public final class MainMenu {
   }
 
 
-  private long countEmptyTiles(List<Cell> listCells){
-    Objects.requireNonNull(listCells);
-    return listCells.stream()
-                    .filter(cell -> cell.getTile() instanceof EmptyTile)
-                    .count();
-  }
-
-
   private void showEnvironment(Player player){
     Objects.requireNonNull(player);
     System.out.println("\n\nIt's " + player.name() + "'s turn!");
@@ -107,7 +100,6 @@ public final class MainMenu {
     var listCells = player.environment().getCells();
 
     System.err.println("Size of list : " + listCells.size());
-    System.err.println("Number of empty tiles: " + countEmptyTiles(listCells));
     for (var cell : listCells){
       // if (cell.getTile() == null){  /* for tests */
       //   throw new IllegalArgumentException("tile in Cell is null! be aware\n");
@@ -115,7 +107,7 @@ public final class MainMenu {
       switch(cell.getTile()){
         case HabitatTile h -> { System.out.println(cell.toString()); }
         case KeystoneTile k -> { System.out.println(cell.toString()); }
-        case EmptyTile e -> { /* */}
+        case EmptyTile e -> { /* System.out.println(cell.toString()); */ }
       }
     }
   }
@@ -147,15 +139,28 @@ public final class MainMenu {
 
 
   private void showPossibleTokenPlacement(Player player, WildlifeType token){
-    Objects.requireNonNull(player);
-    Objects.requireNonNull(token);
+    Objects.requireNonNull(player, "player is null in showPossibleTokenPlacement()");
+    Objects.requireNonNull(token, "token is null in showPossibleTokenPlacement()");
+
     System.out.println("Here are the possible coordinates to place the token: ");
-    var setOfCoordinates = player.environment().getPossibleCells();
-    for (var coordinates : setOfCoordinates){
-      var currCell = player.environment().getCellOrCreate(coordinates);
-      if (currCell.getTile().canBePlaced(token)){
-        System.out.println(currCell.toString());
+    var listOfCells = player.environment().getCells();
+
+    for (var cell : listOfCells){
+      if (cell == null){
+        throw new IllegalArgumentException("cell is null in showPossibleTokenPlacement()");
       }
+      switch (cell.getTile()){
+        case HabitatTile h -> {
+          if (h.canBePlaced(token)){ System.out.println(cell.toString()); }
+        }
+        case KeystoneTile k -> {
+          if (k.canBePlaced(token)){ System.out.println(cell.toString()); }
+        }
+        case EmptyTile e -> { /* empty */}
+      }
+      // if (currCell.getTile().canBePlaced(token)){
+      //   System.out.println(currCell.toString());
+      // }
     }
   }
 
@@ -233,11 +238,11 @@ public final class MainMenu {
     /* chosed token from `choice` */
     System.out.println("Now you need to place the wildlife token: " + chosedToken.toString());
     showPossibleTokenPlacement(player, chosedToken);
-    
+
     var userCoordinatesString = IO.readln("Give me coordinates of tile, that you want to place the token on (format: \"x, y\"): ");
 
     var userCoordinates = getCoordinatesFromUser(userCoordinatesString);
-    var currCell = player.environment().getCellOrCreate(userCoordinates);
+    var currCell = player.environment().getCell(userCoordinates);
     var tokenWasPlaced = player.environment().placeAnimal(currCell, chosedToken);
 
     /* for tests, to delete later */
@@ -259,7 +264,7 @@ public final class MainMenu {
 
       if (possibleCoordinates.stream()
                              .anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
-        var currCell = player.environment().getCellOrCreate(userCoordinates);
+        var currCell = player.environment().getCell(userCoordinates);
         if (player.environment().placeTile(currCell, chosedTile)){
           System.out.println("Tile was placed successfully (for test Main Menu)");
           break;

@@ -3,14 +3,12 @@ package fr.uge.core;
 import fr.uge.bag.Bag;
 import fr.uge.bag.BagHexagonal;
 import fr.uge.bag.BagSquare;
-// import fr.uge.bag.Deck;
 import fr.uge.environment.Tile;
 import fr.uge.environment.WildlifeType;
 import fr.uge.util.Constants;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -18,14 +16,13 @@ import java.util.stream.IntStream;
  * This method is used to initialise the tiles and tokens on the board
  */
 public final class GameBoard {
-  private final Bag bag;
-  // private final Deck deck;
+  private /*static*/ final Bag bag;
 
   private boolean tokensAreUpdated = false;   /* update only once per player's turn */
 
   private static final HashMap<WildlifeType, Integer> map = new HashMap<>();
 
-  private static final ArrayList<Tile> tiles           = new ArrayList<>(Constants.TILES_ON_BOARD);
+  private static final ArrayList<Tile> tiles          = new ArrayList<>(Constants.TILES_ON_BOARD);
   private static final ArrayList<WildlifeType> tokens = new ArrayList<>(Constants.TOKENS_ON_BOARD);
 
   // private int indexOfTokenToUpdate = 0;
@@ -79,7 +76,9 @@ public final class GameBoard {
    */
   private Optional<WildlifeType> getTokenToUpdate() {
     map.clear();
-    return GameBoard.tokens.stream().filter(token -> map.merge(token, 1, Integer::sum) >= 3).findFirst();
+    return GameBoard.tokens.stream()
+                           .filter(token -> map.merge(token, 1, Integer::sum) >= 3)
+                           .findFirst();
   }
 
 

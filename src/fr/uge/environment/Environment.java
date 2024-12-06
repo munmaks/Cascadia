@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 public sealed interface Environment permits EnvironmentSquare, EnvironmentHexagonal {
-    Cell getCellOrCreate(Coordinates coordinates);
+    Cell getCell(Coordinates coordinates);
     boolean placeTile(Cell cell, Tile tile);
     boolean placeAnimal(Cell cell, WildlifeType token);
     List<Cell> getCells();

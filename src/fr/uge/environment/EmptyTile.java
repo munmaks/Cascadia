@@ -18,6 +18,6 @@ public final class EmptyTile implements Tile {
 
   @Override
   public final String toString() {
-    return "Empty Tile";
+    return "empty tile";
   }
 }

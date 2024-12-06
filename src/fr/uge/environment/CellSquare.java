@@ -58,7 +58,7 @@ public final class CellSquare implements Cell {
                                       .append(k.toString()).append(" ")
                                       .append((k.getAnimal() != null) ? ("") : ("empty"));
                              }
-      case EmptyTile e -> { /* builder.append(e.toString()); */ }
+      case EmptyTile e -> { builder.append(this.coordinates).append(" ").append(e.toString()); }
     }
     // builder.append("\n");
     return builder.toString();

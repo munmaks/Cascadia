@@ -16,7 +16,7 @@ public final class KeystoneTile implements Tile {
 
 
   public final boolean isOccupied() {
-    return occupied;
+    return this.occupied;
   }
 
   /**
@@ -35,26 +35,26 @@ public final class KeystoneTile implements Tile {
 
   public final boolean placeAnimal(WildlifeType token) {
     if (canBePlaced(token)) {
-      occupied = true;
-      placedAnimal = token;            
+      this.occupied = true;
+      this.placedAnimal = token;            
     }
     return false;
   }
   
   @Override
   public final WildlifeType getAnimal() { 
-    return placedAnimal;
+    return this.placedAnimal;
   }
   
 
   @Override
   public String toString() {
-    return habitat + ": " + animal;
+    return this.habitat + ": " + this.animal;
   }
   
   @Override
   public int hashCode() {
-    return Objects.hash(habitat, animal);
+    return Objects.hash(this.habitat, this.animal);
   }
 
   @Override

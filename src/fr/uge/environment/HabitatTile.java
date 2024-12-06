@@ -4,42 +4,33 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public final class HabitatTile implements Tile {
-
   /*
    * configTilesWithTwoAnimals.txt
    * 45 Tiles : with two animals
-   * River, Prairie : Bear, Salmon
+   * RIVER, PRAIRIE : BEAR, SALMON
    * 
    * configTilesWithThreeAnimals.txt
    * 15 Tiles : with three animals
-   * Mountain, Wetland : Elk, Hawk, Fox
-   * 
-   * clockwise = dans le sens des aiguilles d'une montre
-   * counterclockwise = dans le sens inverse des aiguilles d'une montre
-   * */
-
-
-  private final TileType[] habitats;       /* 1-2 habitats  depends from game version */
-  private final WildlifeType[] animals;    /* 2-3 animals   depends from game version */
+   * MOUNTAIN, WETLAND : ELK, HAWK, FOX
+   **/
+  private final TileType[] habitats;
+  private final WildlifeType[] animals;
   private boolean occupiedByAnimal = false;  /* idle */
   private WildlifeType placedAnimal = null;
 
-  
-  public HabitatTile(
-    TileType[] habitats,       /* 1-2 habitats  depends from game version */
-    WildlifeType[] animals     /* 2-3 animals   depends from game version */
-  ) {
+  /* depends from game version: 1-2 habitats         2-3 animals */
+  public HabitatTile(TileType[] habitats, WildlifeType[] animals) {
     this.habitats = Objects.requireNonNull(habitats, "Habitats can't be null");
     this.animals = Objects.requireNonNull(animals, "Animals can't be null");
   }
 
   @Override
   public final WildlifeType getAnimal() {
-    return placedAnimal;
+    return this.placedAnimal;
   }
 
-  public final boolean isOccupied() {
-    return occupiedByAnimal;
+  private boolean isOccupied() {
+    return this.occupiedByAnimal;
   }
 
   /**
@@ -52,7 +43,7 @@ public final class HabitatTile implements Tile {
     if (isOccupied()) {
       return false;
     }
-    for (var authorisedAnimal : animals) {
+    for (var authorisedAnimal : this.animals) {
       if (authorisedAnimal.equals(token)) {
         return true;
       }
@@ -71,7 +62,7 @@ public final class HabitatTile implements Tile {
     }
     this.placedAnimal = token;
     this.occupiedByAnimal = true;
-    return occupiedByAnimal;    /* we placed animal */
+    return this.occupiedByAnimal;    /* we placed animal */
   }
 
 
@@ -79,20 +70,19 @@ public final class HabitatTile implements Tile {
   private String habitatsAndAnimalsAsString() {
     var builder = new StringBuilder();
     var separator = "";
-    for (var habitat : habitats) {
+    for (var habitat : this.habitats) {
       builder.append(separator).append(habitat);
       separator = " ";
     }
     builder.append(": ");
     separator = "(";
-
-    for (var animal : animals) {  /* two or three animals */
-      builder.append(separator).append(animal.toString());
+    for (var animal : this.animals) {  /* two or three animals */
+      builder.append(separator).append(animal);
       separator = ", ";
     }
     builder.append(")");
-    if (placedAnimal != null) {
-      builder.append(" ").append(placedAnimal);
+    if (this.placedAnimal != null) {
+      builder.append(" - ").append(this.placedAnimal);
     }
     return builder.toString();
   }
@@ -108,14 +98,14 @@ public final class HabitatTile implements Tile {
 
   @Override
   public int hashCode() {
-    return Objects.hash(habitats, animals);
+    return Objects.hash(this.habitats, this.animals);
   }
 
   @Override
   public boolean equals(Object o) {
     return o instanceof HabitatTile other
-          && Arrays.equals(habitats, other.habitats)
-          && Arrays.equals(animals, other.animals);
+          && Arrays.equals(this.habitats, other.habitats)
+          && Arrays.equals(this.animals, other.animals);
   }
 }
 
