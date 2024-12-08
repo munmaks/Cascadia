@@ -1,16 +1,16 @@
 package fr.uge.environment;
 
-import fr.uge.util.Constants;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Player's environment of all tiles and placed wildlife tokens */
-public final class EnvironmentSquare implements Environment {
+public final class SquareEnvironment implements Environment {
 
   /* 100 - 196 total tiles to show in player's environment */
   // private final Cell[][] grid = new Cell[Constants.MAX_ROW][Constants.MAX_COL];
@@ -22,8 +22,21 @@ public final class EnvironmentSquare implements Environment {
   /* environment of all placed tiles by one player */
   private final HashMap<Coordinates, Cell> cellsMap;
 
+  /**
+   * <b>
+   *   (x, y)</b><br>
+   *   {-1, 0} left  <br>
+   *   {0, -1} down  <br>
+   *   {1, 0}  right <br>
+   *   {0, 1}  up    <br>
+   * */
+  private static final int[][] SQUARE_DIRECTION_DIFFERENCES = {
+    {-1,  0}, { 0, -1}, { 1,  0}, { 0,  1}
+  };
 
-  public EnvironmentSquare() {
+  private static final int SQUARE_NUMBER_OF_NEIGHBORS = 4;
+
+  public SquareEnvironment() {
     /* class for all check and valid parameters to stop checking everytime THE SAME THING */
     // initializeGrid(version);
     this.cellsMap = new HashMap<>();
@@ -52,46 +65,117 @@ public final class EnvironmentSquare implements Environment {
 //  }
 
 
+
+
+  private Coordinates getNeighborCoordinates(Coordinates coordinates, int direction) {
+    var diff = SQUARE_DIRECTION_DIFFERENCES[direction];
+    return new Coordinates(
+      coordinates.y() + diff[1],  /* neighborRow */
+      coordinates.x() + diff[0]   /* neighborCol */
+    );
+  }
+
+
   /**
-   * @param from this cell we determine a neighbor
-   * @param direction - 0, 1, 2, 3
-   * */
+   * Map.computeIfAbsent() - if the specified key is not already associated with a value (or is mapped to null),
+   * attempts to compute its value using the given mapping function and enters it into this map unless null.
+   * 
+   * @param cell The cell for which to retrieve a neighbor.
+   * @param direction The direction of the neighbor.
+   * 
+   * @return The neighbor cell.
+   */
   @Override
   public Cell getOneNeighbor(Cell cell, int direction) {
     Objects.requireNonNull(cell, "Cell can't be null in getOneNeighbor()");
-    var diff = Constants.SQUARE_DIRECTION_DIFFERENCES[direction];
-    var neighborRow = cell.getCoordinates().y() + diff[1];
-    var neighborCol = cell.getCoordinates().x() + diff[0];
-
-    if (Constants.isValidCoordinates(neighborRow, neighborCol)) { /* validate neighbor coordinates */
-      var newCoordinates = new Coordinates(neighborRow, neighborCol);
-      if (cellsMap.containsKey(newCoordinates)) {
-        return cellsMap.get(newCoordinates);
-      }
-      var neighbor = new CellSquare(newCoordinates);
-      cellsMap.put(newCoordinates, neighbor); /* insert in hashmap */
-      return neighbor;
-      // } else {
-      //   cellsMap.replace(newCoordinates, neighbor); /* replace in hashmap */
-      // }
-    }
-    return null;
+    return this.cellsMap.computeIfAbsent(
+        getNeighborCoordinates(cell.getCoordinates(), direction),   /* neighbor coordinates */
+        SquareCell::new                                             /* create new cell if not exists */
+    );
   }
 
+
+
+
+
+
+  /**
+   * <b>gets a copy of list of all valid neighbors for a given hex cell.</b>
+   * 
+   * @param cell The hex cell for which to retrieve neighbors.
+   * 
+   * @return     An immutable list of neighboring cells.
+   */
   @Override
   public List<Cell> getNeighbors(Cell cell) {
-    Objects.requireNonNull(cell);
-    var neighbors = new ArrayList<Cell>();
-    /* SQUARE_DIRECTION_DIFFERENCES: (x, y) */
-    for (var direction = 0; direction < Constants.NB_NEIGHBORS_SQUARE; ++direction) {
-      var neighbor = getOneNeighbor(cell, direction);
-      if (null != neighbor) {
-        neighbors.add(neighbor);
-      }
-    }
-    return List.copyOf(neighbors);
-  }  
+      Objects.requireNonNull(cell, "Cell can't be null in getNeighbors()");
+      return IntStream.range(0, SquareEnvironment.SQUARE_NUMBER_OF_NEIGHBORS)
+                      .mapToObj(direction -> getOneNeighbor(cell, direction))
+                      .filter(Objects::nonNull)
+                      .collect(Collectors.toUnmodifiableList());
+  }
+
+
+
+
+
+
+
+
+
+
+
+  // @Override
+  // public Cell getOneNeighbor(Cell cell, int direction) {
+  //   Objects.requireNonNull(cell, "Cell can't be null in getOneNeighbor()");
+  //   var diff = Constants.SQUARE_DIRECTION_DIFFERENCES[direction];
+  //   var neighborRow = cell.getCoordinates().y() + diff[1];
+  //   var neighborCol = cell.getCoordinates().x() + diff[0];
+
+  //   if (Constants.isValidCoordinates(neighborRow, neighborCol)) { /* validate neighbor coordinates */
+  //     var newCoordinates = new Coordinates(neighborRow, neighborCol);
+  //     if (this.cellsMap.containsKey(newCoordinates)) {
+  //       return this.cellsMap.get(newCoordinates);
+  //     }
+  //     var neighbor = new SquareCell(newCoordinates);
+  //     this.cellsMap.put(newCoordinates, neighbor); /* insert in hashmap */
+  //     return neighbor;
+  //   }
+  //   return null;
+  // }
+
+
+
+
+
   
+  // @Override
+  // public List<Cell> getNeighbors(Cell cell) {
+  //   Objects.requireNonNull(cell);
+  //   var neighbors = new ArrayList<Cell>();
+  //   /* SQUARE_DIRECTION_DIFFERENCES: (x, y) */
+  //   for (var direction = 0; direction < Constants.NB_NEIGHBORS_SQUARE; ++direction){
+  //     var neighbor = getOneNeighbor(cell, direction);
+  //     if (neighbor != null) {
+  //       neighbors.add(neighbor);
+  //     }
+  //   }
+  //   return List.copyOf(neighbors);
+  // }  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
   // public Cell getOneNeighborHexagonal(Cell cell, int direction) {
   //   var parity = cell.getCoordinates().y() & 1;  /* parity: 0 - even rows, 1 - odd rows */
@@ -105,8 +189,8 @@ public final class EnvironmentSquare implements Environment {
   //   }
   //   var currCoordinates = new Coordinates(neighborRow, neighborCol);
   //   var neighbor = new CellHexagonal(currCoordinates);
-  //   if (!cellsMap.containsKey(currCoordinates)) {  /* insert in hashmap `cellsMap` and return new coordinates */
-  //     cellsMap.put(currCoordinates, neighbor);
+  //   if (!this.cellsMap.containsKey(currCoordinates)) {  /* insert in hashmap `this.cellsMap` and return new coordinates */
+  //     this.cellsMap.put(currCoordinates, neighbor);
   //   }
   //   return neighbor;
   // }
@@ -136,8 +220,8 @@ public final class EnvironmentSquare implements Environment {
    * */
   // public final List<Cell> getNeighbors(Cell cell) {
   //   Objects.requireNonNull(cell);
-  //   return switch (cell){
-  //     case CellSquare square -> getNeighborsSquare(cell);
+  //   return switch (cell) {
+  //     case SquareCell square -> getNeighborsSquare(cell);
   //     case CellHexagonal hexagonal -> getNeighborsHexagonal(cell);
   //   };
   // }
@@ -149,8 +233,8 @@ public final class EnvironmentSquare implements Environment {
   //  * */
   // public final List<Cell> getNeighborsCells(Coordinates coordinates) {
   //   Objects.requireNonNull(coordinates);
-  //   return switch (coordinates){
-  //     case CellSquare square -> getNeighborsSquareCoordinates(coordinates);
+  //   return switch (coordinates) {
+  //     case SquareCell square -> getNeighborsSquareCoordinates(coordinates);
   //     case CellHexagonal hexagonal -> getOffsetNeighborsCoordinates(coordinates);
   //   };
   // }
@@ -158,23 +242,24 @@ public final class EnvironmentSquare implements Environment {
 
 
   private void addNeighborsInSet(Cell cell) {
-    Objects.requireNonNull(cell, "cell can't be null in addNeighborsInSet()");
+    // don't need to check again if cell is null, because we did it in placeTile()
+    // Objects.requireNonNull(cell, "cell can't be null in addNeighborsInSet()");
     var neighbors = getNeighbors(cell);
-    for (var neighbor : neighbors){
+    for (var neighbor : neighbors) {
       var currCoordinates = neighbor.getCoordinates();
-      if (!cellsMap.get(currCoordinates).isOccupied()) {
+      if (!this.cellsMap.get(currCoordinates).isOccupiedByTile()) {
         this.cellsSet.add(currCoordinates);
       }
     }
   }
 
 
-  // public final boolean placeCell(Coordinates coordinates){
+  // public final boolean placeCell(Coordinates coordinates) {
   //   Objects.requireNonNull(coordinates, "Coordinates can't be null");
   //   Objects.requireNonNull(cell, "Cell can't be null");
 
-  //   if (!cellsMap.containsKey(coordinates)){
-  //     cellsMap.put(coordinates, cell);
+  //   if (!this.cellsMap.containsKey(coordinates)) {
+  //     this.cellsMap.put(coordinates, cell);
   //     // delete those coordinates from cellsSet (it's occupied now)
   //     return true;
   //   }
@@ -191,12 +276,6 @@ public final class EnvironmentSquare implements Environment {
     if (cell.placeTile(tile)) {
       addNeighborsInSet(cell);  /* placed and added to all player's occupied cells */
       var currCoordinates = cell.getCoordinates();
-      // if (!this.cellsMap.containsKey(currCoordinates)) {
-      //   this.cellsMap.put(currCoordinates, cell);
-      // } else {
-      //   this.cellsMap.replace(currCoordinates, cell);
-      // }
-      // this.cellsMap.put(currCoordinates, cell);
       if (this.cellsSet.contains(currCoordinates)) {  /* remove from set if exists */
         this.cellsSet.remove(currCoordinates);
       }
@@ -211,61 +290,53 @@ public final class EnvironmentSquare implements Environment {
    * Determine possibility to placed a wildlife token on player's environment. 
    * */
   @Override
-  public final boolean canBePlacedWildlifeToken(WildlifeToken token) {
-    Objects.requireNonNull(token);
-    boolean flag = false;
+  public final boolean canBePlacedWildlifeToken(WildlifeType token) {
+    Objects.requireNonNull(token, "Wildlife token can't be null in canBePlacedWildlifeToken()");
 
     for (var cell : this.cellsMap.values()) {
-      switch (cell.getTile()) {
-        case HabitatTile habitat -> { flag = habitat.canBePlaced(token);}
-        case KeystoneTile keystone -> { flag = keystone.canBePlaced(token); }
-        /* normally shouldn't happen */
-        case EmptyTile empty -> { System.err.println("Can't place wildlife token on " + empty.toString()); }
-      }
-      if (flag) { /* found */
-        return flag;
+      if (cell.canBePlaced(token)) { /* found, no need to continue */
+        return true;
       }
     }
-    return flag;
+    return false;
   }
 
 
   @Override
-  public final boolean placeAnimal(Cell cell, WildlifeToken token) {
+  public final boolean placeAnimal(Cell cell, WildlifeType token) {
     Objects.requireNonNull(cell);
     Objects.requireNonNull(token);
-    if (!cell.isOccupied()) {
+    if (!cell.isOccupiedByTile()) {
       return false;
     }
-    var currentTile = cell.getTile();
-    boolean flag = false;
-    switch (currentTile) {
-      case HabitatTile habitat -> { flag = habitat.placeAnimal(token);}
-      case KeystoneTile keystone -> { flag = keystone.placeAnimal(token); }
-      /* normally shouldn't happen */
-      case EmptyTile empty -> { System.err.println("Can't place wildlife token on " + empty.toString()); }
-    }
-    return flag;
+    return cell.placeAnimal(token);
   }
 
 
-  /* DEPRECATED, TO DELETE LATER, DONT FORGET */
+  /**
+   * Determine possibility to placed a wildlife token on player's environment.
+   * Map.computeIfAbsent() - if the specified key is not already associated with a value (or is mapped to null),
+   * attempts to compute its value using the given mapping function and enters it into this map unless null.
+   */
   @Override
-  public final Cell getCellOrCreate(Coordinates coordinates) {
-    // if (!Constants.isValidCoordinates(coordinates.y(), coordinates.x())) {
-    //   throw new IllegalArgumentException(Constants.ILLEGAL_COORDINATES);
-    // }
-    if (!cellsMap.containsKey(coordinates)) {
-      var cell = new CellSquare(coordinates);
-      cellsMap.put(coordinates, cell);
-    }
-    // System.out.println("EnvironmentSquare.getCellOrCreate() is: " + cellsMap.get(coordinates).toString());
-    return cellsMap.get(coordinates);
+  public final Cell getCell(Coordinates coordinates) {
+    Objects.requireNonNull(coordinates, "Coordinates can't be null in getCell()");
+    return this.cellsMap.computeIfAbsent(coordinates, SquareCell::new);
   }
+
+  /*
+  public final Cell getCell(Coordinates coordinates) {
+    Objects.requireNonNull(coordinates, "Coordinates can't be null in getCell()");
+    if (!this.cellsMap.containsKey(coordinates)) {
+      var cell = new SquareCell(coordinates);
+      this.cellsMap.put(coordinates, cell);
+    }
+    return this.cellsMap.get(coordinates);
+  } */
 
   
   
-//  public final List<Cell> getCellsWithToken(WildlifeToken token){
+//  public final List<Cell> getCellsWithToken(WildlifeToken token) {
 //    Objects.requireNonNull(token);
 //    var list = new ArrayList<Cell>();
 //    for (var tile : cells) {
@@ -285,15 +356,6 @@ public final class EnvironmentSquare implements Environment {
 
   @Override
   public final Set<Coordinates> getPossibleCells() {
-
-    // for (var cell : this.cellsSet){
-    //   var neighbors = getNeighborsCells(cell);
-    //   for (var neighbor : neighbors){
-    //     if (!neighbor.isOccupied()) {
-    //       this.cellsSet.add(neighbor);
-    //     }
-    //   }
-    // }
     return Set.copyOf(this.cellsSet);
   }
 
@@ -302,9 +364,9 @@ public final class EnvironmentSquare implements Environment {
   // public final Set<Coordinates> getPossibleCoordinates() {
   //   var set = new HashSet<Coordinates>();
 
-  //   for (var cell : this.cellsSet){
+  //   for (var cell : this.cellsSet) {
   //     var neighbors = getNeighborsCells(cell);
-  //     for (var neighbor : neighbors){
+  //     for (var neighbor : neighbors) {
   //       if (!neighbor.isOccupied()) {
   //         set.add(neighbor.getCoordinates());
   //       }
@@ -313,19 +375,22 @@ public final class EnvironmentSquare implements Environment {
   //   return Set.copyOf(set);
   // }
 
-  
+  /*
+   * We look at all cells in set and then we show them
+   */
   @Override
   public void printAllNeighbors(Coordinates coordinates) {
     Objects.requireNonNull(coordinates, "Coordinates can't be null in printAllNeighbors()");
-    var neighbors = getNeighbors(cellsMap.get(coordinates));
+    var neighbors = getNeighbors(this.cellsMap.get(coordinates));
+    
     for (var neighbor : neighbors) {
-      var cell = cellsMap.getOrDefault(neighbor.getCoordinates(), null);
+      var cell = this.cellsMap.getOrDefault(neighbor.getCoordinates(), null);
       if (cell != null) {
-        switch (cell.getTile()){
-          case HabitatTile habitat -> { System.out.println(coordinates + " has " + habitat.toString()); }
-          case KeystoneTile keystone -> { /* System.out.println(coordinates + " (keystone) " + keystone.getAnimal()); */}
-          case EmptyTile empty -> { /* System.out.println(empty.toString()); */ }
+        var tile = cell.getTile();
+        if (tile == null) {
+          continue;
         }
+        System.out.println(coordinates + " - " + tile.toString());
       }
     }
     // System.out.println(cell.coordinates() + " : " + getNeighborsCells(cell));
@@ -339,7 +404,7 @@ public final class EnvironmentSquare implements Environment {
     var builder = new StringBuilder();
     // for (var row = 0; row < Constants.MAX_ROW; ++row) {
     //   for (var col = 0; col < Constants.MAX_COL; ++col) {
-    //     builder.append(cellsMap.get(new Coordinates(row, col)).toString());
+    //     builder.append(this.cellsMap.get(new Coordinates(row, col)).toString());
     //   }
     //   builder.append("\n");
     // }

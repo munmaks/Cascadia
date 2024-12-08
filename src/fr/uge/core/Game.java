@@ -124,10 +124,10 @@ public final class Game {
       int leftNeighborNumber,
       int rightNeighborNumber
     ) {
-    var starter = board.getBag().getStarter();
+    var starter = board.getBag().getStarter();  /* 3 tiles */
     var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
 
-    var cell = playerEnvironment.getCellOrCreate(centerCoordinates); /* main cell */
+    var cell = playerEnvironment.getCell(centerCoordinates); /* main cell */
     playerEnvironment.placeTile(cell, starter[0]);
 
     var neighborCell = playerEnvironment.getOneNeighbor(cell, leftNeighborNumber);     /* on down from current cell - 1 */
@@ -144,10 +144,10 @@ public final class Game {
       int leftNeighborNumber,
       int rightNeighborNumber
     ) {
-    var starter = board.getBag().getStarter();
+    var starter = board.getBag().getStarter();  /* 3 tiles */
     var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
 
-    var cell = playerEnvironment.getCellOrCreate(centerCoordinates); /* main cell */
+    var cell = playerEnvironment.getCell(centerCoordinates); /* main cell */
     playerEnvironment.placeTile(cell, starter[0]);
 
     var neighborCell = playerEnvironment.getOneNeighbor(cell, leftNeighborNumber);    /* left down cell - 2*/

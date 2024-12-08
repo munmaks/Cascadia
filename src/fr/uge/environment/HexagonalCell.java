@@ -5,16 +5,23 @@ import java.util.Objects;
 
 /**
  * Cell class for represent a cell where a tile can be placed */
-public final class CellHexagonal implements Cell {
+public final class HexagonalCell implements Cell {
 
   private final Coordinates coordinates;
   /**
    *  Occupation status of tile represented by the cell.
    */
-  private boolean occupied;
+  private boolean occupiedByTile;  /* idle */
+
+  /**
+   *  Occupation status of animal represented by the cell.
+   */
+  private boolean occupiedByAnimal;  /* idle */
 
   /* by default it's empty type of tile on this cell */
   private Tile tile;
+
+  private WildlifeType placedAnimal = null;
 
   /**<p>for version 1 - 2, we needn't rotation</p>
    * <p>for version 3:</p>
@@ -23,12 +30,13 @@ public final class CellHexagonal implements Cell {
    * */
   private int currentRotation = 0;
 
-  public CellHexagonal(Coordinates coordinates) {
+  public HexagonalCell(Coordinates coordinates) {
 
     this.coordinates = Objects.requireNonNull(coordinates);
 
-    this.occupied = false;
-    this.tile = new EmptyTile();
+    this.occupiedByTile = false;
+    this.occupiedByAnimal = false;
+    this.tile = null;
   }
   
   @Override
@@ -37,27 +45,39 @@ public final class CellHexagonal implements Cell {
   }
   
   
+  /*
+   * @return possibility to place tile on the cell
+   */
   @Override
-  public final boolean isOccupied() {
-    return this.occupied;
+  public final boolean isOccupiedByTile() {
+    return this.occupiedByTile;
   }
   
+  private boolean isOccupiedByAnimal() {
+    return this.occupiedByAnimal;
+  }
+
+
   @Override
   public final boolean placeTile(Tile tileToPlace) {
     Objects.requireNonNull(tileToPlace);
-    if (isOccupied()) {
+    if (isOccupiedByAnimal()) {
       return false;
     }
-    tile = tileToPlace;
-    this.occupied = true;
-    return this.occupied;
+    this.tile = tileToPlace;
+    this.occupiedByTile = true;
+    return this.occupiedByTile;
   }
   
   @Override
   public final Tile getTile() {
-    return tile;
+    return this.tile;
   }
 
+  @Override
+  public final WildlifeType getAnimal() {
+    return this.placedAnimal;
+  }
 
   /**
    * Only in Hexagonal version
@@ -82,19 +102,35 @@ public final class CellHexagonal implements Cell {
 
 
   @Override
+  public boolean canBePlaced(WildlifeType token) {
+    Objects.requireNonNull(token, "token must not be null in HabitatTile.canBePlaced()");
+    if (isOccupiedByAnimal()) {
+      return false;
+    }
+    return this.tile.animals().contains(token);
+  }
+
+
+  @Override
+  public boolean placeAnimal(WildlifeType token){
+    Objects.requireNonNull(token, "animal must not be null in placeToken()");
+    if (isOccupiedByAnimal()) {
+      return false;     /* we don't place animal, and return false (it wasn't placed) */
+    }
+    if (!canBePlaced(token)) {
+      return false;
+    }
+    this.placedAnimal = token;
+    this.occupiedByAnimal = true;
+    return this.occupiedByAnimal;    /* we placed animal */
+  }
+
+
+  @Override
   public final String toString() {
     var builder = new StringBuilder();
-    switch (tile) {
-      case HabitatTile h -> { builder.append(this.coordinates).append(" ")
-                                     .append(h.toString()).append(" ")
-                                     .append((h.getAnimal() != null) ? (" ") : ("empty"));
-                            }
-      case KeystoneTile k -> { builder.append(this.coordinates).append(" ")
-                                      .append(k.toString()).append(" ")
-                                      .append((k.getAnimal() != null) ? (" ") : ("empty"));
-                             }
-      case EmptyTile e -> { /* builder.append("Empty cell"); */ }
-    }
+    builder.append(this.coordinates).append(" ")
+                                     .append(tile.toString()).append(" ");
     // builder.append("\n");
     return builder.toString();
   }

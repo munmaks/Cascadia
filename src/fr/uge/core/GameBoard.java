@@ -1,31 +1,29 @@
 package fr.uge.core;
 
 import fr.uge.bag.Bag;
-import fr.uge.bag.BagHexagonal;
-import fr.uge.bag.BagSquare;
-import fr.uge.bag.Deck;
+import fr.uge.bag.HexagonalBag;
+import fr.uge.bag.SquareBag;
 import fr.uge.environment.Tile;
-import fr.uge.environment.WildlifeToken;
+import fr.uge.environment.WildlifeType;
 import fr.uge.util.Constants;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 /**
  * This method is used to initialise the tiles and tokens on the board
  */
 public final class GameBoard {
-  private final Bag bag;
-  private final Deck deck;
+  private /*static*/ final Bag bag;
 
   private boolean tokensAreUpdated = false;   /* update only once per player's turn */
 
-  private static final HashMap<WildlifeToken, Integer> map = new HashMap<>();
+  private static final HashMap<WildlifeType, Integer> map = new HashMap<>();
 
-  private static final ArrayList<Tile> tiles           = new ArrayList<>(Constants.TILES_ON_BOARD);
-  private static final ArrayList<WildlifeToken> tokens = new ArrayList<>(Constants.TOKENS_ON_BOARD);
+  private static final ArrayList<Tile> tiles          = new ArrayList<>(Constants.TILES_ON_BOARD);
+  private static final ArrayList<WildlifeType> tokens = new ArrayList<>(Constants.TOKENS_ON_BOARD);
 
   // private int indexOfTokenToUpdate = 0;
 
@@ -55,11 +53,11 @@ public final class GameBoard {
     if (Constants.isInvalidSquareNbPlayers(nbPlayers, version)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_SQUARE_NUMBER_OF_PLAYERS);
     }
-    this.bag = (version == Constants.VERSION_HEXAGONAL) ? new BagHexagonal(nbPlayers) : new BagSquare(nbPlayers);
-    this.deck = new Deck(version);
+    this.bag = (version == Constants.VERSION_HEXAGONAL) ? new HexagonalBag(nbPlayers) : new SquareBag(nbPlayers);
+    // this.deck = new Deck(version);
     for (int i = 0; i < Constants.TILES_ON_BOARD; ++i) {
       GameBoard.tiles.add(bag.getRandomTile());
-      GameBoard.tokens.add(deck.getRandomToken());
+      GameBoard.tokens.add(bag.getRandomToken());
     }
   }
 
@@ -76,12 +74,11 @@ public final class GameBoard {
    * This method is used to determine which token needs to be updated.
    * if there's a token with 3 or more occurrences, we return it.
    */
-  private WildlifeToken getTokenToUpdate() {
+  private Optional<WildlifeType> getTokenToUpdate() {
     map.clear();
     return GameBoard.tokens.stream()
                            .filter(token -> map.merge(token, 1, Integer::sum) >= 3)
-                           .findFirst()
-                           .orElse(null);
+                           .findFirst();
   }
 
 
@@ -91,7 +88,7 @@ public final class GameBoard {
    */
   public final boolean tokensCanBeUpdated() {
     if (this.tokensAreUpdated) { return false; }   /* already updated */
-    return getTokenToUpdate() != null;
+    return !getTokenToUpdate().isEmpty();
   }
 
 
@@ -115,9 +112,8 @@ public final class GameBoard {
   }
 
 
-  private WildlifeToken updateToken(WildlifeToken token) {
-    Objects.requireNonNull(token);
-    return deck.updateToken(token);
+  private WildlifeType updateToken(WildlifeType token) {
+    return bag.updateToken(token);
   }
 
 
@@ -128,15 +124,17 @@ public final class GameBoard {
       return;
     }
     /* there will be always only one token with 3 or more occurences */
-    WildlifeToken tokenToChange = getTokenToUpdate();
+    Optional<WildlifeType> tokenToChange = getTokenToUpdate();
 
-    /* if there's no token with 3 or more occurrences, no update is needed  */
-    if (tokenToChange == null) { return; }
+    /* if there's tokensCanBeUpdatedoken with 3 or more occurrences, no update is needed  */
+    if (tokenToChange.isEmpty()) {
+      System.err.println("No token to update");
+      return;
+    }
 
     IntStream.range(0, tokens.size())
-             .filter(i -> GameBoard.tokens.get(i).equals(tokenToChange))
+             .filter(i -> GameBoard.tokens.get(i).equals(tokenToChange.get()))
              .forEach(i -> GameBoard.tokens.set(i, updateToken(GameBoard.tokens.get(i))));
-             //.forEach(i -> GameBoard.tokens[i] = updateToken(GameBoard.tokens[i]));
     this.tokensAreUpdated = true;
   }
 
@@ -145,7 +143,7 @@ public final class GameBoard {
     return List.copyOf(GameBoard.tiles);  // we sent a copy
   }
 
-  public final List<WildlifeToken> getCopyOfTokens() {
+  public final List<WildlifeType> getCopyOfTokens() {
     return List.copyOf(GameBoard.tokens);  // we sent a copy
   }
   
@@ -160,12 +158,12 @@ public final class GameBoard {
   }
 
 
-  public WildlifeToken getToken(int index){
+  public WildlifeType getToken(int index){
     if (index < 0 || index >= Constants.TOKENS_ON_BOARD) {
       throw new IllegalArgumentException("Index of wildlife token out of bounds");
     }
     var token = GameBoard.tokens.get(index);
-    GameBoard.tokens.set(index, deck.getRandomToken());  /* replace the token */
+    GameBoard.tokens.set(index, bag.getRandomToken());  /* replace the token */
     return token;
   }
 
@@ -174,10 +172,6 @@ public final class GameBoard {
     return bag;
   }
 
-
-  public Deck getDeck() {
-    return deck;
-  }
 
 
   // public static void main(String[] args) {

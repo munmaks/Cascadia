@@ -2,20 +2,17 @@ package fr.uge.ui;
 
 
 import fr.uge.core.*;
+import fr.uge.environment.Coordinates;
+import fr.uge.environment.Tile;  // enable preview
+import fr.uge.environment.WildlifeType;
 import fr.uge.environment.Cell;
-import fr.uge.environment.Coordinates;  // enable preview
-import fr.uge.environment.EmptyTile;
-import fr.uge.environment.HabitatTile;
-import fr.uge.environment.KeystoneTile;
-import fr.uge.environment.Tile;
-import fr.uge.environment.WildlifeToken;
-// import fr.uge.environment.WildlifeType;
 import fr.uge.scoring.FamilyAndIntermediateScoringCards;
 import fr.uge.scoring.WildlifeScoringCard;
 import fr.uge.util.Constants;
-
 import java.io.IO;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -92,17 +89,14 @@ public final class MainMenu {
   }
 
 
-  private void testPrintAllCells(List<Cell> listCells){
-    Objects.requireNonNull(listCells);
-    for (var cell : listCells){
-      // switch(cell.getTile()){
-      //   case HabitatTile h -> { /* */ }
-      //   case KeystoneTile k -> { /* */ }
-      //   case EmptyTile e -> { /* */ }
-      // }
-      System.out.println(cell.toString());
-    }
-  }
+  // sort by x and y
+  // listCells.sort((cell1, cell2) -> {
+  //   if (cell1.getCoordinates().x() == cell2.getCoordinates().x()){
+  //     return cell1.getCoordinates().y() - cell2.getCoordinates().y();
+  //   }
+  //   return cell1.getCoordinates().x() - cell2.getCoordinates().x();
+  // });
+
 
 
   private void showEnvironment(Player player){
@@ -112,19 +106,14 @@ public final class MainMenu {
     var listCells = player.environment().getCells();
 
     System.err.println("Size of list : " + listCells.size());
-
-    System.err.println("\nbefore testPrintAllCells\n");
-    testPrintAllCells(listCells);
-    System.err.println("\nafter testPrintAllCells\n");
     for (var cell : listCells){
       // if (cell.getTile() == null){  /* for tests */
       //   throw new IllegalArgumentException("tile in Cell is null! be aware\n");
       // }
-      switch(cell.getTile()){
-        case HabitatTile h -> { System.out.println(cell.toString()); }
-        case KeystoneTile k -> { System.out.println(cell.toString()); }
-        case EmptyTile e -> { /* */}
-      }
+      /* we check if there any tile and if it's occupied by animal */
+      // if (cell.isOccupiedByTile()){
+        System.out.println(cell.toString());
+      // }
     }
   }
 
@@ -154,15 +143,19 @@ public final class MainMenu {
 
 
 
-  private void showPossibleTokenPlacement(Player player, WildlifeToken token){
-    Objects.requireNonNull(player);
-    Objects.requireNonNull(token);
+  private void showPossibleTokenPlacement(Player player, WildlifeType token){
+    Objects.requireNonNull(player, "player is null in showPossibleTokenPlacement()");
+    Objects.requireNonNull(token, "token is null in showPossibleTokenPlacement()");
+
     System.out.println("Here are the possible coordinates to place the token: ");
-    var setOfCoordinates = player.environment().getPossibleCells();
-    for (var coordinates : setOfCoordinates){
-      var currCell = player.environment().getCellOrCreate(coordinates);
-      if (currCell.getTile().canBePlaced(token)){
-        System.out.println(currCell.toString());
+    var listOfCells = player.environment().getCells();
+
+    for (var cell : listOfCells){
+      if (cell == null){
+        throw new IllegalArgumentException("cell is null in showPossibleTokenPlacement()");
+      }
+      if (cell.canBePlaced(token)){
+        System.out.println(cell.toString());
       }
     }
   }
@@ -195,18 +188,16 @@ public final class MainMenu {
   // don't forget to check if already was changed and if so we don't change it
   // setToDefault in `src/fr/uge/core/TurnManager.java`
   /**
-   * java doc ...
    * */
   private void handleTokenChange(Game game){
     Objects.requireNonNull(game);
     if (game.board().tokensNeedUpdate()){
       game.board().updateTokens();
       System.out.println("Tokens were updated, because one token had 4 occurences");
-      return;
+      showGameBoard(game.board());
     }
-    if (game.board().tokensCanBeUpdated()){
+    else if (game.board().tokensCanBeUpdated()){
       var stringTokensToChange = IO.readln("Enter `yes` if you want to change the tokens, otherwise press enter ");
-      
       try (Scanner s = new Scanner(stringTokensToChange)) {
         if (s.hasNext() && "yes".equals(s.next())){
           System.out.println("tokens are now updated");
@@ -229,24 +220,25 @@ public final class MainMenu {
 
 
   private void handleTurnChange(Game game){
+    game.board().setDefaultTokensAreUpdated();  // that means, next person can change tokens (if needed)
     game.turnManager().changePlayer();
     game.turnManager().nextTurn();
     // System.out.println("Turns left: " + (Constants.MAX_GAME_TURNS - game.turnManager().getTotalTurns()));
   }
 
 
-  private void handleTokenPlacement(Player player, WildlifeToken chosedToken){
+  private void handleTokenPlacement(Player player, WildlifeType chosedToken){
     Objects.requireNonNull(player);
     Objects.requireNonNull(chosedToken);
 
     /* chosed token from `choice` */
     System.out.println("Now you need to place the wildlife token: " + chosedToken.toString());
     showPossibleTokenPlacement(player, chosedToken);
-    
+
     var userCoordinatesString = IO.readln("Give me coordinates of tile, that you want to place the token on (format: \"x, y\"): ");
 
     var userCoordinates = getCoordinatesFromUser(userCoordinatesString);
-    var currCell = player.environment().getCellOrCreate(userCoordinates);
+    var currCell = player.environment().getCell(userCoordinates);
     var tokenWasPlaced = player.environment().placeAnimal(currCell, chosedToken);
 
     /* for tests, to delete later */
@@ -268,7 +260,7 @@ public final class MainMenu {
 
       if (possibleCoordinates.stream()
                              .anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
-        var currCell = player.environment().getCellOrCreate(userCoordinates);
+        var currCell = player.environment().getCell(userCoordinates);
         if (player.environment().placeTile(currCell, chosedTile)){
           System.out.println("Tile was placed successfully (for test Main Menu)");
           break;

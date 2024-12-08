@@ -1,0 +1,19 @@
+package fr.uge.environment;
+
+public final class EmptyTile implements Tile {
+
+  public EmptyTile(){
+    /* don't have any habitats and any animals */
+  }
+
+
+  @Override
+  public final String toString() {
+    return "empty tile";
+  }
+
+  @Override
+  public final boolean isOccupied() {
+    return false;
+  }
+}

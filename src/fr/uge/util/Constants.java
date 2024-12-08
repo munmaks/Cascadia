@@ -92,7 +92,7 @@ public final class Constants {
   public static final int MAX_STARTER_HABITATS = 5;      /* 15 = 5 * 3 (starter tiles) */
   public static final int MAX_TILES_ON_STARTER = 3;      /* 3 animals on each starter habitat tiles */
 
-  public static final int TILE_PER_PLAYER = 20;
+  public static final int TILES_PER_PLAYER = 20;
 
   /* version hexagonal */
   public static final int MIN_PLAYERS = 1;
@@ -101,12 +101,10 @@ public final class Constants {
   /* exactly 3 tiles must remain on the game board in the end of the game */
   public static final int THREE = 3;
 
-
-
-  /* Deck */
-  public static final int ANIMAL_TOKENS = 20;
+  /* Tokens */
+  public static final int ANIMALS_HEXAGONAL = 20;
   public static final int ANIMALS_SQUARE = 10;
-  
+  public static final int MAX_ITERATION = 0xF;   /* some number to prevent infinity loop */
   
   /* useful methods across the project */
   public static boolean isValidVersion(int version) {
