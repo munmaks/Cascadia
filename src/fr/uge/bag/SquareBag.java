@@ -1,6 +1,5 @@
 package fr.uge.bag;
 
-import fr.uge.environment.HabitatTile;
 import fr.uge.environment.Tile;
 import fr.uge.environment.TileType;
 import fr.uge.environment.WildlifeType;
@@ -10,11 +9,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
 
 
-public final class BagSquare implements Bag {
+public final class SquareBag implements Bag {
 
   /**
    * Indexes from WildlifeType `enum`: <br>
@@ -41,7 +41,7 @@ public final class BagSquare implements Bag {
   private static final int MAX_TILES_FOR_GAME = Constants.MAX_TILES_SQUARE - 1;
   private static final int MAX_TILES_TOTAL = Constants.MAX_TILES_SQUARE;
 
-  public BagSquare(int numberOfPlayers) {
+  public SquareBag(int numberOfPlayers) {
     if (!Constants.isValidNbPlayers(numberOfPlayers)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_NUMBER_OF_PLAYERS);
     }
@@ -50,7 +50,7 @@ public final class BagSquare implements Bag {
     } catch (IOException e) {
       System.err.println("Error initializing tiles: " + e.getMessage());
     }
-    Collections.shuffle(BagSquare.tiles);
+    Collections.shuffle(SquareBag.tiles);
     decreaseNumberOfTiles();
   }
 
@@ -60,10 +60,10 @@ public final class BagSquare implements Bag {
    * Result: it takes one tile from the bag
    */
   private void decreaseNumberOfTiles() {
-    int currentNumberOfTiles = BagSquare.MAX_TILES_FOR_GAME;
-    while (currentNumberOfTiles > BagSquare.MAX_TILES_TOTAL) {
+    int currentNumberOfTiles = SquareBag.MAX_TILES_FOR_GAME;
+    while (currentNumberOfTiles > SquareBag.MAX_TILES_TOTAL) {
       --currentNumberOfTiles;
-      BagSquare.tiles.remove(0);  /* remove first element */
+      SquareBag.tiles.remove(0);  /* remove first element */
     }
   }
 
@@ -98,23 +98,20 @@ public final class BagSquare implements Bag {
    * Gives random HabitatTile with one tile and two animals
    * @return one HabitatTile from array `tiles`
    */
-  private HabitatTile getSquareTiles(
+  private Tile getSquareTiles(
       String oneTile,
       String firstAnimal, String secondAnimal
     ) {
-    var tile = new TileType[]{ TileType.valueOf(oneTile) };
-    var tokens = new WildlifeType[]{
-        WildlifeType.valueOf(firstAnimal),
-        WildlifeType.valueOf(secondAnimal)
-    };
-    return new HabitatTile(tile, tokens);
+    var tile = TileType.valueOf(oneTile);
+    var set = Set.of(WildlifeType.valueOf(firstAnimal), WildlifeType.valueOf(secondAnimal));
+    return new Tile(tile, tile, set);
   }
 
   @Override
   public Tile getRandomTile() {
     var random = new Random();
-    var randomIndex = random.nextInt(BagSquare.tiles.size()); /* in [0, tiles.size()[ */
-    return BagSquare.tiles.remove(randomIndex);
+    var randomIndex = random.nextInt(SquareBag.tiles.size()); /* in [0, tiles.size()[ */
+    return SquareBag.tiles.remove(randomIndex);
   }
 
 

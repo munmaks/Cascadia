@@ -71,7 +71,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
     var listOfCells = env.getCells();
     var cellsWithToken = new ArrayList<Cell>();
     for (var cell : listOfCells){
-      if (token.equals(cell.getTile().getAnimal())){
+      if (token.equals(cell.getAnimal())){
         cellsWithToken.add(cell);
       }
     }
@@ -110,7 +110,7 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
 
 
   private static boolean isValidNeighbor(Cell neighbor, WildlifeType token, Set<Cell> visited) {
-    return visited.contains(neighbor) && token.equals(neighbor.getTile().getAnimal());
+    return visited.contains(neighbor) && token.equals(neighbor.getAnimal());
   }
   
 

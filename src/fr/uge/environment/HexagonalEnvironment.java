@@ -1,19 +1,16 @@
 package fr.uge.environment;
 
+import fr.uge.util.Constants;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-
 import java.util.Set;
-import java.util.HashSet;
-import java.util.HashMap;
-
-
-import fr.uge.util.Constants;
 
 /**
  * Player's environment of all tiles and placed wildlife tokens */
-public final class EnvironmentHexagonal implements Environment {
+public final class HexagonalEnvironment implements Environment {
 
   /* 100 - 196 total tiles to show in player's environment */
   // private final Cell[][] grid = new Cell[Constants.MAX_ROW][Constants.MAX_COL];
@@ -26,7 +23,7 @@ public final class EnvironmentHexagonal implements Environment {
   private final HashMap<Coordinates, Cell> cellsMap;
 
 
-  public EnvironmentHexagonal() {
+  public HexagonalEnvironment() {
     /* class for all check and valid parameters to stop checking everytime THE SAME THING */
     // initializeGrid(version);
     this.cellsMap = new HashMap<>();
@@ -66,7 +63,7 @@ public final class EnvironmentHexagonal implements Environment {
     //   return null;
     // }
     var currCoordinates = new Coordinates(neighborRow, neighborCol);
-    var neighbor = new CellHexagonal(currCoordinates);
+    var neighbor = new HexagonalCell(currCoordinates);
     if (!cellsMap.containsKey(currCoordinates)) {  /* insert in hashmap `cellsMap` and return new coordinates */
       cellsMap.put(currCoordinates, neighbor);
     }
@@ -125,7 +122,7 @@ public final class EnvironmentHexagonal implements Environment {
     var neighbors = getNeighbors(cell);
     for (var neighbor : neighbors){
       var currCoordinates = neighbor.getCoordinates();
-      if (!cellsMap.get(currCoordinates).isOccupied()) {
+      if (!cellsMap.get(currCoordinates).isOccupiedByTile()) {
         this.cellsSet.add(currCoordinates);
       }
     }
@@ -168,58 +165,31 @@ public final class EnvironmentHexagonal implements Environment {
   @Override
   public final boolean canBePlacedWildlifeToken(WildlifeType token) {
     Objects.requireNonNull(token);
-    boolean flag = false;
 
     for (var cell : this.cellsMap.values()) {
-      switch (cell.getTile()) {
-        case HabitatTile habitat -> { flag = habitat.canBePlaced(token);}
-        case KeystoneTile keystone -> { flag = keystone.canBePlaced(token); }
-        /* normally shouldn't happen */
-        case EmptyTile empty -> { System.err.println("Can't place wildlife token on " + empty.toString()); }
-      }
-      if (flag) { /* found */
-        return flag;
+      if (cell.canBePlaced(token)){ /* found, no need to continue */
+        return true;
       }
     }
-    return flag;
+    return false;
   }
 
   @Override
   public final boolean placeAnimal(Cell cell, WildlifeType token) {
     Objects.requireNonNull(cell);
     Objects.requireNonNull(token);
-    if (!cell.isOccupied()) {
+    if (!cell.isOccupiedByTile()) {
       return false;
     }
-    var currentTile = cell.getTile();
-    boolean flag = false;
-    switch (currentTile) {
-      case HabitatTile habitat -> { flag = habitat.placeAnimal(token);}
-      case KeystoneTile keystone -> { flag = keystone.placeAnimal(token); }
-      /* normally shouldn't happen */
-      case EmptyTile empty -> { System.err.println("Can't place wildlife token on " + empty.toString()); }
-    }
-    return flag;
+    return cell.getTile() != null && cell.placeAnimal(token);
   }
 
 
   /* DEPRECATED, TO DELETE LATER, DONT FORGET */
   @Override
   public final Cell getCell(Coordinates coordinates) {
-    // if (!Constants.isValidCoordinates(coordinates.y(), coordinates.x())) {
-    //   throw new IllegalArgumentException(Constants.ILLEGAL_COORDINATES);
-    // }
-    if (!cellsMap.containsKey(coordinates)) {
-      var cell = switch (Constants.VERSION_HEXAGONAL) {
-        case Constants.VERSION_HEXAGONAL -> new CellHexagonal(coordinates);
-        case Constants.VERSION_SQUARE -> new CellSquare(coordinates);
-        default -> throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
-      };
-      cellsMap.put(coordinates, cell);
-      this.cellsSet.add(coordinates);
-    }
-    return cellsMap.get(coordinates);
-    // return grid[y][x];
+    Objects.requireNonNull(coordinates, "Coordinates can't be null in getCell()");
+    return this.cellsMap.computeIfAbsent(coordinates, SquareCell::new);
   }
 
   
@@ -275,13 +245,16 @@ public final class EnvironmentHexagonal implements Environment {
   
   @Override
   public void printAllNeighbors(Coordinates coordinates) {
-    var neighbors = getNeighbors(cellsMap.get(coordinates));
-    for (var neighbor : neighbors) {
-      var cell = cellsMap.get(neighbor.getCoordinates());
-      if (cell.getTile() instanceof HabitatTile){
-        System.out.println(neighbor + " - " + cell.getTile().toString() + " "); //+ (neighbor.isOccupied() ? (neighbor.getTile().getAnimal()) : " no Animal"));
-      }
-    }
+    Objects.requireNonNull(coordinates);
+    System.err.println("Not implemented yet, HexagonalEnvironment.printAllNeighbors()");
+    // var neighbors = getNeighbors(cellsMap.get(coordinates));
+    // for (var neighbor : neighbors) {
+    //   var cell = cellsMap.get(neighbor.getCoordinates());
+    //   var tile = cell.getTile();
+    //   if (tile != null && !tile.isKeystone()){
+    //     System.out.println(neighbor + " - " + cell.getTile().toString() + " ");
+    //   }
+    // }
     // System.out.println(cell.coordinates() + " : " + getNeighborsCells(cell));
   }
 

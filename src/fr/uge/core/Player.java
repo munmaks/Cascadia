@@ -1,8 +1,8 @@
 package fr.uge.core;
 
 import fr.uge.environment.Environment;
-import fr.uge.environment.EnvironmentHexagonal;
-import fr.uge.environment.EnvironmentSquare;
+import fr.uge.environment.HexagonalEnvironment;
+import fr.uge.environment.SquareEnvironment;
 import fr.uge.scoring.BearScoringCard;
 import fr.uge.scoring.ElkScoringCard;
 import fr.uge.scoring.FoxScoringCard;
@@ -28,8 +28,8 @@ public final class Player {
     this.name = Objects.requireNonNull(name, "Player name cannot be null");
 
     this.environment = (version == Constants.VERSION_HEXAGONAL) ?
-                        new EnvironmentHexagonal() :
-                        new EnvironmentSquare();
+                        new HexagonalEnvironment() :
+                        new SquareEnvironment();
   }
 
 

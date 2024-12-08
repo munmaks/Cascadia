@@ -2,22 +2,18 @@ package fr.uge.ui;
 
 
 import fr.uge.core.*;
-import fr.uge.environment.Cell;
-import fr.uge.environment.Coordinates;  // enable preview
-import fr.uge.environment.EmptyTile;
-import fr.uge.environment.HabitatTile;
-import fr.uge.environment.KeystoneTile;
-import fr.uge.environment.Tile;
-// import fr.uge.environment.WildlifeToken;
+import fr.uge.environment.Coordinates;
+import fr.uge.environment.Tile;  // enable preview
 import fr.uge.environment.WildlifeType;
+import fr.uge.environment.Cell;
 import fr.uge.scoring.FamilyAndIntermediateScoringCards;
 import fr.uge.scoring.WildlifeScoringCard;
 import fr.uge.util.Constants;
-
 import java.io.IO;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.Objects;
 import java.util.Scanner;
 // import java.util.Arrays;
@@ -93,6 +89,16 @@ public final class MainMenu {
   }
 
 
+  // sort by x and y
+  // listCells.sort((cell1, cell2) -> {
+  //   if (cell1.getCoordinates().x() == cell2.getCoordinates().x()){
+  //     return cell1.getCoordinates().y() - cell2.getCoordinates().y();
+  //   }
+  //   return cell1.getCoordinates().x() - cell2.getCoordinates().x();
+  // });
+
+
+
   private void showEnvironment(Player player){
     Objects.requireNonNull(player);
     System.out.println("\n\nIt's " + player.name() + "'s turn!");
@@ -104,11 +110,10 @@ public final class MainMenu {
       // if (cell.getTile() == null){  /* for tests */
       //   throw new IllegalArgumentException("tile in Cell is null! be aware\n");
       // }
-      switch(cell.getTile()){
-        case HabitatTile h -> { System.out.println(cell.toString()); }
-        case KeystoneTile k -> { System.out.println(cell.toString()); }
-        case EmptyTile e -> { /* System.out.println(cell.toString()); */ }
-      }
+      /* we check if there any tile and if it's occupied by animal */
+      // if (cell.isOccupiedByTile()){
+        System.out.println(cell.toString());
+      // }
     }
   }
 
@@ -149,18 +154,9 @@ public final class MainMenu {
       if (cell == null){
         throw new IllegalArgumentException("cell is null in showPossibleTokenPlacement()");
       }
-      switch (cell.getTile()){
-        case HabitatTile h -> {
-          if (h.canBePlaced(token)){ System.out.println(cell.toString()); }
-        }
-        case KeystoneTile k -> {
-          if (k.canBePlaced(token)){ System.out.println(cell.toString()); }
-        }
-        case EmptyTile e -> { /* empty */}
+      if (cell.canBePlaced(token)){
+        System.out.println(cell.toString());
       }
-      // if (currCell.getTile().canBePlaced(token)){
-      //   System.out.println(currCell.toString());
-      // }
     }
   }
 

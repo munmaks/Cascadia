@@ -104,7 +104,7 @@ public final class Constants {
   /* Tokens */
   public static final int ANIMALS_HEXAGONAL = 20;
   public static final int ANIMALS_SQUARE = 10;
-  public static final int MAX_ITERATION = 1 << 16;   /* big number to prevent infinity loop */
+  public static final int MAX_ITERATION = 0xF;   /* some number to prevent infinity loop */
   
   /* useful methods across the project */
   public static boolean isValidVersion(int version) {

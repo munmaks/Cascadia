@@ -1,8 +1,8 @@
 package fr.uge.core;
 
 import fr.uge.bag.Bag;
-import fr.uge.bag.BagHexagonal;
-import fr.uge.bag.BagSquare;
+import fr.uge.bag.HexagonalBag;
+import fr.uge.bag.SquareBag;
 import fr.uge.environment.Tile;
 import fr.uge.environment.WildlifeType;
 import fr.uge.util.Constants;
@@ -53,7 +53,7 @@ public final class GameBoard {
     if (Constants.isInvalidSquareNbPlayers(nbPlayers, version)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_SQUARE_NUMBER_OF_PLAYERS);
     }
-    this.bag = (version == Constants.VERSION_HEXAGONAL) ? new BagHexagonal(nbPlayers) : new BagSquare(nbPlayers);
+    this.bag = (version == Constants.VERSION_HEXAGONAL) ? new HexagonalBag(nbPlayers) : new SquareBag(nbPlayers);
     // this.deck = new Deck(version);
     for (int i = 0; i < Constants.TILES_ON_BOARD; ++i) {
       GameBoard.tiles.add(bag.getRandomTile());
