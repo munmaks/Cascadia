@@ -28,7 +28,7 @@ public final class HexagonalBag implements Bag {
    * FOX    : 3 <br>
    * SALMON : 4 <br>
    */
-  private static final int[] animals =  {
+  private final int[] animals =  {
     Constants.ANIMALS_HEXAGONAL,  /* BEAR   */
     Constants.ANIMALS_HEXAGONAL,  /* ELK    */
     Constants.ANIMALS_HEXAGONAL,  /* HAWK   */
@@ -37,10 +37,10 @@ public final class HexagonalBag implements Bag {
   };
 
   /* fill tiles with needed number of tiles for a game */
-  private static final ArrayList<Tile> tiles = new ArrayList<>();
+  private final ArrayList<Tile> tiles = new ArrayList<>();
 
   /* 3 tiles for each starter habitat tile (top, left, right), total 5 occurences */
-  private static final Tile[][] starters = new Tile[Constants.MAX_STARTER_HABITATS][Constants.MAX_TILES_ON_STARTER];
+  private final Tile[][] starters = new Tile[Constants.MAX_STARTER_HABITATS][Constants.MAX_TILES_ON_STARTER];
   private int maxTilesForGame = 0;
   private int maxTilesTotal = 0;
   
@@ -57,7 +57,7 @@ public final class HexagonalBag implements Bag {
     } catch (IOException e) {
       System.err.println("Error initializing tiles: " + e.getMessage());
     }
-    Collections.shuffle(HexagonalBag.tiles);
+    Collections.shuffle(this.tiles);
     decreaseNumberOfTiles();
   }
 
@@ -71,7 +71,7 @@ public final class HexagonalBag implements Bag {
     int currentNumberOfTiles = this.maxTilesTotal;
     while (currentNumberOfTiles > this.maxTilesForGame) {
       --currentNumberOfTiles;
-      HexagonalBag.tiles.remove(0);   /* remove first element */
+      this.tiles.remove(0);   /* remove first element */
     }
   }
 
@@ -158,15 +158,15 @@ public final class HexagonalBag implements Bag {
       while ((line = reader.readLine()) != null) {
         var row = line.split("\\s+");
         /* toptile */                         /* tile,  animal */
-        HexagonalBag.starters[index][0] = getKeystoneTile(row[0], row[1]);
+        this.starters[index][0] = getKeystoneTile(row[0], row[1]);
         /* leftTile */                                /* tile,   tile,   animal, animal, animal */
-        HexagonalBag.starters[index][1] = getHabitatTileThreeAnimals(row[2], row[3], row[4], row[5], row[6]);
+        this.starters[index][1] = getHabitatTileThreeAnimals(row[2], row[3], row[4], row[5], row[6]);
         /* rightTile */                            /* tile,   tile,   animal, animal */
-        HexagonalBag.starters[index][2] = getHabitatTileTwoAnimals(row[7], row[8], row[9], row[10]);
+        this.starters[index][2] = getHabitatTileTwoAnimals(row[7], row[8], row[9], row[10]);
         index++;
       }
     }
-    shuffleStarterHabitats(HexagonalBag.starters);  /* shuffle them for more random game */
+    shuffleStarterHabitats(this.starters);  /* shuffle them for more random game */
   }
 
 
@@ -178,8 +178,8 @@ public final class HexagonalBag implements Bag {
   @Override
   public Tile getRandomTile() {
     var random = new Random();
-    var randomIndex = random.nextInt(HexagonalBag.tiles.size()); /* in [0, tiles.size()[ */
-    return HexagonalBag.tiles.remove(randomIndex);
+    var randomIndex = random.nextInt(this.tiles.size()); /* in [0, tiles.size()[ */
+    return this.tiles.remove(randomIndex);
   }
 
 
@@ -207,6 +207,9 @@ public final class HexagonalBag implements Bag {
       Set.of(WildlifeType.valueOf(animal))
     );
   }
+
+
+  /* to improve this method, we can use reflection */
 
   /**
    * Gives random HabitatTile with two animals
@@ -264,7 +267,7 @@ public final class HexagonalBag implements Bag {
   @Override
   public String toString() {
     var builder = new StringBuilder();
-    for (var tile : tiles) {
+    for (var tile : this.tiles) {
       builder.append(" ").append(tile.toString()).append("\n");
     }
     //builder.append(starterHabitats.toString());
@@ -285,7 +288,7 @@ public final class HexagonalBag implements Bag {
 
     /* return into deck current token */
     var index = token.ordinal();
-    animals[index]++;
+    this.animals[index]++;
 
     return getRandomToken();
   }
@@ -300,17 +303,16 @@ public final class HexagonalBag implements Bag {
    */
   @Override
   public final WildlifeType getRandomToken(){
-    int index;
-    int iteration = 0;
+    var iteration = 0;
     var random = new Random();
-
+    var length = this.animals.length;
     /* we have max iteration, to prevent infinity loop */
     while (iteration <= Constants.MAX_ITERATION) {
-        index = random.nextInt(animals.length);   /* random integer in range [0, 5[ */
+        var index = random.nextInt(length);   /* random integer in range [0, 5[ */
         ++iteration;
 
-        if (animals[index] > 0) {   /* if tokens of this animals are still available */
-            animals[index]--;
+        if (this.animals[index] > 0) {   /* if tokens of this animals are still available */
+            this.animals[index]--;
             return WildlifeType.values()[index];
         }
     }

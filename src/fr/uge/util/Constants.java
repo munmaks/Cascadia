@@ -10,7 +10,7 @@ public final class Constants {
   
 
   /* Turn Manager */
-  public static final int MAX_GAME_TURNS = 5;
+  public static final int MAX_GAME_TURNS = 2;
 
   
   /* Game Board */
@@ -22,7 +22,7 @@ public final class Constants {
   /* Environment */
   // public static final int MAX_ROW = 12;
   // public static final int MAX_COL = 12;
-  
+
   public static final int NB_NEIGHBORS_SQUARE = 4;
   public static final int NB_NEIGHBORS_HEXAGONAL = 6;
   public static final int MAX_ROTATIONS = 6;  /* for hexagonals */
@@ -33,7 +33,7 @@ public final class Constants {
   public static final int NB_TOKENS = 5;
 
 
-  
+
   /**<b>
    * Direction offsets based on "odd-r" layout<br>
    *       (x, y)</b><br><br>

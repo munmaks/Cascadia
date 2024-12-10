@@ -2,7 +2,6 @@ package fr.uge.bag;
 
 import fr.uge.environment.Tile;
 import fr.uge.environment.WildlifeType;
-import java.util.Random;
 
 public sealed interface Bag permits SquareBag, HexagonalBag {
     Tile[] getStarter();

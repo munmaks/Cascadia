@@ -5,14 +5,11 @@ import fr.uge.core.*;
 import fr.uge.environment.Coordinates;
 import fr.uge.environment.Tile;  // enable preview
 import fr.uge.environment.WildlifeType;
-import fr.uge.environment.Cell;
 import fr.uge.scoring.FamilyAndIntermediateScoringCards;
 import fr.uge.scoring.WildlifeScoringCard;
 import fr.uge.util.Constants;
 import java.io.IO;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -105,15 +102,11 @@ public final class MainMenu {
     System.out.println("\nHere is " + player.name() + "'s environment: ");
     var listCells = player.environment().getCells();
 
-    System.err.println("Size of list : " + listCells.size());
+    // System.err.println("Size of list : " + listCells.size());  // for test, to delete later
     for (var cell : listCells){
-      // if (cell.getTile() == null){  /* for tests */
-      //   throw new IllegalArgumentException("tile in Cell is null! be aware\n");
-      // }
-      /* we check if there any tile and if it's occupied by animal */
-      // if (cell.isOccupiedByTile()){
+      if (cell.isOccupiedByTile()){
         System.out.println(cell.toString());
-      // }
+      }
     }
   }
 
@@ -167,6 +160,7 @@ public final class MainMenu {
   private void showScore(Game game){
     System.out.println("Game is over!\nThank you for playing!");
 
+    //
     // Objects.requireNonNull(game);
     // var players = game.players();
     // for (var player : players){
@@ -211,10 +205,10 @@ public final class MainMenu {
 
 
   private int handleUserChoiceTileAndToken(){
-    int choice = Integer.parseInt(IO.readln("Please choose from 1 to 4 to take a couple: (Tile, Token)\n"));
-    while(!Constants.isValidChoice(choice)){
+    int choice;
+    do {
       choice = Integer.parseInt(IO.readln("Please choose ONLY from 1 to 4 to take a couple: (Tile, Token)\n"));
-    }
+    } while(!Constants.isValidChoice(choice));
     return choice;
   }
 
@@ -241,9 +235,8 @@ public final class MainMenu {
     var currCell = player.environment().getCell(userCoordinates);
     var tokenWasPlaced = player.environment().placeAnimal(currCell, chosedToken);
 
-    /* for tests, to delete later */
     if (!tokenWasPlaced){
-      System.err.println("Token wasn't placed");
+      System.err.println("Token wasn't placed");  /* for tests, to delete later */
     }
   }
 
@@ -262,7 +255,7 @@ public final class MainMenu {
                              .anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
         var currCell = player.environment().getCell(userCoordinates);
         if (player.environment().placeTile(currCell, chosedTile)){
-          System.out.println("Tile was placed successfully (for test Main Menu)");
+          System.out.println("Tile was placed successfully (for test Main Menu)");  // for test, to delete later
           break;
         }
       }
@@ -292,8 +285,9 @@ public final class MainMenu {
 
   private void showPlayerScore(Player player, FamilyAndIntermediateScoringCards card) {
     System.out.println(player.name() + " your final score: " + card.getScore(player) + "\n");
+    System.out.println(player.name() + " your tiles score: " + player.environment().calculateTileScore() + "\n");
   }
-  
+
 
   private void calculateAndShowScore(Game game, int familyOrIntermediate){
     // var listOfPlayerScores = calculateListOfScores(game);
@@ -314,9 +308,6 @@ public final class MainMenu {
   }
   
 
-  /**
-   * 
-   * */
   // under test
   private void gameLoopVersionSquare(Game game){
     Objects.requireNonNull(game);
@@ -359,6 +350,7 @@ public final class MainMenu {
     Game game = new Game(board, turnManager, listOfPlayers.size(), this.version);
     gameLoopVersionSquare(game);
     calculateAndShowScore(game, familyOrIntermediate);
+
   }
 
   

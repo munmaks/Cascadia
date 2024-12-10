@@ -14,6 +14,10 @@ import java.util.Random;
 import java.util.Set;
 
 
+// add generics: 
+// Bag of Animals
+// Bag of Tiles
+// to think well how to implement it
 public final class SquareBag implements Bag {
 
   /**
@@ -24,7 +28,7 @@ public final class SquareBag implements Bag {
    * FOX    : 3 <br>
    * SALMON : 4 <br>
    */
-  private static final int[] animals =  {
+  private final int[] animals = {
     Constants.ANIMALS_SQUARE,  /* BEAR   */
     Constants.ANIMALS_SQUARE,  /* ELK    */
     Constants.ANIMALS_SQUARE,  /* HAWK   */
@@ -33,7 +37,7 @@ public final class SquareBag implements Bag {
   };
 
   /* fill tiles with needed number of tiles for a game */
-  private static final ArrayList<Tile> tiles = new ArrayList<>();
+  private final ArrayList<Tile> tiles = new ArrayList<>();
 
   /* ((Constants.TILES_PER_PLAYER + MAX_TILES_ON_STARTER) * numberOfPlayers) + Constants.THREE = 49 */
   /* ((20 + 3) * 2) + 3 = 49 */
@@ -50,7 +54,7 @@ public final class SquareBag implements Bag {
     } catch (IOException e) {
       System.err.println("Error initializing tiles: " + e.getMessage());
     }
-    Collections.shuffle(SquareBag.tiles);
+    Collections.shuffle(this.tiles);
     decreaseNumberOfTiles();
   }
 
@@ -63,7 +67,7 @@ public final class SquareBag implements Bag {
     int currentNumberOfTiles = SquareBag.MAX_TILES_FOR_GAME;
     while (currentNumberOfTiles > SquareBag.MAX_TILES_TOTAL) {
       --currentNumberOfTiles;
-      SquareBag.tiles.remove(0);  /* remove first element */
+      this.tiles.remove(0);  /* remove first element */
     }
   }
 
@@ -110,8 +114,8 @@ public final class SquareBag implements Bag {
   @Override
   public Tile getRandomTile() {
     var random = new Random();
-    var randomIndex = random.nextInt(SquareBag.tiles.size()); /* in [0, tiles.size()[ */
-    return SquareBag.tiles.remove(randomIndex);
+    var randomIndex = random.nextInt(this.tiles.size()); /* in [0, tiles.size()[ */
+    return this.tiles.remove(randomIndex);
   }
 
 
@@ -122,6 +126,7 @@ public final class SquareBag implements Bag {
   }
 
 
+  
   /************************ TOKENS ****************************/
 
 
@@ -136,7 +141,7 @@ public final class SquareBag implements Bag {
 
     /* return into deck current token */
     var index = token.ordinal();
-    animals[index]++;
+    this.animals[index]++;
 
     return getRandomToken();
   }
@@ -151,17 +156,15 @@ public final class SquareBag implements Bag {
    */
   @Override
   public final WildlifeType getRandomToken(){
-    int index;
-    int iteration = 0;
+    var iteration = 0;
     var random = new Random();
-
+    var length = this.animals.length;
     /* we have max iteration, to prevent infinity loop */
     while (iteration <= Constants.MAX_ITERATION) {
-        index = random.nextInt(animals.length);   /* random integer in range [0, 5[ */
+        var index = random.nextInt(length);   /* random integer in range [0, 5[ */
         ++iteration;
-
-        if (animals[index] > 0) {   /* if tokens of this animals are still available */
-            animals[index]--;
+        if (this.animals[index] > 0) {   /* if tokens of this animals are still available */
+            this.animals[index]--;
             return WildlifeType.values()[index];
         }
     }

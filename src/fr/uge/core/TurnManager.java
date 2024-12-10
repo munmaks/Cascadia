@@ -57,7 +57,7 @@ public final class TurnManager {
     if (this.currentPlayerIndex == this.playersLength) {
       this.currentPlayerIndex %= this.playersLength;
       this.totalTurns++;
-      needToTurn = false;
+      this.needToTurn = false;
     }
   }
   
@@ -78,36 +78,5 @@ public final class TurnManager {
   public final boolean isGameEnd() {
     return this.totalTurns >= Constants.MAX_GAME_TURNS;
   }
-
-     // still need to test this class
-//   public static void main(String[] args) {
-//     // Test the TurnManager class
-//     var version = Constants.VERSION_HEXAGONAL;
-//     var player1 = new Player("Alice", version);
-//     var player2 = new Player("Bob", version);
-//     var player3 = new Player("Charlie", version);
-//     var player4 = new Player("David", version);
-//
-//     var players = new ArrayList<Player>();
-//     players.add(player1);
-////     players.add(player2);
-////     players.add(player3);
-////     players.add(player4);
-//     var turnManager = new TurnManager(players, version);
-//
-//     for (var i = 1; i < players.size() * Constants.TILE_PER_PLAYER + 1; ++i) {
-//       System.out.println(i + ": " + turnManager.getCurrentPlayer());
-//       turnManager.changePlayer();
-//
-//       if (i % players.size() == 0 && i != 0) {
-//         turnManager.nextTurn();
-//         System.out.println("turns : " + turnManager.getTotalTurns());
-//       }
-//
-//       turnManager.nextTurn();
-//       System.out.println(isGameEnd());
-//     }
-//     System.out.println(isGameEnd());
-//   }
 
 }

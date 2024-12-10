@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -274,26 +275,43 @@ public final class HexagonalEnvironment implements Environment {
   }
   
   
-  // for tests
-  // public static void main(String[] main) {
-  //   var version = 3;
-  //   var env = new Environment(version);
-  //   var bag = new Bag(3, version);
-  //   var deck = new Deck(version);
-  //   var coord = new Coordinates(0, 0);
-  //   var tile = bag.getRandomTile();
-  //   var token = deck.getRandomToken();
 
-  //   var cell = env.getCell(coord);
-  //   env.placeTile(cell, tile);
-  //   env.placeWildlifeToken(cell, token);
 
-  //   // cell.turnСounterСlockwise();
-  //   // System.out.println("rotation: " + cell.getRotation());
-  //   System.out.println("tile: " + tile.toString() + " token: " + token.toString());
-  //   System.out.println(cell);
-  //   System.out.println(env.getCells());
-  // }
+  private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
+    Objects.requireNonNull(tileType, "TileType can't be null in dfs()");
+    Objects.requireNonNull(cell, "Cell can't be null in dfs()");
+    if (visited.contains(cell)) {
+      return 0;
+    }
+    visited.add(cell);
+    if (!tileType.equals(cell.getTile().leftHabitat())) { /* not the same tile */
+      return 0;
+    }
+    var score = 1;
+    var neighbors = getNeighbors(cell);
+    for (var neighbor : neighbors) {
+      score += dfs(tileType, neighbor, visited);
+    }
+    return score;
+  }
+
+
+
+  @Override
+  public final Map<TileType, Integer> calculateTileScore() {
+    var tileTypes = TileType.values();
+    var score = 0;
+    var allTiles = this.cellsMap.values();
+    var map = new HashMap<TileType, Integer>();
+    for (var tileType : tileTypes) {
+      var visited = new HashSet<Cell>();
+      for (var cell : allTiles) {
+        score = Math.max(score, dfs(tileType, cell, visited));
+      }
+      map.put(tileType, score);
+    }
+    return map;
+  }
   
   
 }

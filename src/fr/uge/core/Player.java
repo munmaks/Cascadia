@@ -11,6 +11,7 @@ import fr.uge.scoring.SalmonScoringCard;
 import fr.uge.util.Constants;
 import java.util.Objects;
 
+
 public final class Player {
   private final String name;    /* just for counting later */
   private final Environment environment;
@@ -46,7 +47,6 @@ public final class Player {
   }
 
 
-
   public boolean canUseNatureTokens(){
     return this.natureTokens > 0;
   }
@@ -72,7 +72,18 @@ public final class Player {
     return score;
   }
   
+
+  // public final Map<TileType, Integer> calculateTileScore() {
+  //   var tileTypes = TileType.values();
+  //   var score = 0;
+  //   var allTiles = environment.getCells();
+
+  //   return score;
+  // }
   
+
+
+
   
   public final int calculateBearScore(BearScoringCard card) {
     

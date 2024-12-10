@@ -56,8 +56,8 @@ public final class GameBoard {
     this.bag = (version == Constants.VERSION_HEXAGONAL) ? new HexagonalBag(nbPlayers) : new SquareBag(nbPlayers);
     // this.deck = new Deck(version);
     for (int i = 0; i < Constants.TILES_ON_BOARD; ++i) {
-      GameBoard.tiles.add(bag.getRandomTile());
-      GameBoard.tokens.add(bag.getRandomToken());
+      GameBoard.tiles.add(this.bag.getRandomTile());
+      GameBoard.tokens.add(this.bag.getRandomToken());
     }
   }
 
@@ -105,15 +105,16 @@ public final class GameBoard {
   public final void setDefaultTokensAreUpdated() {
     this.tokensAreUpdated = false;
   }
-  
 
-  public final void setTrueTokensAreUpdated() {
-    this.tokensAreUpdated = true;
-  }
+  // not usefull, because it's true when updateTokens() is called (so need to change) 
+  // and token weren't already changed
+  // public final void setTrueTokensAreUpdated() {
+  //   this.tokensAreUpdated = true;
+  // }
 
 
   private WildlifeType updateToken(WildlifeType token) {
-    return bag.updateToken(token);
+    return this.bag.updateToken(token);
   }
 
 
@@ -153,7 +154,7 @@ public final class GameBoard {
       throw new IllegalArgumentException("Index of tile out of bounds");
     }
     var tile = GameBoard.tiles.get(index);
-    GameBoard.tiles.set(index, bag.getRandomTile());  /* replace the tile */
+    GameBoard.tiles.set(index, this.bag.getRandomTile());  /* replace the tile */
     return tile;
   }
 
@@ -163,35 +164,15 @@ public final class GameBoard {
       throw new IllegalArgumentException("Index of wildlife token out of bounds");
     }
     var token = GameBoard.tokens.get(index);
-    GameBoard.tokens.set(index, bag.getRandomToken());  /* replace the token */
+    GameBoard.tokens.set(index, this.bag.getRandomToken());  /* replace the token */
     return token;
   }
 
 
   public Bag getBag() {
-    return bag;
+    return this.bag;
   }
 
-
-
-  // public static void main(String[] args) {
-  //   GameBoard gb = new GameBoard(2, 1);
-  //   System.out.println("Tokens before update:");
-
-  //   while (!gb.tokensNeedUpdate()) {
-  //     gb.testUpdateTokens();
-  //   }
-  //   for (var i = 0; i < Constants.TOKENS_ON_BOARD; ++i) {
-  //     System.out.println(tokens[i]);
-  //   }
-  //   System.out.println("Tokens need update: " + gb.tokensNeedUpdate());
-
-  //   gb.updateTokens();
-  //   System.out.println("Tokens after update:");
-  //   for (var i = 0; i < Constants.TOKENS_ON_BOARD; ++i) {
-  //     System.out.println(tokens[i]);
-  //   }
-  // }
 
 }
 
