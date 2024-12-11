@@ -1,5 +1,6 @@
 package fr.uge.environment;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.Collections;
+
 
 /**
  * Player's environment of all tiles and placed wildlife tokens */
@@ -222,14 +225,16 @@ public final class SquareEnvironment implements Environment {
   }
   
 
+
+
+
+  /*
   private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
     Objects.requireNonNull(tileType, "TileType can't be null in dfs()");
     Objects.requireNonNull(cell, "Cell can't be null in dfs()");
-    if (cell.getTile() == null || visited.contains(cell)) { return 0; } 
+    if (cell.getTile() == null || visited.contains(cell)) { return 0; }
     visited.add(cell);
-    if (!tileType.equals(cell.getTile().leftHabitat())) { /* not the same tile */
-      return 0;
-    }
+    if (!tileType.equals(cell.getTile().leftHabitat())) { return 0; }
     var score = 1;
     var neighbors = getNeighbors(cell);
     for (var neighbor : neighbors) {
@@ -237,16 +242,63 @@ public final class SquareEnvironment implements Environment {
     }
     return score;
   }
+  */
 
+
+
+  private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
+    Objects.requireNonNull(tileType, "TileType can't be null in dfs()");
+    Objects.requireNonNull(cell, "Cell can't be null in dfs()");
+    if (cell.getTile() == null || visited.contains(cell)) { return 0; } /* no tile or already visited */
+    visited.add(cell);
+    if (!tileType.equals(cell.getTile().leftHabitat())) { return 0; }   /* not the same tile */
+    return 1 + getNeighbors(cell).stream()
+                                 .mapToInt(neighbor -> dfs(tileType, neighbor, visited))
+                                 .max()
+                                 .orElse(0);
+  }
+
+
+  private int calculateScoreTileType(TileType tileType) {
+    return this.cellsMap.values().stream()
+                                 .mapToInt(cell -> dfs(tileType, cell, new HashSet<>()))
+                                 .max()
+                                 .orElse(0);
+  }
 
 
   @Override
+  public final Map<TileType, Integer> calculateTileScore(){
+    return Collections.unmodifiableMap(
+              Arrays.stream(TileType.values())
+                    .collect(Collectors.toMap(
+                        tileType -> tileType,
+                        tileType -> calculateScoreTileType(tileType)  // this::calculateScoreTileType
+                      )
+                    )
+          );
+  }
+
+
+  /*
+  @Override
+  public final Map<TileType, Integer> calculateTileScore(){
+    return Arrays.stream(TileType.values())
+                  .collect(Collectors.toMap(
+                    tileType -> tileType,
+                    tileType -> calculateScoreTileType(tileType)  // this::calculateScoreTileType
+                  ));
+  }
+  */
+
+  /*
+  @Override
   public final Map<TileType, Integer> calculateTileScore() {
     var tileTypes = TileType.values();
-    var score = 0;
     var allTiles = this.cellsMap.values();
     var map = new HashMap<TileType, Integer>();
     for (var tileType : tileTypes) {
+      var score = 0;
       var visited = new HashSet<Cell>();
       for (var cell : allTiles) {
         score = Math.max(score, dfs(tileType, cell, visited));
@@ -255,6 +307,6 @@ public final class SquareEnvironment implements Environment {
     }
     return map;
   }
-
+  */
 
 }
