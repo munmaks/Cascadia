@@ -284,7 +284,7 @@ public final class HexagonalEnvironment implements Environment {
       return 0;
     }
     visited.add(cell);
-    if (!tileType.equals(cell.getTile().leftHabitat())) { /* not the same tile */
+    if (!tileType.equals(cell.getTile().firstHabitat())) { /* not the same tile */
       return 0;
     }
     var score = 1;

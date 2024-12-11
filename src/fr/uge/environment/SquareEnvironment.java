@@ -1,6 +1,7 @@
 package fr.uge.environment;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.Collections;
 
 
 /**
@@ -251,7 +251,7 @@ public final class SquareEnvironment implements Environment {
     Objects.requireNonNull(cell, "Cell can't be null in dfs()");
     if (cell.getTile() == null || visited.contains(cell)) { return 0; } /* no tile or already visited */
     visited.add(cell);
-    if (!tileType.equals(cell.getTile().leftHabitat())) { return 0; }   /* not the same tile */
+    if (!tileType.equals(cell.getTile().firstHabitat())) { return 0; }   /* not the same tile */
     return 1 + getNeighbors(cell).stream()
                                  .mapToInt(neighbor -> dfs(tileType, neighbor, visited))
                                  .max()
@@ -259,6 +259,7 @@ public final class SquareEnvironment implements Environment {
   }
 
 
+  
   private int calculateScoreTileType(TileType tileType) {
     return this.cellsMap.values().stream()
                                  .mapToInt(cell -> dfs(tileType, cell, new HashSet<>()))
@@ -310,3 +311,4 @@ public final class SquareEnvironment implements Environment {
   */
 
 }
+

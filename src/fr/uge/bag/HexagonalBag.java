@@ -9,9 +9,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 /**
@@ -58,7 +61,7 @@ public final class HexagonalBag implements Bag {
       System.err.println("Error initializing tiles: " + e.getMessage());
     }
     Collections.shuffle(this.tiles);
-    decreaseNumberOfTiles();
+    BagUtils.decreaseNumberOfTiles(this.tiles, this.maxTilesForGame, this.maxTilesTotal);
   }
 
 
@@ -67,13 +70,13 @@ public final class HexagonalBag implements Bag {
    * Decrease number of tiles in bag to maxTilesForGame
    * Result: it takes only needed number of tiles for a game (depends on number of players)
    */
-  private void decreaseNumberOfTiles() {
-    int currentNumberOfTiles = this.maxTilesTotal;
-    while (currentNumberOfTiles > this.maxTilesForGame) {
-      --currentNumberOfTiles;
-      this.tiles.remove(0);   /* remove first element */
-    }
-  }
+  // private void decreaseNumberOfTiles() {
+  //   int currentNumberOfTiles = this.maxTilesTotal;
+  //   while (currentNumberOfTiles > this.maxTilesForGame){
+  //     --currentNumberOfTiles;
+  //     this.tiles.remove(0);   /* remove first element */
+  //   }
+  // }
 
 
 
@@ -89,57 +92,84 @@ public final class HexagonalBag implements Bag {
   }
 
 
+  private void readTiles(String path, Function<String[], Tile> tileMapper) throws IOException {
+    try (var reader = Files.newBufferedReader(Paths.get(path))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        var row = line.split("\\s+");
+        tiles.add(tileMapper.apply(row));
+      }
+    }
+  }
+
+  private void readHabitatTilesThreeAnimals() throws IOException {           /* tile,   tile,  animal, animal, animal */
+    readTiles(Constants.PATH_HABITAT_TILE_THREE_ANIMALS, row -> getHabitatTile(row[0], row[1], row[2], row[3], row[4]));
+  }
+
+  private void readHabitatTilesTwoAnimals() throws IOException {            /* tile,   tile,  animal, animal */
+    readTiles(Constants.PATH_HABITAT_TILE_TWO_ANIMALS, row -> getHabitatTile(row[0], row[1], row[2], row[3]));
+  }
+
+  private void readKeystoneTiles() throws IOException {           /* tile,  animal */
+    readTiles(Constants.PATH_KEYSTONE_TILE, row -> getKeystoneTile(row[0], row[1]));
+  }
+
+
 
   
   /**
    * read all habitat tiles with three animals in `tiles`.
    * throws IOException if file not found or can't be read
    * */
-  private void readHabitatTilesThreeAnimals() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_HABITAT_TILE_THREE_ANIMALS))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        var row = line.split("\\s+");
-        tiles.add(                /* tile,   tile,   animal, animal, animal */
-          getHabitatTileThreeAnimals(row[0], row[1], row[2], row[3], row[4])
-        );
-      }
-    }
-  }
+  // private void readHabitatTilesThreeAnimals() throws IOException {
+  //   try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_HABITAT_TILE_THREE_ANIMALS))) {
+  //     String line;
+  //     while ((line = reader.readLine()) != null) {
+  //       var row = line.split("\\s+");
+  //       tiles.add(                /* tile,   tile,   animal, animal, animal */
+  //         getHabitatTile(row[0], row[1], row[2], row[3], row[4])
+  //       );
+  //     }
+  //   }
+  // }
 
 
   /**
    * read all habitat tiles with two animals in `tiles`.
    * throws IOException if file not found or can't be read
    * */
-  private void readHabitatTilesTwoAnimals() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_HABITAT_TILE_TWO_ANIMALS))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        var row = line.split("\\s+");
-        tiles.add(                /* tile,   tile,   animal, animal */
-          getHabitatTileTwoAnimals(row[0], row[1], row[2], row[3])
-        );
-      }
-    }
-  }
-
+  // private void readHabitatTilesTwoAnimals() throws IOException {
+  //   try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_HABITAT_TILE_TWO_ANIMALS))) {
+  //     String line;
+  //     while ((line = reader.readLine()) != null) {
+  //       var row = line.split("\\s+");
+  //       tiles.add(             /* tile,   tile,   animal, animal */
+  //         getHabitatTile(row[0], row[1], row[2], row[3])
+  //       );
+  //     }
+  //   }
+  // }
 
   /**
    * read all keystone tiles in `tiles`.
    * throws IOException if file not found or can't be read
    * */
-  private void readKeystoneTiles() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_KEYSTONE_TILE))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        var row = line.split("\\s+");
-        tiles.add(      /* tile,  animal */
-          getKeystoneTile(row[0], row[1])
-        );
-      }
-    }
-  }
+  // private void readKeystoneTiles() throws IOException {
+  //   try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_KEYSTONE_TILE))) {
+  //     String line;
+  //     while ((line = reader.readLine()) != null) {
+  //       var row = line.split("\\s+");
+  //       tiles.add(      /* tile,  animal */
+  //         getKeystoneTile(row[0], row[1])
+  //       );
+  //     }
+  //   }
+  // }
+
+
+
+
+
 
 
   /**
@@ -160,9 +190,9 @@ public final class HexagonalBag implements Bag {
         /* toptile */                         /* tile,  animal */
         this.starters[index][0] = getKeystoneTile(row[0], row[1]);
         /* leftTile */                                /* tile,   tile,   animal, animal, animal */
-        this.starters[index][1] = getHabitatTileThreeAnimals(row[2], row[3], row[4], row[5], row[6]);
+        this.starters[index][1] = getHabitatTile(row[2], row[3], row[4], row[5], row[6]);
         /* rightTile */                            /* tile,   tile,   animal, animal */
-        this.starters[index][2] = getHabitatTileTwoAnimals(row[7], row[8], row[9], row[10]);
+        this.starters[index][2] = getHabitatTile(row[7], row[8], row[9], row[10]);
         index++;
       }
     }
@@ -177,9 +207,10 @@ public final class HexagonalBag implements Bag {
    * */
   @Override
   public Tile getRandomTile() {
-    var random = new Random();
-    var randomIndex = random.nextInt(this.tiles.size()); /* in [0, tiles.size()[ */
-    return this.tiles.remove(randomIndex);
+    // var random = new Random();
+    // var randomIndex = random.nextInt(this.tiles.size()); /* in [0, tiles.size()[ */
+    // return this.tiles.remove(randomIndex);
+    return BagUtils.getRandomTile(this.tiles);
   }
 
 
@@ -215,43 +246,38 @@ public final class HexagonalBag implements Bag {
    * Gives random HabitatTile with two animals
    * @return one HabitatTile from array `tiles`
    */
-  private Tile getHabitatTileTwoAnimals(
-      String firstTile, String secondTile,
-      String firstAnimal, String secondAnimal
-    ) {
-    var firstHabitat = TileType.valueOf(firstTile);
-    var secondHabitat = TileType.valueOf(secondTile);
-    var twoAnimals = Set.of(
-        WildlifeType.valueOf(firstAnimal),
-        WildlifeType.valueOf(secondAnimal)
-    );
-    return new Tile(firstHabitat, secondHabitat, twoAnimals);
-  }
+  // private Tile getHabitatTileTwoAnimals(
+  //     String firstTile, String secondTile,
+  //     String firstAnimal, String secondAnimal
+  //   ) {
+  //   var firstHabitat = TileType.valueOf(firstTile);
+  //   var secondHabitat = TileType.valueOf(secondTile);
+  //   var twoAnimals = Set.of(
+  //       WildlifeType.valueOf(firstAnimal),
+  //       WildlifeType.valueOf(secondAnimal)
+  //   );
+  //   return new Tile(firstHabitat, secondHabitat, twoAnimals);
+  // }
 
   /**
    * Gives random HabitatTile with three animals
    * @return one HabitatTile from array `tiles`
    */
-  private Tile getHabitatTileThreeAnimals(
-      String firstTile, String secondTile,
-      String firstAnimal, String secondAnimal, String thirdAnimal
-    ) {
+  private Tile getHabitatTile(String firstTile, String secondTile, String... animals) {
     var firstHabitat = TileType.valueOf(firstTile);
     var secondHabitat = TileType.valueOf(secondTile);
-    var threeAnimals = Set.of(
-        WildlifeType.valueOf(firstAnimal),
-        WildlifeType.valueOf(secondAnimal),
-        WildlifeType.valueOf(thirdAnimal)
-    );
-    return new Tile(firstHabitat, secondHabitat, threeAnimals);
-  }
+    var setAnimals = Arrays.stream(animals)
+                             .map(WildlifeType::valueOf)
+                             .collect(Collectors.toSet());
+    return new Tile(firstHabitat, secondHabitat, setAnimals);
+}
 
   
   /**
    * Shuffle starter habitats tiles for more random game
    * @param starterHabitats array of StarterHabitatTile
    */
-  private  void shuffleStarterHabitats(Tile[][] starterHabitats) {
+  private void shuffleStarterHabitats(Tile[][] starterHabitats) {
     var random = new Random();
     for (var i = starterHabitats.length - 1; i > 0; --i) {
       var randomIndex = random.nextInt(i + 1);
@@ -278,20 +304,25 @@ public final class HexagonalBag implements Bag {
   /************************ TOKENS ****************************/
 
 
+
+
+  @Override
+  public final WildlifeType updateToken(WildlifeType token) {
+    return BagUtils.updateToken(token, this.animals);
+  }
+
   /**
    * This method is called when we need to replace a token on the game board with a new one.
    * @param token token to change
    * @return new token.
    */
-  @Override
-  public final WildlifeType updateToken(WildlifeType token) {
-
-    /* return into deck current token */
-    var index = token.ordinal();
-    this.animals[index]++;
-
-    return getRandomToken();
-  }
+  // @Override
+  // public final WildlifeType updateToken(WildlifeType token) {
+  //   /* return into deck current token */
+  //   var index = token.ordinal();
+  //   this.animals[index]++;
+  //   return getRandomToken();
+  // }
 
 
   /**
@@ -302,23 +333,64 @@ public final class HexagonalBag implements Bag {
    * @return WildlifeType - the randomly selected token.
    */
   @Override
-  public final WildlifeType getRandomToken(){
-    var iteration = 0;
-    var random = new Random();
-    var length = this.animals.length;
-    /* we have max iteration, to prevent infinity loop */
-    while (iteration <= Constants.MAX_ITERATION) {
-        var index = random.nextInt(length);   /* random integer in range [0, 5[ */
-        ++iteration;
-
-        if (this.animals[index] > 0) {   /* if tokens of this animals are still available */
-            this.animals[index]--;
-            return WildlifeType.values()[index];
-        }
-    }
-    /* normally it shouldn't happen */
-    throw new IllegalArgumentException("Maximum number of iterations exceeded in drawToken()");
+  public final WildlifeType getRandomToken() {
+    return BagUtils.getRandomToken(this.animals);
   }
+
+  //     return getRandomTokenStream()
+  //             .findFirst()
+  //             .orElseGet(this::getFallbackToken);
+  // }
+
+  // private Stream<WildlifeType> getRandomTokenStream() {
+  //     var random = new Random();
+  //     return IntStream.range(0, Constants.MAX_ITERATION)
+  //                     .mapToObj(_ -> random.nextInt(this.animals.length))
+  //                     .filter(index -> this.animals[index] > 0)
+  //                     .peek(index -> this.animals[index]--)
+  //                     .map(index -> WildlifeType.values()[index]);
+  // }
+
+  // private WildlifeType getFallbackToken() {
+  //     return Arrays.stream(WildlifeType.values())
+  //                 .filter(animal -> this.animals[animal.ordinal()] > 0)
+  //                 .findFirst()
+  //                 .orElseThrow(() -> new IllegalStateException("No tokens available, game over!"));
+  // }
+
+
+
+
+
+
+  /**
+   * Draws a random WildlifeType from the deck.<br>
+   * If the selected type has no tokens left,<br>
+   * it retries until a type with available tokens is found. <br>
+   *
+   * @return WildlifeType - the randomly selected token.
+   */
+  // @Override
+  // public final WildlifeType getRandomToken(){
+  //   var iteration = 0;
+  //   var random = new Random();
+  //   var length = this.animals.length;
+  //   /* we have max iteration, to prevent infinity loop */
+  //   while (iteration <= Constants.MAX_ITERATION) {
+  //       var index = random.nextInt(length);   /* random integer in range [0, 5[ */
+  //       ++iteration;
+
+  //       if (this.animals[index] > 0) {   /* if tokens of this animals are still available */
+  //           this.animals[index]--;
+  //           return WildlifeType.values()[index];
+  //       }
+  //   }
+  //   // if we left from while loop, we have to give him something
+  //   return Arrays.stream(WildlifeType.values())
+  //                .filter(animal -> this.animals[animal.ordinal()] > 0)
+  //                .findFirst()
+  //                .orElseThrow(() -> new IllegalStateException("No tokens available, game over!"));
+  // }
 
 
 }
