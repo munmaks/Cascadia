@@ -125,7 +125,7 @@ public final class Game {
       int rightNeighborNumber
     ) {
     var starter = board.getBag().getStarter();  /* 3 tiles */
-    var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
+    var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).getEnvironment();
 
     var cell = playerEnvironment.getCell(centerCoordinates); /* main cell */
     playerEnvironment.placeTile(cell, starter[0]);
@@ -145,7 +145,7 @@ public final class Game {
       int rightNeighborNumber
     ) {
     var starter = board.getBag().getStarter();  /* 3 tiles */
-    var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).environment();
+    var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).getEnvironment();
 
     var cell = playerEnvironment.getCell(centerCoordinates); /* main cell */
     playerEnvironment.placeTile(cell, starter[0]);

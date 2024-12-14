@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
-
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import fr.uge.core.Player;
 import fr.uge.environment.Cell;
@@ -80,6 +81,23 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
 
 
 
+  public Map<Integer, Integer> getWildlifeTokenMap(Environment env, WildlifeType token) {
+    Objects.requireNonNull(env);
+    Objects.requireNonNull(token);
+
+    var cellsWithToken = getCellsWithToken(env, token); // List of cells containing the given token
+    var visited = new HashSet<Cell>(); // set to track visited cells
+
+    return cellsWithToken.stream()
+                        .filter(cell -> !visited.contains(cell))
+                        .map(cell -> calculateGroupSize(env, cell, token, visited))
+                        .collect(Collectors.groupingBy(
+                          Function.identity(),
+                          Collectors.summingInt(size -> 1)
+                        ));
+  } 
+
+
   /**
    * Returns a map of group sizes to their respective counts for a given wildlife token.
    * 
@@ -87,25 +105,19 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
    * 
    * @param token The wildlife token to search for.
    */
-  public Map<Integer, Integer> returnWildlifeTokenMap(Environment env, WildlifeType token) {
-    Objects.requireNonNull(env);
-    Objects.requireNonNull(token);
-    // List of cells containing the given token
-    var cellsWithToken = new ArrayList<Cell>(getCellsWithToken(env, token));
-
-    var map = new HashMap<Integer, Integer>();
-    var visited = new HashSet<Cell>();    // set to track visited cells
-
-    for (var cell : cellsWithToken) {
-      if (visited.contains(cell)) { continue; }   // skip already processed cells
-
-      var groupSize = calculateGroupSize(env, cell, token, visited);   // find all connected cells in this group
-
-      map.put(groupSize, map.getOrDefault(groupSize, 0) + 1);     // update the map with the group size
-    }
-
-    return Map.copyOf(map);   // copy of the map
-  }
+  // public Map<Integer, Integer> getWildlifeTokenMap(Environment env, WildlifeType token) {
+  //   Objects.requireNonNull(env);
+  //   Objects.requireNonNull(token);
+  //   var cellsWithToken = getCellsWithToken(env, token); // List of cells containing the given token
+  //   var map = new HashMap<Integer, Integer>();
+  //   var visited = new HashSet<Cell>();    // set to track visited cells
+  //   for (var cell : cellsWithToken) {
+  //     if (visited.contains(cell)) { continue; }   // skip already processed cells
+  //     var groupSize = calculateGroupSize(env, cell, token, visited);   // find all connected cells in this group
+  //     map.put(groupSize, map.getOrDefault(groupSize, 0) + 1);     // update the map with the group size
+  //   }
+  //   return Map.copyOf(map);   // copy of the map
+  // }
 
 
 
@@ -169,13 +181,23 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
   }
 
 
-  public final int getScore(Player player) {
+  public final int getFamilyAndIntermediateGroupSizeToPoints(int groupSize) {
+    if (isIntermediateScoringCard == 2) {
+      return INTERMEDIATE_GROUP_SIZE_TO_POINTS.getOrDefault(groupSize, Constants.INTERMEDIATE_FOUR_AND_PLUS);
+    } else {
+      return FAMILY_GROUP_SIZE_TO_POINTS.getOrDefault(groupSize, Constants.FAMILY_THREE_AND_PLUS);
+    }
+  }
+
+
+
+  public final int getScore(Environment environment) {
     int score = 0;
     var wildlifeTokens = WildlifeType.values();  /* get all wildlife tokens */
 
     for (int i = 0; i < wildlifeTokens.length; ++i) {
       var token = wildlifeTokens[i];
-      var map = returnWildlifeTokenMap(player.environment(), token);
+      var map = getWildlifeTokenMap(environment, token);
       score += calculateScore(map);
     }
 

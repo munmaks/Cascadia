@@ -6,12 +6,12 @@ import fr.uge.environment.TileType;
 import fr.uge.environment.WildlifeType;
 import fr.uge.util.Constants;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -28,7 +28,7 @@ public final class HexagonalBag implements Bag {
    * FOX    : 3 <br>
    * SALMON : 4 <br>
    */
-  private static final int[] animals =  {
+  private final int[] animals =  {
     Constants.ANIMALS_HEXAGONAL,  /* BEAR   */
     Constants.ANIMALS_HEXAGONAL,  /* ELK    */
     Constants.ANIMALS_HEXAGONAL,  /* HAWK   */
@@ -37,12 +37,11 @@ public final class HexagonalBag implements Bag {
   };
 
   /* fill tiles with needed number of tiles for a game */
-  private static final ArrayList<Tile> tiles = new ArrayList<>();
+  private final LinkedList<Tile> tiles = new LinkedList<>();
 
   /* 3 tiles for each starter habitat tile (top, left, right), total 5 occurences */
-  private static final Tile[][] starters = new Tile[Constants.MAX_STARTER_HABITATS][Constants.MAX_TILES_ON_STARTER];
-  private int maxTilesForGame = 0;
-  private int maxTilesTotal = 0;
+  private final Tile[][] starters = new Tile[Constants.MAX_STARTER_HABITATS][Constants.MAX_TILES_ON_STARTER];
+  private final int maxTilesForGame;
   
   private int indexStarterHabitatTile = -1;
 
@@ -51,14 +50,13 @@ public final class HexagonalBag implements Bag {
       throw new IllegalArgumentException(Constants.ILLEGAL_NUMBER_OF_PLAYERS);
     }
     this.maxTilesForGame = (Constants.TILES_PER_PLAYER * numberOfPlayers) + Constants.THREE;
-    this.maxTilesTotal = Constants.MAX_TILES_HEXAGONAL;
     try {
       initializeGame();
     } catch (IOException e) {
       System.err.println("Error initializing tiles: " + e.getMessage());
     }
-    Collections.shuffle(HexagonalBag.tiles);
-    decreaseNumberOfTiles();
+    Collections.shuffle(this.tiles);
+    BagUtils.decreaseNumberOfTiles(this.tiles, this.maxTilesForGame);
   }
 
 
@@ -67,13 +65,13 @@ public final class HexagonalBag implements Bag {
    * Decrease number of tiles in bag to maxTilesForGame
    * Result: it takes only needed number of tiles for a game (depends on number of players)
    */
-  private void decreaseNumberOfTiles() {
-    int currentNumberOfTiles = this.maxTilesTotal;
-    while (currentNumberOfTiles > this.maxTilesForGame) {
-      --currentNumberOfTiles;
-      HexagonalBag.tiles.remove(0);   /* remove first element */
-    }
-  }
+  // private void decreaseNumberOfTiles() {
+  //   int currentNumberOfTiles = this.maxTilesTotal;
+  //   while (currentNumberOfTiles > this.maxTilesForGame){
+  //     --currentNumberOfTiles;
+  //     this.tiles.remove(0);   /* remove first element */
+  //   }
+  // }
 
 
 
@@ -88,58 +86,49 @@ public final class HexagonalBag implements Bag {
     readStarterHabitatTiles();        /* 15 tiles (5 * 3) */
   }
 
-
-
   
-  /**
-   * read all habitat tiles with three animals in `tiles`.
-   * throws IOException if file not found or can't be read
-   * */
-  private void readHabitatTilesThreeAnimals() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_HABITAT_TILE_THREE_ANIMALS))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        var row = line.split("\\s+");
-        tiles.add(                /* tile,   tile,   animal, animal, animal */
-          getHabitatTileThreeAnimals(row[0], row[1], row[2], row[3], row[4])
-        );
-      }
-    }
+  
+  
+  // private void readTiles(String path, Function<String[], Tile> tileMapper) throws IOException {
+    //   try (var reader = Files.newBufferedReader(Paths.get(path))) {
+      //     String line;
+      //     while ((line = reader.readLine()) != null) {
+        //       var row = line.split("\\s+");
+        //       tiles.add(tileMapper.apply(row));
+        //     }
+        //   }
+        // }
+        
+
+
+  private void readHabitatTilesThreeAnimals() throws IOException {           /* tile,   tile,  animal, animal, animal */
+    BagUtils.readTiles(Constants.PATH_HABITAT_TILE_THREE_ANIMALS, row -> tiles.add(getHabitatTile(row[0], row[1], row[2], row[3], row[4])));
   }
 
-
-  /**
-   * read all habitat tiles with two animals in `tiles`.
-   * throws IOException if file not found or can't be read
-   * */
-  private void readHabitatTilesTwoAnimals() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_HABITAT_TILE_TWO_ANIMALS))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        var row = line.split("\\s+");
-        tiles.add(                /* tile,   tile,   animal, animal */
-          getHabitatTileTwoAnimals(row[0], row[1], row[2], row[3])
-        );
-      }
-    }
+  private void readHabitatTilesTwoAnimals() throws IOException {            /* tile,   tile,  animal, animal */
+    BagUtils.readTiles(Constants.PATH_HABITAT_TILE_TWO_ANIMALS, row -> tiles.add(getHabitatTile(row[0], row[1], row[2], row[3])));
   }
 
+  private void readKeystoneTiles() throws IOException {           /* tile,  animal */
+    BagUtils.readTiles(Constants.PATH_KEYSTONE_TILE, row -> tiles.add(getKeystoneTile(row[0], row[1])));
+  }
+
+  // private void readHabitatTilesThreeAnimals() throws IOException {           /* tile,   tile,  animal, animal, animal */
+  //   readTiles(Constants.PATH_HABITAT_TILE_THREE_ANIMALS, row -> getHabitatTile(row[0], row[1], row[2], row[3], row[4]));
+  // }
+
+  // private void readHabitatTilesTwoAnimals() throws IOException {            /* tile,   tile,  animal, animal */
+  //   readTiles(Constants.PATH_HABITAT_TILE_TWO_ANIMALS, row -> getHabitatTile(row[0], row[1], row[2], row[3]));
+  // }
 
   /**
    * read all keystone tiles in `tiles`.
    * throws IOException if file not found or can't be read
    * */
-  private void readKeystoneTiles() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_KEYSTONE_TILE))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        var row = line.split("\\s+");
-        tiles.add(      /* tile,  animal */
-          getKeystoneTile(row[0], row[1])
-        );
-      }
-    }
-  }
+  // private void readKeystoneTiles() throws IOException {           /* tile,  animal */
+  //   readTiles(Constants.PATH_KEYSTONE_TILE, row -> getKeystoneTile(row[0], row[1]));
+  // }
+
 
 
   /**
@@ -152,22 +141,18 @@ public final class HexagonalBag implements Bag {
    * <p>source: github/Cascadia/docs/Cascadia_rules_english.pdf</p>
    * */
   private void readStarterHabitatTiles() throws IOException {
-    int index = 0;
-    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_STARTER_HABITAT_TILE))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        var row = line.split("\\s+");
-        /* toptile */                         /* tile,  animal */
-        HexagonalBag.starters[index][0] = getKeystoneTile(row[0], row[1]);
-        /* leftTile */                                /* tile,   tile,   animal, animal, animal */
-        HexagonalBag.starters[index][1] = getHabitatTileThreeAnimals(row[2], row[3], row[4], row[5], row[6]);
-        /* rightTile */                            /* tile,   tile,   animal, animal */
-        HexagonalBag.starters[index][2] = getHabitatTileTwoAnimals(row[7], row[8], row[9], row[10]);
-        index++;
-      }
-    }
-    shuffleStarterHabitats(HexagonalBag.starters);  /* shuffle them for more random game */
+    BagUtils.readTiles(Constants.PATH_STARTER_HABITAT_TILE, row -> {
+        var index = tiles.size();
+        /* toptile */                           /* tile,  animal */
+        this.starters[index][0] = getKeystoneTile(row[0], row[1]);
+        /* leftTile */                        /* tile,   tile,   animal, animal, animal */
+        this.starters[index][1] = getHabitatTile(row[2], row[3], row[4], row[5], row[6]);
+        /* rightTile */                       /* tile,   tile,   animal, animal */
+        this.starters[index][2] = getHabitatTile(row[7], row[8], row[9], row[10]);
+    });
+    shuffleStarterHabitats(this.starters);  // shuffle them for a more random game
   }
+
 
 
 
@@ -177,9 +162,10 @@ public final class HexagonalBag implements Bag {
    * */
   @Override
   public Tile getRandomTile() {
-    var random = new Random();
-    var randomIndex = random.nextInt(HexagonalBag.tiles.size()); /* in [0, tiles.size()[ */
-    return HexagonalBag.tiles.remove(randomIndex);
+    // var random = new Random();
+    // var randomIndex = random.nextInt(this.tiles.size()); /* in [0, tiles.size()[ */
+    // return this.tiles.remove(randomIndex);
+    return BagUtils.getRandomTile(this.tiles);
   }
 
 
@@ -189,7 +175,7 @@ public final class HexagonalBag implements Bag {
       return null;
     }
     this.indexStarterHabitatTile++;
-    return starters[this.indexStarterHabitatTile];
+    return this.starters[this.indexStarterHabitatTile];
   }
 
 
@@ -197,10 +183,7 @@ public final class HexagonalBag implements Bag {
    * Gives random KeystoneTile
    * @return one KeystoneTile from array `tiles`
    */
-  private static Tile getKeystoneTile(
-      String tile,
-      String animal
-    ) {
+  private static Tile getKeystoneTile(String tile, String animal) {
     return new Tile(
       TileType.valueOf(tile),
       TileType.valueOf(tile),
@@ -208,39 +191,21 @@ public final class HexagonalBag implements Bag {
     );
   }
 
-  /**
-   * Gives random HabitatTile with two animals
-   * @return one HabitatTile from array `tiles`
-   */
-  private Tile getHabitatTileTwoAnimals(
-      String firstTile, String secondTile,
-      String firstAnimal, String secondAnimal
-    ) {
-    var firstHabitat = TileType.valueOf(firstTile);
-    var secondHabitat = TileType.valueOf(secondTile);
-    var twoAnimals = Set.of(
-        WildlifeType.valueOf(firstAnimal),
-        WildlifeType.valueOf(secondAnimal)
-    );
-    return new Tile(firstHabitat, secondHabitat, twoAnimals);
-  }
+
+  /* to improve this method, we can use reflection */
+
 
   /**
    * Gives random HabitatTile with three animals
    * @return one HabitatTile from array `tiles`
    */
-  private Tile getHabitatTileThreeAnimals(
-      String firstTile, String secondTile,
-      String firstAnimal, String secondAnimal, String thirdAnimal
-    ) {
+  private Tile getHabitatTile(String firstTile, String secondTile, String... animals) {
     var firstHabitat = TileType.valueOf(firstTile);
     var secondHabitat = TileType.valueOf(secondTile);
-    var threeAnimals = Set.of(
-        WildlifeType.valueOf(firstAnimal),
-        WildlifeType.valueOf(secondAnimal),
-        WildlifeType.valueOf(thirdAnimal)
-    );
-    return new Tile(firstHabitat, secondHabitat, threeAnimals);
+    var setAnimals = Arrays.stream(animals)
+                           .map(WildlifeType::valueOf)
+                           .collect(Collectors.toSet());
+    return new Tile(firstHabitat, secondHabitat, setAnimals);
   }
 
   
@@ -248,7 +213,7 @@ public final class HexagonalBag implements Bag {
    * Shuffle starter habitats tiles for more random game
    * @param starterHabitats array of StarterHabitatTile
    */
-  private  void shuffleStarterHabitats(Tile[][] starterHabitats) {
+  private void shuffleStarterHabitats(Tile[][] starterHabitats) {
     var random = new Random();
     for (var i = starterHabitats.length - 1; i > 0; --i) {
       var randomIndex = random.nextInt(i + 1);
@@ -257,18 +222,6 @@ public final class HexagonalBag implements Bag {
       starterHabitats[randomIndex] = starterHabitats[i];
       starterHabitats[i] = tmp;
     }
-  }
-
-
-
-  @Override
-  public String toString() {
-    var builder = new StringBuilder();
-    for (var tile : tiles) {
-      builder.append(" ").append(tile.toString()).append("\n");
-    }
-    //builder.append(starterHabitats.toString());
-    return builder.toString();
   }
 
 
@@ -282,12 +235,7 @@ public final class HexagonalBag implements Bag {
    */
   @Override
   public final WildlifeType updateToken(WildlifeType token) {
-
-    /* return into deck current token */
-    var index = token.ordinal();
-    animals[index]++;
-
-    return getRandomToken();
+    return BagUtils.updateToken(token, this.animals);
   }
 
 
@@ -299,24 +247,19 @@ public final class HexagonalBag implements Bag {
    * @return WildlifeType - the randomly selected token.
    */
   @Override
-  public final WildlifeType getRandomToken(){
-    int index;
-    int iteration = 0;
-    var random = new Random();
-
-    /* we have max iteration, to prevent infinity loop */
-    while (iteration <= Constants.MAX_ITERATION) {
-        index = random.nextInt(animals.length);   /* random integer in range [0, 5[ */
-        ++iteration;
-
-        if (animals[index] > 0) {   /* if tokens of this animals are still available */
-            animals[index]--;
-            return WildlifeType.values()[index];
-        }
-    }
-    /* normally it shouldn't happen */
-    throw new IllegalArgumentException("Maximum number of iterations exceeded in drawToken()");
+  public final WildlifeType getRandomToken() {
+    return BagUtils.getRandomToken(this.animals);
   }
 
+
+  @Override
+  public String toString() {
+    var builder = new StringBuilder();
+    for (var tile : this.tiles) {
+      builder.append(" ").append(tile.toString()).append("\n");
+    }
+    //builder.append(starterHabitats.toString());
+    return builder.toString();
+  }
 
 }

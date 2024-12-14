@@ -5,15 +5,14 @@ import fr.uge.environment.TileType;
 import fr.uge.environment.WildlifeType;
 import fr.uge.util.Constants;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Objects;
-import java.util.Random;
+import java.util.LinkedList;
 import java.util.Set;
 
-
+// add generics: 
+// Bag of Animals
+// Bag of Tiles
+// to think well how to implement it
 public final class SquareBag implements Bag {
 
   /**
@@ -24,7 +23,7 @@ public final class SquareBag implements Bag {
    * FOX    : 3 <br>
    * SALMON : 4 <br>
    */
-  private static final int[] animals =  {
+  private final int[] animals = {
     Constants.ANIMALS_SQUARE,  /* BEAR   */
     Constants.ANIMALS_SQUARE,  /* ELK    */
     Constants.ANIMALS_SQUARE,  /* HAWK   */
@@ -32,14 +31,14 @@ public final class SquareBag implements Bag {
     Constants.ANIMALS_SQUARE   /* SALMON */
   };
 
-  /* fill tiles with needed number of tiles for a game */
-  private static final ArrayList<Tile> tiles = new ArrayList<>();
-
   /* ((Constants.TILES_PER_PLAYER + MAX_TILES_ON_STARTER) * numberOfPlayers) + Constants.THREE = 49 */
   /* ((20 + 3) * 2) + 3 = 49 */
 
+  /* fill tiles with needed number of tiles for a game */
+  // private final ArrayList<Tile> tiles = new ArrayList<>();
+  private final LinkedList<Tile> tiles = new LinkedList<>();
+
   private static final int MAX_TILES_FOR_GAME = Constants.MAX_TILES_SQUARE - 1;
-  private static final int MAX_TILES_TOTAL = Constants.MAX_TILES_SQUARE;
 
   public SquareBag(int numberOfPlayers) {
     if (!Constants.isValidNbPlayers(numberOfPlayers)) {
@@ -50,8 +49,8 @@ public final class SquareBag implements Bag {
     } catch (IOException e) {
       System.err.println("Error initializing tiles: " + e.getMessage());
     }
-    Collections.shuffle(SquareBag.tiles);
-    decreaseNumberOfTiles();
+    Collections.shuffle(this.tiles);
+    BagUtils.decreaseNumberOfTiles(this.tiles, MAX_TILES_FOR_GAME);
   }
 
 
@@ -59,13 +58,13 @@ public final class SquareBag implements Bag {
    * Decrease number of tiles in bag to maxTilesForGame
    * Result: it takes one tile from the bag
    */
-  private void decreaseNumberOfTiles() {
-    int currentNumberOfTiles = SquareBag.MAX_TILES_FOR_GAME;
-    while (currentNumberOfTiles > SquareBag.MAX_TILES_TOTAL) {
-      --currentNumberOfTiles;
-      SquareBag.tiles.remove(0);  /* remove first element */
-    }
-  }
+  // private void decreaseNumberOfTiles() {
+  //   int currentNumberOfTiles = SquareBag.MAX_TILES_FOR_GAME;
+  //   while (currentNumberOfTiles > SquareBag.MAX_TILES_TOTAL) {
+  //     --currentNumberOfTiles;
+  //     this.tiles.remove(0);  /* remove first element */
+  //   }
+  // }
 
 
   /**
@@ -73,48 +72,43 @@ public final class SquareBag implements Bag {
    * throws IOException if file not found or can't be read
    */
   private void initializeGame() throws IOException {
-    readSquareTiles();
+    BagUtils.readTiles(Constants.PATH_HABITAT_TILE_SQUARE, row -> tiles.add(getSquareTiles(row[0], row[1], row[2])));
   }
-
 
   /**
    * read all square tiles from config files into `tiles` variable.
    * throws IOException if file not found or can not be read
   */
-  private void readSquareTiles() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_SQUARE_HABITAT_TILE))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        var row = line.split("\\s+");
-                                       /* tile   animal  animal */
-        var habitatTile = getSquareTiles(row[0], row[1], row[2]);
-        tiles.add(habitatTile);
-      }
-    }
-  }
 
 
   /**
    * Gives random HabitatTile with one tile and two animals
    * @return one HabitatTile from array `tiles`
    */
-  private Tile getSquareTiles(
-      String oneTile,
-      String firstAnimal, String secondAnimal
-    ) {
+  private Tile getSquareTiles(String oneTile, String ... animals) {
     var tile = TileType.valueOf(oneTile);
-    var set = Set.of(WildlifeType.valueOf(firstAnimal), WildlifeType.valueOf(secondAnimal));
+    var set = Set.of(WildlifeType.valueOf(animals[0]), WildlifeType.valueOf(animals[1]));
     return new Tile(tile, tile, set);
   }
 
+  /**
+   * Gives random tile from the bag
+   * @return random tile from the bag
+   * @throws IllegalStateException if the bag is empty
+   */
   @Override
   public Tile getRandomTile() {
-    var random = new Random();
-    var randomIndex = random.nextInt(SquareBag.tiles.size()); /* in [0, tiles.size()[ */
-    return SquareBag.tiles.remove(randomIndex);
+    // var random = new Random();
+    // var randomIndex = random.nextInt(this.tiles.size()); /* in [0, tiles.size()[ */
+    // return this.tiles.remove(randomIndex);
+    return BagUtils.getRandomTile(this.tiles);
   }
 
-
+  /**
+   * Gives 3 random tiles from the bag
+   * There no keystone tiles in the square version
+   * @return array of 3 random tiles
+   */
   @Override
   public Tile[] getStarter(){
                       /*  topTile          leftTile         rightTile  */
@@ -122,24 +116,62 @@ public final class SquareBag implements Bag {
   }
 
 
+  
   /************************ TOKENS ****************************/
 
+
+  @Override
+  public final WildlifeType updateToken(WildlifeType token) {
+    return BagUtils.updateToken(token, this.animals);
+  }
 
   /**
    * This method is called when we need to replace a token on the game board with a new one.
    * @param token token to change
    * @return new token.
    */
+  // @Override
+  // public final WildlifeType updateToken(WildlifeType token) {
+  //   Objects.requireNonNull(token, "Token must not be null!");
+
+  //   /* return into deck current token */
+  //   var index = token.ordinal();
+  //   this.animals[index]++;
+
+  //   return getRandomToken();
+  // }
+
+
+
+
+
   @Override
-  public final WildlifeType updateToken(WildlifeType token) {
-    Objects.requireNonNull(token, "Token must not be null!");
-
-    /* return into deck current token */
-    var index = token.ordinal();
-    animals[index]++;
-
-    return getRandomToken();
+  public final WildlifeType getRandomToken() {
+    return BagUtils.getRandomToken(this.animals);
   }
+
+  //     return getRandomTokenStream()
+  //             .findFirst()
+  //             .orElseGet(this::getFallbackToken);
+  // }
+
+  // private Stream<WildlifeType> getRandomTokenStream() {
+  //     var random = new Random();
+  //     return IntStream.range(0, Constants.MAX_ITERATION)
+  //                     .mapToObj(_ -> random.nextInt(this.animals.length))
+  //                     .filter(index -> this.animals[index] > 0)
+  //                     .peek(index -> this.animals[index]--)
+  //                     .map(index -> WildlifeType.values()[index]);
+  // }
+
+  // private WildlifeType getFallbackToken() {
+  //     return Arrays.stream(WildlifeType.values())
+  //                 .filter(animal -> this.animals[animal.ordinal()] > 0)
+  //                 .findFirst()
+  //                 .orElseThrow(() -> new IllegalStateException("No tokens available, game over!"));
+  // }
+
+
 
 
   /**
@@ -149,25 +181,23 @@ public final class SquareBag implements Bag {
    *
    * @return WildlifeType - the randomly selected token.
    */
-  @Override
-  public final WildlifeType getRandomToken(){
-    int index;
-    int iteration = 0;
-    var random = new Random();
-
-    /* we have max iteration, to prevent infinity loop */
-    while (iteration <= Constants.MAX_ITERATION) {
-        index = random.nextInt(animals.length);   /* random integer in range [0, 5[ */
-        ++iteration;
-
-        if (animals[index] > 0) {   /* if tokens of this animals are still available */
-            animals[index]--;
-            return WildlifeType.values()[index];
-        }
-    }
-    /* normally it shouldn't happen */
-    throw new IllegalArgumentException("Maximum number of iterations exceeded in drawToken()");
-  }
+  // @Override
+  // public final WildlifeType getRandomToken(){
+  //   var iteration = 0;
+  //   var random = new Random();
+  //   var length = this.animals.length;
+  //   /* we have max iteration, to prevent infinity loop */
+  //   while (iteration <= Constants.MAX_ITERATION) {
+  //       var index = random.nextInt(length);   /* random integer in range [0, 5[ */
+  //       ++iteration;
+  //       if (this.animals[index] > 0) {   /* if tokens of this animals are still available */
+  //           this.animals[index]--;
+  //           return WildlifeType.values()[index];
+  //       }
+  //   }
+  //   /* normally it shouldn't happen */
+  //   throw new IllegalArgumentException("Maximum number of iterations exceeded in drawToken()");
+  // }
 
 
 }

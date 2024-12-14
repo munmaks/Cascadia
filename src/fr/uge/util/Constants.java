@@ -10,7 +10,7 @@ public final class Constants {
   
 
   /* Turn Manager */
-  public static final int MAX_GAME_TURNS = 5;
+  public static final int MAX_GAME_TURNS = 2;
 
   
   /* Game Board */
@@ -22,7 +22,7 @@ public final class Constants {
   /* Environment */
   // public static final int MAX_ROW = 12;
   // public static final int MAX_COL = 12;
-  
+
   public static final int NB_NEIGHBORS_SQUARE = 4;
   public static final int NB_NEIGHBORS_HEXAGONAL = 6;
   public static final int MAX_ROTATIONS = 6;  /* for hexagonals */
@@ -33,7 +33,7 @@ public final class Constants {
   public static final int NB_TOKENS = 5;
 
 
-  
+
   /**<b>
    * Direction offsets based on "odd-r" layout<br>
    *       (x, y)</b><br><br>
@@ -81,7 +81,7 @@ public final class Constants {
 
   /* constants for configurations */
   private static final String CONFIG_PATH = "config/";
-  public static final String PATH_SQUARE_HABITAT_TILE        = CONFIG_PATH + "configSquareHabitatTile.txt";
+  public static final String PATH_HABITAT_TILE_SQUARE        = CONFIG_PATH + "configSquareHabitatTile.txt";
   public static final String PATH_KEYSTONE_TILE              = CONFIG_PATH + "configKeystoneTile.txt";
   public static final String PATH_HABITAT_TILE_TWO_ANIMALS   = CONFIG_PATH + "configHabitatTileTwoAnimals.txt";
   public static final String PATH_HABITAT_TILE_THREE_ANIMALS = CONFIG_PATH + "configHabitatTileThreeAnimals.txt";
@@ -104,7 +104,7 @@ public final class Constants {
   /* Tokens */
   public static final int ANIMALS_HEXAGONAL = 20;
   public static final int ANIMALS_SQUARE = 10;
-  public static final int MAX_ITERATION = 0xF;   /* some number to prevent infinity loop */
+  public static final int MAX_ITERATION = 0xFF;   /* some number to prevent infinity loop */
   
   /* useful methods across the project */
   public static boolean isValidVersion(int version) {
