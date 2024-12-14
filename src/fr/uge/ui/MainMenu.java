@@ -4,6 +4,7 @@ package fr.uge.ui;
 import fr.uge.core.*;
 import fr.uge.environment.Coordinates;
 import fr.uge.environment.Tile;  // enable preview
+import fr.uge.environment.TileType;
 import fr.uge.environment.WildlifeType;
 import fr.uge.scoring.FamilyAndIntermediateScoringCards;
 import fr.uge.scoring.WildlifeScoringCard;
@@ -11,6 +12,7 @@ import fr.uge.util.Constants;
 import java.io.IO;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 // import java.util.Arrays;
@@ -25,10 +27,10 @@ public final class MainMenu {
   /*
    * Main menu contains, bottoms: Play and Settings (to choose number of players and Wildlife Scoring Cards)
    * 
-   * */
+   **/
   private final int version;
-  private final int nbPlayers;
-  private final List<WildlifeScoringCard> scoringCards = new ArrayList<WildlifeScoringCard>();
+  private final int numberOfPlayers;
+  private final List<WildlifeScoringCard> scoringCards = new ArrayList<>();
   private final boolean isIntermediateScoringCard;
 
 
@@ -58,7 +60,7 @@ public final class MainMenu {
       throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     this.version = version;
-    this.nbPlayers = 0;   // to do later
+    this.numberOfPlayers = 0;   // to do later
     this.isIntermediateScoringCard = false; // to do, later, 0 is Family Card, 1 is Intermediate Card
 
     if (this.version == Constants.VERSION_SQUARE){
@@ -75,6 +77,11 @@ public final class MainMenu {
   }
   
 
+  /**
+   * 1 for Family, 2 for Intermediate
+   * 
+   * Still need to improve it
+   */
   private int chooseVersion(){
     System.out.println("Choose scoring card: ");
     var choice = IO.readln("1 for Family\n2 for Intermediate \n");
@@ -98,9 +105,9 @@ public final class MainMenu {
 
   private void showEnvironment(Player player){
     Objects.requireNonNull(player);
-    System.out.println("\n\nIt's " + player.name() + "'s turn!");
-    System.out.println("\nHere is " + player.name() + "'s environment: ");
-    var listCells = player.environment().getCells();
+    System.out.println("\n\nIt's " + player.getName() + "'s turn!");
+    System.out.println("\nHere is " + player.getName() + "'s environment: ");
+    var listCells = player.getEnvironment().getCells();
 
     // System.err.println("Size of list : " + listCells.size());  // for test, to delete later
     for (var cell : listCells){
@@ -128,9 +135,9 @@ public final class MainMenu {
   private void showPossibleCoordinates(Player player){
     Objects.requireNonNull(player);
     System.out.println("\nHere are the possible coordinates:\n`empty (x, y)` - neighbor tile");
-    var setOfCells = player.environment().getPossibleCells();
+    var setOfCells = player.getEnvironment().getPossibleCells();
     for (var cell : setOfCells){
-      player.environment().printAllNeighbors(cell);
+      player.getEnvironment().printAllNeighbors(cell);
     }
   }
 
@@ -141,7 +148,7 @@ public final class MainMenu {
     Objects.requireNonNull(token, "token is null in showPossibleTokenPlacement()");
 
     System.out.println("Here are the possible coordinates to place the token: ");
-    var listOfCells = player.environment().getCells();
+    var listOfCells = player.getEnvironment().getCells();
 
     for (var cell : listOfCells){
       if (cell == null){
@@ -232,8 +239,8 @@ public final class MainMenu {
     var userCoordinatesString = IO.readln("Give me coordinates of tile, that you want to place the token on (format: \"x, y\"): ");
 
     var userCoordinates = getCoordinatesFromUser(userCoordinatesString);
-    var currCell = player.environment().getCell(userCoordinates);
-    var tokenWasPlaced = player.environment().placeAnimal(currCell, chosedToken);
+    var currCell = player.getEnvironment().getCell(userCoordinates);
+    var tokenWasPlaced = player.getEnvironment().placeAnimal(currCell, chosedToken);
 
     if (!tokenWasPlaced){
       System.err.println("Token wasn't placed");  /* for tests, to delete later */
@@ -244,7 +251,7 @@ public final class MainMenu {
   private void handleTilePlacement(Player player, Tile chosedTile){
     Objects.requireNonNull(player);
     Objects.requireNonNull(chosedTile);
-    var possibleCoordinates = player.environment().getPossibleCells();
+    var possibleCoordinates = player.getEnvironment().getPossibleCells();
 
     /* player has to place tile correctly */
     do {
@@ -253,8 +260,8 @@ public final class MainMenu {
 
       if (possibleCoordinates.stream()
                              .anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
-        var currCell = player.environment().getCell(userCoordinates);
-        if (player.environment().placeTile(currCell, chosedTile)){
+        var currCell = player.getEnvironment().getCell(userCoordinates);
+        if (player.getEnvironment().placeTile(currCell, chosedTile)){
           System.out.println("Tile was placed successfully (for test Main Menu)");  // for test, to delete later
           break;
         }
@@ -283,9 +290,47 @@ public final class MainMenu {
 //  }
 
 
+  /**
+   * 2-player game: 2 point bonus to the player with
+   * the largest habitat corridor in each of the habitat types.
+   * If tied, 1 bonus point each. No bonus points for second largest.
+   */
+  // private twoPlayerGameScoring(){
+  //   // to do later
+  // }
+
+
+  private String showScoreTile(Map<TileType, Integer> scoreTile){
+    var builder = new StringBuilder();
+    for (var entry : scoreTile.entrySet()){
+      builder.append(entry.getKey().toString()).append(": ").append(entry.getValue()).append(" pts");
+    }
+    return builder.toString();
+  }
+
+
+  private void showTokensMap(Player player, FamilyAndIntermediateScoringCards card){
+    Objects.requireNonNull(player);
+    Objects.requireNonNull(card);
+    var values = WildlifeType.values();
+    for (var value : values){
+      var map = card.getWildlifeTokenMap(player.getEnvironment(), value);
+      for (var entry : map.entrySet()){
+        System.out.println("For " + value.toString() + ": " + entry.getKey().toString() + ": " + card.getFamilyAndIntermediateGroupSizeToPoints(entry.getKey()) * entry.getValue() + " points");
+      }
+    }
+  }
+
+
   private void showPlayerScore(Player player, FamilyAndIntermediateScoringCards card) {
-    System.out.println(player.name() + " your final score: " + card.getScore(player) + "\n");
-    System.out.println(player.name() + " your tiles score: " + player.environment().calculateTileScore() + "\n");
+    var score = card.getScore(player.getEnvironment());
+    System.out.println("\n" + player.getName() + " your final score: " + (score + player.calculateScore()));
+
+    var scoreTile = player.getEnvironment().calculateTileScore();
+    System.out.println("Based on the scoring card: \n" + showScoreTile(scoreTile) + "\n");
+
+    showTokensMap(player, card);
+
   }
 
 

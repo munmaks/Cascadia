@@ -23,6 +23,12 @@ public record Tile (
     Objects.requireNonNull(animals, "Animals can't be null");
   }
 
+  /**
+   * Check if the tile is a keystone tile
+   * 
+   * @return <b>true</b> if the tile is a keystone tile
+   *        <b>false</b> otherwise
+   */
   public final boolean isKeystone(){
     return firstHabitat.equals(secondHabitat);
   }
@@ -31,11 +37,11 @@ public record Tile (
   /* to improve later */
   private String habitatsAndAnimalsAsString() {
     var builder = new StringBuilder();
-    var separator = ": (";
     builder.append(firstHabitat).append(" ");
     if (!this.isKeystone()) {
       builder.append(secondHabitat);
     }
+    var separator = ": (";
     for (var animal : this.animals) {  /* two or three animals */
       builder.append(separator).append(animal);
       separator = ", ";

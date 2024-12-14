@@ -81,7 +81,7 @@ public final class Constants {
 
   /* constants for configurations */
   private static final String CONFIG_PATH = "config/";
-  public static final String PATH_SQUARE_HABITAT_TILE        = CONFIG_PATH + "configSquareHabitatTile.txt";
+  public static final String PATH_HABITAT_TILE_SQUARE        = CONFIG_PATH + "configSquareHabitatTile.txt";
   public static final String PATH_KEYSTONE_TILE              = CONFIG_PATH + "configKeystoneTile.txt";
   public static final String PATH_HABITAT_TILE_TWO_ANIMALS   = CONFIG_PATH + "configHabitatTileTwoAnimals.txt";
   public static final String PATH_HABITAT_TILE_THREE_ANIMALS = CONFIG_PATH + "configHabitatTileThreeAnimals.txt";

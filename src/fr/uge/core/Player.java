@@ -16,7 +16,7 @@ public final class Player {
   private final String name;    /* just for counting later */
   private final Environment environment;
   private int natureTokens = 0;
-
+  private int score = 0;
 
   /**
    * To think later how we get here all wildlife scoring card?
@@ -34,15 +34,15 @@ public final class Player {
   }
 
 
-  public final Environment environment() {
+  public final Environment getEnvironment() {
     return this.environment;
   }
 
-  public final int natureTokens() {
+  public final int getNatureTokens() {
     return this.natureTokens;
   }
 
-  public final String name() {
+  public final String getName() {
     return this.name;
   }
 
@@ -65,13 +65,17 @@ public final class Player {
   }
 
 
-  /** calculates the player's based on his environment and current wildlife cards */
+  /** calculates the player's score based on his environment and current wildlife cards */
   public final int calculateScore() {
-    int score = 0;
-    
+    score += environment.calculateTileScore()
+                        .values()
+                        .stream()
+                        .mapToInt(Integer::intValue)
+                        .sum();
     return score;
   }
-  
+
+
 
   // public final Map<TileType, Integer> calculateTileScore() {
   //   var tileTypes = TileType.values();

@@ -5,12 +5,9 @@ import fr.uge.environment.TileType;
 import fr.uge.environment.WildlifeType;
 import fr.uge.util.Constants;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Set;
-
 
 // add generics: 
 // Bag of Animals
@@ -36,11 +33,12 @@ public final class SquareBag implements Bag {
 
   /* ((Constants.TILES_PER_PLAYER + MAX_TILES_ON_STARTER) * numberOfPlayers) + Constants.THREE = 49 */
   /* ((20 + 3) * 2) + 3 = 49 */
-  
+
   /* fill tiles with needed number of tiles for a game */
-  private final ArrayList<Tile> tiles = new ArrayList<>();
+  // private final ArrayList<Tile> tiles = new ArrayList<>();
+  private final LinkedList<Tile> tiles = new LinkedList<>();
+
   private static final int MAX_TILES_FOR_GAME = Constants.MAX_TILES_SQUARE - 1;
-  private static final int MAX_TILES_TOTAL = Constants.MAX_TILES_SQUARE;
 
   public SquareBag(int numberOfPlayers) {
     if (!Constants.isValidNbPlayers(numberOfPlayers)) {
@@ -52,7 +50,7 @@ public final class SquareBag implements Bag {
       System.err.println("Error initializing tiles: " + e.getMessage());
     }
     Collections.shuffle(this.tiles);
-    BagUtils.decreaseNumberOfTiles(this.tiles, MAX_TILES_FOR_GAME, MAX_TILES_TOTAL);
+    BagUtils.decreaseNumberOfTiles(this.tiles, MAX_TILES_FOR_GAME);
   }
 
 
@@ -74,40 +72,30 @@ public final class SquareBag implements Bag {
    * throws IOException if file not found or can't be read
    */
   private void initializeGame() throws IOException {
-    readSquareTiles();
+    BagUtils.readTiles(Constants.PATH_HABITAT_TILE_SQUARE, row -> tiles.add(getSquareTiles(row[0], row[1], row[2])));
   }
-
 
   /**
    * read all square tiles from config files into `tiles` variable.
    * throws IOException if file not found or can not be read
   */
-  private void readSquareTiles() throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(Constants.PATH_SQUARE_HABITAT_TILE))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        var row = line.split("\\s+");
-                                       /* tile   animal  animal */
-        var habitatTile = getSquareTiles(row[0], row[1], row[2]);
-        tiles.add(habitatTile);
-      }
-    }
-  }
 
 
   /**
    * Gives random HabitatTile with one tile and two animals
    * @return one HabitatTile from array `tiles`
    */
-  private Tile getSquareTiles(
-      String oneTile,
-      String firstAnimal, String secondAnimal
-    ) {
+  private Tile getSquareTiles(String oneTile, String ... animals) {
     var tile = TileType.valueOf(oneTile);
-    var set = Set.of(WildlifeType.valueOf(firstAnimal), WildlifeType.valueOf(secondAnimal));
+    var set = Set.of(WildlifeType.valueOf(animals[0]), WildlifeType.valueOf(animals[1]));
     return new Tile(tile, tile, set);
   }
 
+  /**
+   * Gives random tile from the bag
+   * @return random tile from the bag
+   * @throws IllegalStateException if the bag is empty
+   */
   @Override
   public Tile getRandomTile() {
     // var random = new Random();
@@ -116,7 +104,11 @@ public final class SquareBag implements Bag {
     return BagUtils.getRandomTile(this.tiles);
   }
 
-
+  /**
+   * Gives 3 random tiles from the bag
+   * There no keystone tiles in the square version
+   * @return array of 3 random tiles
+   */
   @Override
   public Tile[] getStarter(){
                       /*  topTile          leftTile         rightTile  */

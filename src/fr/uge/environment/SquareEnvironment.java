@@ -187,27 +187,40 @@ public final class SquareEnvironment implements Environment {
   }
 
   
+  @Override
+  public void printAllNeighbors(Coordinates coordinates) {
+    Objects.requireNonNull(coordinates, "Coordinates can't be null in printAllNeighbors()");
+
+    getNeighbors(this.cellsMap.get(coordinates)).stream()
+        .map(neighbor -> this.cellsMap.get(neighbor.getCoordinates())) // Map to the cell
+        .filter(Objects::nonNull) // Filter out null cells
+        .filter(cell -> cell.getTile() != null) // Filter cells with null tiles
+        .map(cell -> String.format("%8s  %8s  %6s",
+                coordinates,
+                cell.getTile(),
+                (cell.getAnimal() == null) ? "" : cell.getAnimal())) // Format the output string
+        .forEach(System.out::println); // Print each formatted string
+  }
 
 
   /*
    * We look at all cells in set and then we show them
    */
-  @Override
-  public void printAllNeighbors(Coordinates coordinates) {
-    Objects.requireNonNull(coordinates, "Coordinates can't be null in printAllNeighbors()");
-    var neighbors = getNeighbors(this.cellsMap.get(coordinates));
-    
-    for (var neighbor : neighbors) {
-      var cell = this.cellsMap.getOrDefault(neighbor.getCoordinates(), null);
-      if (cell != null) {
-        var tile = cell.getTile();
-        if (tile == null) {
-          continue;
-        }
-        System.out.println(coordinates + " - " + tile.toString());
-      }
-    }
-  }
+  // @Override
+  // public void printAllNeighbors(Coordinates coordinates) {
+  //   Objects.requireNonNull(coordinates, "Coordinates can't be null in printAllNeighbors()");
+  //   var neighbors = getNeighbors(this.cellsMap.get(coordinates));
+  //   for (var neighbor : neighbors) {
+  //     var builder = new StringBuilder();
+  //     var cell = this.cellsMap.getOrDefault(neighbor.getCoordinates(), null);
+  //     if (cell != null) {
+  //       var tile = cell.getTile();
+  //       if (tile == null) { continue; }
+  //       builder.append(coordinates).append(" - ").append(tile.toString()).append(" - ").append(cell.getAnimal());
+  //       System.out.println(builder);
+  //     }
+  //   }
+  // }
 
 
 
