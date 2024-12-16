@@ -23,9 +23,9 @@ enum SalmonScoringType {
 
 }
 
-public record SalmonScoringCard(SalmonScoringType version) implements WildlifeScoringCard {
+public final class SalmonScoringCard implements WildlifeScoringCard {
 
-  public SalmonScoringCard {
+  public SalmonScoringCard(SalmonScoringType version) {
     
   }
 

@@ -165,6 +165,7 @@ public final class MainMenu {
    * to do later
    */
   private void showScore(Game game){
+    Objects.requireNonNull(game);
     System.out.println("Game is over!\nThank you for playing!");
 
     //
@@ -177,6 +178,7 @@ public final class MainMenu {
 
 
   private Coordinates getCoordinatesFromUser(String message){
+    Objects.requireNonNull(message);
     int x, y;
     try (Scanner s = new Scanner(message).useDelimiter(",\\s*")){
       x = s.nextInt();
@@ -221,6 +223,7 @@ public final class MainMenu {
 
 
   private void handleTurnChange(Game game){
+    Objects.requireNonNull(game);
     game.board().setDefaultTokensAreUpdated();  // that means, next person can change tokens (if needed)
     game.turnManager().changePlayer();
     game.turnManager().nextTurn();
@@ -271,6 +274,8 @@ public final class MainMenu {
 
 
   private void showPlayerEnvironmentAndGameBoard(Player player, GameBoard board){
+    Objects.requireNonNull(player);
+    Objects.requireNonNull(board);
     showEnvironment(player);
     showPossibleCoordinates(player);
     showGameBoard(board);
@@ -301,9 +306,10 @@ public final class MainMenu {
 
 
   private String showScoreTile(Map<TileType, Integer> scoreTile){
+    Objects.requireNonNull(scoreTile);
     var builder = new StringBuilder();
     for (var entry : scoreTile.entrySet()){
-      builder.append(entry.getKey().toString()).append(": ").append(entry.getValue()).append(" pts");
+      builder.append(entry.getKey().toString()).append(": ").append(entry.getValue()).append(" pts\n");
     }
     return builder.toString();
   }
@@ -323,26 +329,26 @@ public final class MainMenu {
 
 
   private void showPlayerScore(Player player, FamilyAndIntermediateScoringCards card) {
+    Objects.requireNonNull(player);
+    Objects.requireNonNull(card);
     var score = card.getScore(player.getEnvironment());
-    System.out.println("\n" + player.getName() + " your final score: " + (score + player.calculateScore()));
-
+    
+    System.out.println("\nPlayer " + player.getName() + " here is your details.\n");
     var scoreTile = player.getEnvironment().calculateTileScore();
     System.out.println("Based on the scoring card: \n" + showScoreTile(scoreTile) + "\n");
-
+    
     showTokensMap(player, card);
-
+    System.out.println("\n" + player.getName() + " your final score: " + (score + player.calculateScore()));
   }
 
 
   private void calculateAndShowScore(Game game, int familyOrIntermediate){
-    // var listOfPlayerScores = calculateListOfScores(game);
+    Objects.requireNonNull(game);
     var scoringCard = new FamilyAndIntermediateScoringCards(familyOrIntermediate);
 
     for (var i = 0; i < game.getPlayerCount(); ++i) {
-      showPlayerScore(game.turnManager().getPlayerByIndex(i), scoringCard);
+      showPlayerScore(game.getPlayerByIndex(i), scoringCard);
     }
-    // showPlayersScores(listOfPlayerScores);
-    // showScore(game);
   }
 
   
@@ -357,7 +363,8 @@ public final class MainMenu {
   private void gameLoopVersionSquare(Game game){
     Objects.requireNonNull(game);
     while (!game.turnManager().isGameEnd()) {
-      var currentPlayer = game.turnManager().getCurrentPlayer();
+      var currIndex = game.turnManager().getCurrentPlayerIndex();
+      var currentPlayer = game.getPlayerByIndex(currIndex);
       showPlayerEnvironmentAndGameBoard(currentPlayer, game.board());
 
       handleTokenChange(game);  /* if we need to update tokens */
@@ -391,8 +398,8 @@ public final class MainMenu {
     
     var listOfPlayers = List.of(player1, player2);
     var board = new GameBoard(Constants.NB_PLAYERS_SQUARE, this.version);
-    var turnManager = new TurnManager(listOfPlayers, this.version);
-    Game game = new Game(board, turnManager, listOfPlayers.size(), this.version);
+    var turnManager = new TurnManager(listOfPlayers.size(), this.version);
+    Game game = new Game(board, turnManager, listOfPlayers, this.version);
     gameLoopVersionSquare(game);
     calculateAndShowScore(game, familyOrIntermediate);
 
