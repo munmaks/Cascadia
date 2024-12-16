@@ -33,7 +33,7 @@ public final class SquareEnvironment implements Environment {
     {-1,  0}, { 0, -1}, { 1,  0}, { 0,  1}
   };
 
-  private static final int SQUARE_NUMBER_OF_NEIGHBORS = 4;
+  // private static final int SQUARE_NUMBER_OF_NEIGHBORS = 4;
 
   public SquareEnvironment() {
     /* class for all check and valid parameters to stop checking everytime THE SAME THING */
@@ -43,12 +43,19 @@ public final class SquareEnvironment implements Environment {
   }
 
 
-
-  private Coordinates getNeighborCoordinates(Coordinates coordinates, int direction) {
-    var diff = SQUARE_DIRECTION_DIFFERENCES[direction];
+  /**
+   * Get the coordinates of a neighbor cell.
+   * 
+   * @param cell The cell for which to retrieve a neighbor.
+   * @param direction The direction of the neighbor.
+   * 
+   * @return The coordinates of the neighbor cell.
+   */
+  private Coordinates getNeighborCoordinates(Cell cell, int direction) {
+    var diff = SquareEnvironment.SQUARE_DIRECTION_DIFFERENCES[direction];
     return new Coordinates(
-      coordinates.y() + diff[1],  /* neighborRow */
-      coordinates.x() + diff[0]   /* neighborCol */
+      cell.getCoordinates().y() + diff[1],  /* neighborRow */
+      cell.getCoordinates().x() + diff[0]   /* neighborCol */
     );
   }
 
@@ -65,7 +72,7 @@ public final class SquareEnvironment implements Environment {
   @Override
   public Cell getOneNeighbor(Cell cell, int direction) {
     Objects.requireNonNull(cell, "Cell can't be null in getOneNeighbor()");
-    var currCoordinates = getNeighborCoordinates(cell.getCoordinates(), direction);
+    var currCoordinates = getNeighborCoordinates(cell, direction);
     if (!cell.isOccupiedByTile()){
       return new SquareCell(currCoordinates); // without adding into hashmap
     }
@@ -86,7 +93,7 @@ public final class SquareEnvironment implements Environment {
   @Override
   public List<Cell> getNeighbors(Cell cell) {
       Objects.requireNonNull(cell, "Cell can't be null in getNeighbors()");
-      return IntStream.range(0, SquareEnvironment.SQUARE_NUMBER_OF_NEIGHBORS)
+      return IntStream.range(0, SquareEnvironment.SQUARE_DIRECTION_DIFFERENCES.length)
                       .mapToObj(direction -> getOneNeighbor(cell, direction))
                       // .filter(Objects::nonNull)    // no need to filter, because we create new cell if not exists
                       .collect(Collectors.toUnmodifiableList());
@@ -119,8 +126,8 @@ public final class SquareEnvironment implements Environment {
    * */
   @Override
   public final boolean placeTile(Cell cell, Tile tile) {
-    Objects.requireNonNull(cell, "Cell can't be null in EnvironmentSqaure.placeTile()");
-    Objects.requireNonNull(tile, "Tile can't be null in EnvironmentSqaure.placeTile()");
+    Objects.requireNonNull(cell);
+    Objects.requireNonNull(tile);
     if (cell.placeTile(tile)) {
       addNeighborsInSet(cell);  /* placed and added to all player's occupied cells */
       var currCoordinates = cell.getCoordinates();
@@ -139,7 +146,7 @@ public final class SquareEnvironment implements Environment {
    * */
   @Override
   public final boolean canBePlacedWildlifeToken(WildlifeType token) {
-    Objects.requireNonNull(token, "Wildlife token can't be null in canBePlacedWildlifeToken()");
+    Objects.requireNonNull(token);
     for (var cell : this.cellsMap.values()) {
       if (cell.canBePlaced(token)) { /* found, no need to continue */
         return true;
@@ -156,7 +163,8 @@ public final class SquareEnvironment implements Environment {
     if (!cell.isOccupiedByTile()) {
       return false;
     }
-    return cell.placeAnimal(token);
+    // return cell.placeAnimal(token);
+    return cell.getTile() != null && cell.placeAnimal(token);
   }
 
 
@@ -177,13 +185,15 @@ public final class SquareEnvironment implements Environment {
   /* gets all tiles in the environment */
   @Override
   public final List<Cell> getCells() {
-    return List.copyOf(this.cellsMap.values());
+    // return List.copyOf(this.cellsMap.values());
+    return this.cellsMap.values().stream().collect(Collectors.toUnmodifiableList());
   }
 
 
   @Override
   public final Set<Coordinates> getPossibleCells() {
-    return Set.copyOf(this.cellsSet);
+    // return Set.copyOf(this.cellsSet);
+    return Collections.unmodifiableSet(this.cellsSet);
   }
 
   
@@ -228,12 +238,10 @@ public final class SquareEnvironment implements Environment {
   @Override
   public String toString() {
     var builder = new StringBuilder();
-    // for (var row = 0; row < Constants.MAX_ROW; ++row) {
-    //   for (var col = 0; col < Constants.MAX_COL; ++col) {
-    //     builder.append(this.cellsMap.get(new Coordinates(row, col)).toString());
-    //   }
-    //   builder.append("\n");
-    // }
+    var allCells = this.cellsMap.values();
+    for (var cell : allCells) {
+      builder.append(cell.toString()).append("\n");
+    }
     return builder.toString();
   }
   
@@ -260,8 +268,8 @@ public final class SquareEnvironment implements Environment {
 
 
   private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
-    Objects.requireNonNull(tileType, "TileType can't be null in dfs()");
-    Objects.requireNonNull(cell, "Cell can't be null in dfs()");
+    /* we don't need Objects.requireNonNull(...) because it's internal method 
+     * and we know that tileType, cell and visited are not null */
     if (cell.getTile() == null || visited.contains(cell)) { return 0; } /* no tile or already visited */
     visited.add(cell);
     if (!tileType.equals(cell.getTile().firstHabitat())) { return 0; }   /* not the same tile */

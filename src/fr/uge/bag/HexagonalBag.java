@@ -56,7 +56,7 @@ public final class HexagonalBag implements Bag {
       System.err.println("Error initializing tiles: " + e.getMessage());
     }
     Collections.shuffle(this.tiles);
-    BagUtils.decreaseNumberOfTiles(this.tiles, this.maxTilesForGame);
+    UtilsBag.decreaseNumberOfTiles(this.tiles, this.maxTilesForGame);
   }
 
 
@@ -102,15 +102,15 @@ public final class HexagonalBag implements Bag {
 
 
   private void readHabitatTilesThreeAnimals() throws IOException {           /* tile,   tile,  animal, animal, animal */
-    BagUtils.readTiles(Constants.PATH_HABITAT_TILE_THREE_ANIMALS, row -> tiles.add(getHabitatTile(row[0], row[1], row[2], row[3], row[4])));
+    UtilsBag.readTiles(Constants.PATH_HABITAT_TILE_THREE_ANIMALS, row -> tiles.add(getHabitatTile(row[0], row[1], row[2], row[3], row[4])));
   }
 
   private void readHabitatTilesTwoAnimals() throws IOException {            /* tile,   tile,  animal, animal */
-    BagUtils.readTiles(Constants.PATH_HABITAT_TILE_TWO_ANIMALS, row -> tiles.add(getHabitatTile(row[0], row[1], row[2], row[3])));
+    UtilsBag.readTiles(Constants.PATH_HABITAT_TILE_TWO_ANIMALS, row -> tiles.add(getHabitatTile(row[0], row[1], row[2], row[3])));
   }
 
   private void readKeystoneTiles() throws IOException {           /* tile,  animal */
-    BagUtils.readTiles(Constants.PATH_KEYSTONE_TILE, row -> tiles.add(getKeystoneTile(row[0], row[1])));
+    UtilsBag.readTiles(Constants.PATH_KEYSTONE_TILE, row -> tiles.add(getKeystoneTile(row[0], row[1])));
   }
 
   // private void readHabitatTilesThreeAnimals() throws IOException {           /* tile,   tile,  animal, animal, animal */
@@ -141,7 +141,7 @@ public final class HexagonalBag implements Bag {
    * <p>source: github/Cascadia/docs/Cascadia_rules_english.pdf</p>
    * */
   private void readStarterHabitatTiles() throws IOException {
-    BagUtils.readTiles(Constants.PATH_STARTER_HABITAT_TILE, row -> {
+    UtilsBag.readTiles(Constants.PATH_STARTER_HABITAT_TILE, row -> {
         var index = tiles.size();
         /* toptile */                           /* tile,  animal */
         this.starters[index][0] = getKeystoneTile(row[0], row[1]);
@@ -165,7 +165,7 @@ public final class HexagonalBag implements Bag {
     // var random = new Random();
     // var randomIndex = random.nextInt(this.tiles.size()); /* in [0, tiles.size()[ */
     // return this.tiles.remove(randomIndex);
-    return BagUtils.getRandomTile(this.tiles);
+    return UtilsBag.getRandomTile(this.tiles);
   }
 
 
@@ -235,7 +235,7 @@ public final class HexagonalBag implements Bag {
    */
   @Override
   public final WildlifeType updateToken(WildlifeType token) {
-    return BagUtils.updateToken(token, this.animals);
+    return UtilsBag.updateToken(token, this.animals);
   }
 
 
@@ -248,7 +248,7 @@ public final class HexagonalBag implements Bag {
    */
   @Override
   public final WildlifeType getRandomToken() {
-    return BagUtils.getRandomToken(this.animals);
+    return UtilsBag.getRandomToken(this.animals);
   }
 
 

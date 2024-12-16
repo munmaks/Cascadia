@@ -17,12 +17,12 @@ import java.util.stream.Stream;
 
 
 
-final class BagUtils {
+final class UtilsBag {
 
   /*
    * To prevent instantiation
    */
-  private BagUtils() {
+  private UtilsBag() {
     throw new IllegalStateException("Utility class, cannot be instantiated");
   }
 

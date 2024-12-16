@@ -50,7 +50,7 @@ public final class SquareBag implements Bag {
       System.err.println("Error initializing tiles: " + e.getMessage());
     }
     Collections.shuffle(this.tiles);
-    BagUtils.decreaseNumberOfTiles(this.tiles, MAX_TILES_FOR_GAME);
+    UtilsBag.decreaseNumberOfTiles(this.tiles, MAX_TILES_FOR_GAME);
   }
 
 
@@ -72,7 +72,7 @@ public final class SquareBag implements Bag {
    * throws IOException if file not found or can't be read
    */
   private void initializeGame() throws IOException {
-    BagUtils.readTiles(Constants.PATH_HABITAT_TILE_SQUARE, row -> tiles.add(getSquareTiles(row[0], row[1], row[2])));
+    UtilsBag.readTiles(Constants.PATH_HABITAT_TILE_SQUARE, row -> tiles.add(getSquareTiles(row[0], row[1], row[2])));
   }
 
   /**
@@ -101,7 +101,7 @@ public final class SquareBag implements Bag {
     // var random = new Random();
     // var randomIndex = random.nextInt(this.tiles.size()); /* in [0, tiles.size()[ */
     // return this.tiles.remove(randomIndex);
-    return BagUtils.getRandomTile(this.tiles);
+    return UtilsBag.getRandomTile(this.tiles);
   }
 
   /**
@@ -122,7 +122,7 @@ public final class SquareBag implements Bag {
 
   @Override
   public final WildlifeType updateToken(WildlifeType token) {
-    return BagUtils.updateToken(token, this.animals);
+    return UtilsBag.updateToken(token, this.animals);
   }
 
   /**
@@ -147,7 +147,7 @@ public final class SquareBag implements Bag {
 
   @Override
   public final WildlifeType getRandomToken() {
-    return BagUtils.getRandomToken(this.animals);
+    return UtilsBag.getRandomToken(this.animals);
   }
 
   //     return getRandomTokenStream()

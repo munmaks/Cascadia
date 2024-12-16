@@ -121,9 +121,8 @@ public final class Player {
     
     return 0;
   }
-  
-  
-  
+
+
   @Override
   public String toString() {
       return "Player, name: [ " + name + " ]\n" +
