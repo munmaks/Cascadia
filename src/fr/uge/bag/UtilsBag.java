@@ -4,7 +4,6 @@ package fr.uge.bag;
 import fr.uge.environment.Tile;
 import fr.uge.environment.WildlifeType;
 import fr.uge.util.Constants;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -89,7 +88,7 @@ final class UtilsBag {
 
 
   public static void readTiles(String path, Consumer<String[]> tileConsumer) throws IOException {
-    try (BufferedReader reader = Files.newBufferedReader(Paths.get(path))) {
+    try (var reader = Files.newBufferedReader(Paths.get(path))) {
       reader.lines()
             .map(line -> line.split("\\s+"))
             .forEach(tileConsumer);
