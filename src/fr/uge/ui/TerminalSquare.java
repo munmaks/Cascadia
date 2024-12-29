@@ -8,10 +8,8 @@ import fr.uge.environment.Tile;  // enable preview
 import fr.uge.environment.TileType;
 import fr.uge.environment.WildlifeType;
 import fr.uge.scoring.FamilyAndIntermediateScoringCards;
-import fr.uge.scoring.WildlifeScoringCard;
 import fr.uge.util.Constants;
 import java.io.IO;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -181,7 +179,6 @@ final class TerminalSquare {
     game.board().setDefaultTokensAreUpdated();  // that means, next person can change tokens (if needed)
     game.turnManager().changePlayer();
     game.turnManager().nextTurn();
-    // System.out.println("Turns left: " + (Constants.MAX_GAME_TURNS - game.turnManager().getTotalTurns()));
   }
 
 
@@ -227,7 +224,7 @@ final class TerminalSquare {
                              .anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
         var currCell = player.getEnvironment().getCell(userCoordinates);
         if (player.getEnvironment().placeTile(currCell, chosedTile)){
-          System.out.println("Tile was placed successfully (for test Main Menu)");  // for test, to delete later
+          System.out.println("Tile was placed successfully");  // for test, to delete later
           break;
         }
       }
@@ -297,12 +294,7 @@ final class TerminalSquare {
   }
 
   
-  
-  private void resetForNextTurn(Game game) {
-    Objects.requireNonNull(game);
-    game.board().setDefaultTokensAreUpdated();  // that means, next person can change
-  }
-  
+
 
 
   // under test
@@ -324,7 +316,6 @@ final class TerminalSquare {
 
       // IO.readln("STOP before the next turn");
       handleTurnChange(game);
-      resetForNextTurn(game);
     }
 
   }
@@ -333,9 +324,9 @@ final class TerminalSquare {
   public void playSquareTerminal(){
     System.out.println("Welcome to the Cascadia game (terminal version)!");
     System.out.println("We have two players, please introduce yourselves.\n");
-    String firstPlayerName = readName(1);
-    String secondPlayerName = readName(2);
-    int familyOrIntermediate = chooseVersion();
+    var firstPlayerName = readName(1);
+    var secondPlayerName = readName(2);
+    var familyOrIntermediate = chooseVersion();
     System.out.println("You have chosen " + (familyOrIntermediate == 1 ? "Family" : "Intermediate") + " Scoring Card");
 
     System.out.println("The game is starting!");
