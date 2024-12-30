@@ -319,24 +319,24 @@ public class GraphicSquare {
       var tile = listOfTiles.get(i - 1);
 
       // draw Habitat tile (rectangle)
-      drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_RIVER);
-      // switch (tile.firstHabitat()){
-      //   case FOREST -> drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_FOREST);
-      //   case WETLAND -> drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_WETLAND);
-      //   case MOUNTAIN -> drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_MOUNTAIN);
-      //   case RIVER -> drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_RIVER);
-      //   case PRAIRIE -> drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_PRAIRIE);
-      // }
+      // drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_RIVER);
+      switch (tile.firstHabitat()){
+        case FOREST -> drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_FOREST);
+        case WETLAND -> drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_WETLAND);
+        case MOUNTAIN -> drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_MOUNTAIN);
+        case RIVER -> drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_RIVER);
+        case PRAIRIE -> drawRectangle(context, baseXOffset, yPosition, figureSize, figureSize, COLOR_PRAIRIE);
+      }
       var token = listOfTokens.get(i - 1);  // BEAR, ELK, SALMON, HAWK, FOX
       // draw Wildlife token (circle)
-      drawCircle(context, circleX, circleY, tokenSize, Color.RED);
-      // switch (token){
-      //   case BEAR -> drawCircle(context, circleX, circleY, tokenSize, Color.RED);
-      //   case ELK -> drawCircle(context, circleX, circleY, tokenSize, Color.BLUE);
-      //   case SALMON -> drawCircle(context, circleX, circleY, tokenSize, Color.GREEN);
-      //   case HAWK -> drawCircle(context, circleX, circleY, tokenSize, Color.YELLOW);
-      //   case FOX -> drawCircle(context, circleX, circleY, tokenSize, Color.CYAN);
-      // }
+      // drawCircle(context, circleX, circleY, tokenSize, Color.RED);
+      switch (token){
+        case BEAR -> drawCircle(context, circleX, circleY, tokenSize, Color.RED);
+        case ELK -> drawCircle(context, circleX, circleY, tokenSize, Color.BLUE);
+        case SALMON -> drawCircle(context, circleX, circleY, tokenSize, Color.GREEN);
+        case HAWK -> drawCircle(context, circleX, circleY, tokenSize, Color.YELLOW);
+        case FOX -> drawCircle(context, circleX, circleY, tokenSize, Color.CYAN);
+      }
 
       // do not delete this code for now ! it's for internal use and see where the
       // lines are
@@ -425,34 +425,47 @@ public class GraphicSquare {
     showGameBoard(context, board, figureSize, figureSize);
   }
 
-  private static void handleTokenChange(ApplicationContext context, Game game, int figureSize) {
+  private static boolean handleTokenChange(
+      ApplicationContext context, Game game, int figureSize
+    ) {
     Objects.requireNonNull(game);
     if (game.board().tokensNeedUpdate()) {
       game.board().updateTokens();
       // System.out.println("Tokens were updated, because one token had 4
       // occurences");
       showGameBoard(context, game.board(), figureSize, figureSize);
+      return true;
     } else if (game.board().tokensCanBeUpdated()) {
-      // var stringTokensToChange = IO.readln("Enter `yes` if you want to change the
-      // tokens, otherwise press enter ");
+
+      // restartRectangleWithText(context,
+      // "Change Tokens", figureSize / 3, figureSize / 2, 15,
+      // figureSize, figureSize, figureSize, figureSize, Color.BLACK);
+
+
 
       // to check coordinates from user
-      if (true) {
+      var userCoordinates = getCoordinatesFromUser(context, figureSize);
+      if (userCoordinates == null) {
+        System.err.println("Coordinates are invalid 1"); /* for tests, to delete later */
+        return false;
+      }
+      if (insideRectangle(userCoordinates.x(), userCoordinates.y(), 0, 0, figureSize, figureSize)) {
         // if player wants to change tokens he must click on the rectangle "(Change Tokens)"
         System.out.println("tokens are now updated");
         game.board().updateTokens();
       }
 
       showGameBoard(context, game.board(), figureSize, figureSize);
+      return true;
     }
-
+    return false;
   }
 
   private static void handleTurnChange(Game game) {
     Objects.requireNonNull(game);
-    game.board().setDefaultTokensAreUpdated(); // that means, next person can change tokens (if needed)
     game.turnManager().changePlayer();
     game.turnManager().nextTurn();
+    game.board().setDefaultTokensAreUpdated(); // that means, next person can change tokens (if needed)
   }
 
   private static int handleUserChoiceTileAndToken() {
@@ -468,28 +481,31 @@ public class GraphicSquare {
     var width = screenInfo.width();
     var height = screenInfo.height();
 
-    var event = context.pollOrWaitEvent(10);
-
-    switch (event) {
-      case null -> {
-        break;
+    do { 
+      var event = context.pollOrWaitEvent(10);
+      switch (event) {
+        case null -> {
+          continue;
+        }
+        case PointerEvent e -> {
+          var location = e.location();
+          checkRange(0, location.x(), width);
+          checkRange(0, location.y(), height);
+          return new Coordinates(location.y(), location.x());
+        }
+        case KeyboardEvent ke -> {
+          if (ke.key() == KeyboardEvent.Key.Q) {
+            return null;
+          }
+        }
+        default -> {
+          continue;
+        }
       }
-      case PointerEvent e -> {
-        var location = e.location();
-        checkRange(0, location.x(), width);
-        checkRange(0, location.y(), height);
-        return new Coordinates(location.y() / figureSize, location.x() / figureSize);
-      }
-      case KeyboardEvent e -> {
-        break;
-      }
-      default -> {
-        // throw new IllegalStateException("Unexpected value: " + event);
-      }
-    }
-    throw new IllegalStateException("You have to click on correct coordinates!\n"); 
+    } while (true);
     // return null;
   }
+
 
   private static void showPossibleTokenPlacement(
     ApplicationContext context, Player player,
@@ -505,9 +521,10 @@ public class GraphicSquare {
           var x = cell.getCoordinates().x();
           var y = cell.getCoordinates().y();
           drawCircle(context,
-          x * figureSize + (figureSize / 2),
-          y * figureSize + (figureSize / 2),
-          tokenSize, Color.ORANGE);
+            x * figureSize + (figureSize / 2),
+            y * figureSize + (figureSize / 2),
+            tokenSize,
+            Color.ORANGE);
         }
       }
     }
@@ -516,16 +533,24 @@ public class GraphicSquare {
 
   private static void handleTokenPlacement(
     ApplicationContext context, Player player,
-    WildlifeType chosedToken, int figureSize, int tokenSize) {
+    WildlifeType chosedToken, int width, int height,
+    int figureSize, int tokenSize) {
     Objects.requireNonNull(player);
     Objects.requireNonNull(chosedToken);
 
     /* chosed token from `choice` */
-    System.out.println("Now you need to place the wildlife token: " + chosedToken.toString());
+    // System.out.println("Now you need to place the wildlife token: " + chosedToken.toString());
     showPossibleTokenPlacement(context, player, chosedToken, figureSize, tokenSize);
 
     var userCoordinates = getCoordinatesFromUser(context, figureSize);
-    var currCell = player.getEnvironment().getCell(userCoordinates);
+    if (userCoordinates == null) {
+      System.err.println("Coordinates are invalid 3"); /* for tests, to delete later */
+      return;
+    }
+    var coordinatesForMap = new Coordinates(
+      (int)((userCoordinates.y() - width / 2) / figureSize),
+      (int)((userCoordinates.x() - height / 2) / figureSize));
+    var currCell = player.getEnvironment().getCell(coordinatesForMap);
     var tokenWasPlaced = player.getEnvironment().placeAnimal(currCell, chosedToken);
 
     if (!tokenWasPlaced) {
@@ -533,7 +558,10 @@ public class GraphicSquare {
     }
   }
 
-  private static void handleTilePlacement(ApplicationContext context, Player player, Tile chosedTile, int figureSize) {
+  private static void handleTilePlacement(
+      ApplicationContext context, Player player,
+      Tile chosedTile, int width, int height, int figureSize
+    ) {
     Objects.requireNonNull(player);
     Objects.requireNonNull(chosedTile);
     var possibleCoordinates = player.getEnvironment().getPossibleCells();
@@ -541,45 +569,52 @@ public class GraphicSquare {
     /* player has to place tile correctly */
     do {
       var userCoordinates = getCoordinatesFromUser(context, figureSize);
-
-      if (possibleCoordinates.stream()
-          .anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
-        var currCell = player.getEnvironment().getCell(userCoordinates);
+      if (userCoordinates == null) {
+        System.err.println("Coordinates are invalid 4"); /* for tests, to delete later */
+        return;
+      }
+      var coordinatesForMap = new Coordinates(
+        (int)((userCoordinates.y() - width / 2) / figureSize),
+        (int)((userCoordinates.x() - height / 2) / figureSize));
+  
+      if (possibleCoordinates.stream().anyMatch(coordinates -> coordinates.equals(coordinatesForMap))) {
+        var currCell = player.getEnvironment().getCell(coordinatesForMap);
         if (player.getEnvironment().placeTile(currCell, chosedTile)) {
-          // System.out.println("Tile was placed successfully"); // for test, to delete later
-          break;
+          // System.out.println("Tile was placed successfully");
+          return;
         }
       }
     } while (true);
   }
 
-  private static void gameLoopVersionSquare(
-    ApplicationContext context, Game game, int width, int height, int figureSize, int tokenSize) {
-    Objects.requireNonNull(game);
-    while (!game.turnManager().isGameEnd()) {
-      var currIndex = game.turnManager().getCurrentPlayerIndex();
-      var currentPlayer = game.getPlayerByIndex(currIndex);
-      showPlayerEnvironmentAndGameBoard(context, currentPlayer, game.board(), width, height, figureSize);
+  // private static void gameLoopVersionSquare(
+  //   ApplicationContext context, Game game, int width, int height, int figureSize, int tokenSize) {
+  //   Objects.requireNonNull(game);
+  //   while (!game.turnManager().isGameEnd()) {
+  //     drawRectangle(context, 0, 0, width, height, Color.WHITE); /* clear the screen */
+  //     var currIndex = game.turnManager().getCurrentPlayerIndex();
+  //     var currentPlayer = game.getPlayerByIndex(currIndex);
+  //     showPlayerEnvironmentAndGameBoard(context, currentPlayer, game.board(), width, height, figureSize);
 
-      // if (true){
-      //   IO.readln("test");
-      //   context.dispose();
-      //   throw new IllegalStateException("You have to click on correct coordinates!\n");
-      // }
+  //     // if (true){
+  //     //   IO.readln("test");
+  //     //   context.dispose();
+  //     //   throw new IllegalStateException("You have to click on correct coordinates!\n");
+  //     // }
 
-      handleTokenChange(context, game, figureSize); /* if we need to update tokens */
+  //     // handleTokenChange(context, game, figureSize); /* if we need to update tokens */
 
-      int choice = handleUserChoiceTileAndToken();
-      var chosedTile = game.board().getTile(choice - 1);
-      var chosedToken = game.board().getToken(choice - 1);
+  //     int choice = handleUserChoiceTileAndToken();
+  //     var chosedTile = game.board().getTile(choice - 1);
+  //     var chosedToken = game.board().getToken(choice - 1);
 
-      handleTilePlacement(context, currentPlayer, chosedTile, figureSize);
-      handleTokenPlacement(context, currentPlayer, chosedToken, figureSize, tokenSize);
+  //     handleTilePlacement(context, currentPlayer, chosedTile, figureSize);
+  //     handleTokenPlacement(context, currentPlayer, chosedToken, figureSize, tokenSize);
 
-      handleTurnChange(game);
-    }
+  //     handleTurnChange(game);
+  //   }
 
-  }
+  // }
 
   // public void playGraphicSquare() {
   //   // System.out.println("Welcome to the Cascadia game (Graphic version)!");
@@ -652,23 +687,23 @@ public class GraphicSquare {
     return name;
   }
 
-  private static boolean insideEnvSquare(int x, int y, int x1, int y1, int x2, int y2) {
+  private static boolean insideRectangle(int x, int y, int x1, int y1, int x2, int y2) {
     return x >= x1 && x <= x2 && y >= y1 && y <= y2;
   }
 
 
-  private static int insideGameBoardSquare(int x, int y, int x1, int y1, int x2, int y2, int figureSize) {
-    for (var i = 1; i <= 4; ++i){
-      var x1_board = (int) (figureSize / 3);
-      var y1_board = figureSize * i;
-      var x2_board = x1_board + (int) (figureSize * 2.35);
-      var y2_board = y1_board + figureSize;
-      if (x >= x1_board && x <= x2_board && y >= y1_board && y <= y2_board){
-        return i;
-      }
-    }
-    return -1;
-  }
+  // private static int insideGameBoardSquare(int x, int y, int x1, int y1, int x2, int y2, int figureSize) {
+  //   for (var i = 1; i <= 4; ++i){
+  //     var x1_board = (int) (figureSize / 3);
+  //     var y1_board = figureSize * i;
+  //     var x2_board = x1_board + (int) (figureSize * 2.35);
+  //     var y2_board = y1_board + figureSize;
+  //     if (x >= x1_board && x <= x2_board && y >= y1_board && y <= y2_board){
+  //       return i;
+  //     }
+  //   }
+  //   return -1;
+  // }
 
 
 
@@ -761,10 +796,74 @@ public class GraphicSquare {
         i * figureSize + (figureSize / 3),
         j * figureSize + (figureSize / 2),
         15, Color.BLACK);
+      }
     }
   }
-}
 
+
+
+
+  private static void restartEnvironmentRectangle(
+      ApplicationContext context, int width, int height, int environmentSquareWidth, int environmentSquareHeight
+    ) {
+    drawRoundRectangle(context,
+    width / 2 - (environmentSquareWidth / 2), // center of the screen - x
+    height / 2 - (environmentSquareHeight / 2), // center of the screen - y
+    environmentSquareWidth,
+    environmentSquareHeight,
+    environmentSquareWidth / 10,
+    environmentSquareHeight / 10,
+    Color.PINK);
+  }
+
+
+
+  private static void restartGameBoardRectangle(
+      ApplicationContext context, int figureSize, int environmentSquareHeight
+    ) {
+    drawRoundRectangle(context,
+    (int) (figureSize / 3), // width
+    figureSize, // height
+    (int) (figureSize * 2.35), // to think about coefficient
+    environmentSquareHeight,
+    figureSize,
+    environmentSquareHeight / 10,
+    Color.CYAN);
+  }
+
+
+
+  private static void restartScoringCardRectangle(
+      ApplicationContext context, int width, int figureSize, int environmentSquareHeight
+    ) {
+    drawRoundRectangle(context,
+    width - (int) (figureSize * 2.35) - (int) (figureSize / 3), // width
+    figureSize, // height
+    (int) (figureSize * 2.35),
+    environmentSquareHeight,
+    figureSize,
+    environmentSquareHeight / 10,
+    Color.MAGENTA);
+  }
+
+
+  private static void restartRectangleWithText(
+      ApplicationContext context,
+      String text, int x, int y, int fontSize,
+      int width,
+      int environmentSquareWidth, int environmentSquareHeight, Color color
+    ) {
+    drawRoundRectangle(context,
+      width - (environmentSquareWidth / 3), // center of the screen - x
+      0, // center of the screen - y
+      environmentSquareWidth / 3,
+      environmentSquareHeight / 10,
+      environmentSquareWidth / 15,
+      environmentSquareHeight / 10,
+      Color.RED);
+
+    drawString(context, text, x, y, fontSize, color);
+  }
 
 
   private static void cascadiaSquareGame(ApplicationContext context) {
@@ -778,17 +877,19 @@ public class GraphicSquare {
     var coeffSizeSquare = 0.1; /* optimal, to have 10 square on screen */
     var coeffSizeToken = 0.08; /* to test */
 
+    var coeffFontSizeInstructions = 0.01328125;
+
     var figureSize = (int) (coeffSizeSquare * Math.min(width, height));
-    var tokenSize = (int) (coeffSizeToken * Math.min(width, height));
+    var tokenSize =  (int) (coeffSizeToken  * Math.min(width, height));
 
     var environmentSquareWidth = width - (figureSize * 6);
     var environmentSquareHeight = height - (figureSize * 2);
 
     System.out.println("size of the screen (" + width + " x " + height + ")");
 
-    var firstPlayerName = "Alice"; // to be changed later
-    var secondPlayerName = "Bob"; // to be changed later
-    var familyOrIntermediate = 1; // to be changed later
+    var firstPlayerName = "Alice";  // to be changed later
+    var secondPlayerName = "Bob";   // to be changed later
+    var familyOrIntermediate = 1;   // to be changed later
 
     var player1 = new Player(firstPlayerName, Constants.VERSION_SQUARE);
     var player2 = new Player(secondPlayerName, Constants.VERSION_SQUARE);
@@ -798,6 +899,7 @@ public class GraphicSquare {
     var turnManager = new TurnManager(listOfPlayers.size(), Constants.VERSION_SQUARE);
     Game game = new Game(board, turnManager, listOfPlayers, Constants.VERSION_SQUARE);
     // gameLoopVersionSquare(context, game, width, height, figureSize, tokenSize);
+    // calculateAndShowScore(game, familyOrIntermediate);
 
 
 
@@ -840,34 +942,34 @@ public class GraphicSquare {
     var y2 = y1 + environmentSquareHeight / 2;
 
     // rectangle for player's environment
-    drawRoundRectangle(context,
-      width / 2 - (environmentSquareWidth / 2), // center of the screen - x
-      height / 2 - (environmentSquareHeight / 2), // center of the screen - y
-      environmentSquareWidth,
-      environmentSquareHeight,
-      environmentSquareWidth / 10,
-      environmentSquareHeight / 10,
-      Color.PINK);
+    // drawRoundRectangle(context,
+    //   width / 2 - (environmentSquareWidth / 2), // center of the screen - x
+    //   height / 2 - (environmentSquareHeight / 2), // center of the screen - y
+    //   environmentSquareWidth,
+    //   environmentSquareHeight,
+    //   environmentSquareWidth / 10,
+    //   environmentSquareHeight / 10,
+    //   Color.PINK);
 
     // game board
-    drawRoundRectangle(context,
-      (int) (figureSize / 3), // width
-      figureSize, // height
-      (int) (figureSize * 2.35), // to think about coefficient
-      environmentSquareHeight,
-      figureSize,
-      environmentSquareHeight / 10,
-      Color.ORANGE);
+    // drawRoundRectangle(context,
+    //   (int) (figureSize / 3), // width
+    //   figureSize, // height
+    //   (int) (figureSize * 2.35), // to think about coefficient
+    //   environmentSquareHeight,
+    //   figureSize,
+    //   environmentSquareHeight / 10,
+    //   Color.ORANGE);
 
     // scoring cards:
-    drawRoundRectangle(context,
-      width - (int) (figureSize * 2.35) - (int) (figureSize / 3), // width
-      figureSize, // height
-      (int) (figureSize * 2.35),
-      environmentSquareHeight,
-      figureSize,
-      environmentSquareHeight / 10,
-      Color.MAGENTA);
+    // drawRoundRectangle(context,
+    //   width - (int) (figureSize * 2.35) - (int) (figureSize / 3), // width
+    //   figureSize, // height
+    //   (int) (figureSize * 2.35),
+    //   environmentSquareHeight,
+    //   figureSize,
+    //   environmentSquareHeight / 10,
+    //   Color.MAGENTA);
 
     showGameBoard(context, game.board() , figureSize, tokenSize);
 
@@ -911,9 +1013,6 @@ public class GraphicSquare {
     // var area = new HexagonalPointyTop();
 
 
-
-
-
     // // first couple
     // drawRectangle(context,
     //   figureSize / 3,
@@ -947,71 +1046,138 @@ public class GraphicSquare {
     //   Color.GREEN);
 
 
-      /*
-      if (i != 4) {
-        drawLine(context,
-          (int) (figureSize / 3),
-          (int) ((int) (figureSize * 1.8f * i); + figureSize * 1.4),
-          (int) (figureSize / 3 + figureSize * 2.35),
-          (int) ((int) (figureSize * 1.8f * i); + figureSize * 1.4),
-          Color.BLACK);
+    // gameLoopVersionSquare(context, game, width, height, figureSize, tokenSize);
+
+
+    // while (!game.turnManager().isGameEnd()) {
+    //   var currIndex = game.turnManager().getCurrentPlayerIndex();
+    //   var currentPlayer = game.getPlayerByIndex(currIndex);
+    //   showPlayerEnvironmentAndGameBoard(context, currentPlayer, game.board(), width, height, figureSize);
+
+
+    //   handleTokenChange(context, game, figureSize); /* if we need to update tokens */
+
+    //   int choice = handleUserChoiceTileAndToken();
+    //   var chosedTile = game.board().getTile(choice - 1);
+    //   var chosedToken = game.board().getToken(choice - 1);
+
+    //   handleTilePlacement(context, currentPlayer, chosedTile, figureSize);
+    //   handleTokenPlacement(context, currentPlayer, chosedToken, figureSize, tokenSize);
+
+    //   handleTurnChange(game);
+    // }
+
+
+    while (!game.turnManager().isGameEnd()) {
+      // drawRectangle(context, 0, 0, width, height, Color.WHITE); /* clear the screen */
+      restartEnvironmentRectangle(context, width, height, environmentSquareWidth, environmentSquareHeight);
+      restartGameBoardRectangle(context, figureSize, environmentSquareHeight);
+      restartScoringCardRectangle(context, width, figureSize, environmentSquareHeight);
+      restartRectangleWithText(context,
+      "Choose from Game Board", (int) (width - (environmentSquareWidth / 3.5)), figureSize / 2, (int) (width * coeffFontSizeInstructions),
+      width, environmentSquareWidth, environmentSquareHeight, Color.BLACK);
+
+      var currIndex = game.turnManager().getCurrentPlayerIndex();
+      var currentPlayer = game.getPlayerByIndex(currIndex);
+      showPlayerEnvironmentAndGameBoard(context, currentPlayer, game.board(), width, height, figureSize);
+
+      // System.err.println("before handleTokenChange");
+      /* if we need to update tokens */
+      if (handleTokenChange(context, game, figureSize))
+      {
+        System.err.println("Changing Tokens");
+        restartRectangleWithText(context,
+        "Change Tokens", (int) (width - (environmentSquareWidth / 3.5)), figureSize / 2, (int) (width * coeffFontSizeInstructions),
+        width, environmentSquareWidth, environmentSquareHeight, Color.BLACK);
       }
-       */
+      // System.err.println("after handleTokenChange");
 
 
-
-    while (true) {
-      var event = context.pollOrWaitEvent(10);
-      switch (event) {
-        case null -> {
-          continue;
+      // while (true) {
+        
+      Coordinates coordinates = null;
+      System.err.println("before choosing tile and token");
+      int choice = 0;
+      do {
+        coordinates = getCoordinatesFromUser(context, figureSize);
+        if (coordinates == null){
+          System.err.println("Coordinates are invalid 5"); /* for tests, to delete later */
+          context.dispose();
+          return;
         }
-        case PointerEvent e -> {
-          var location = e.location();
-          checkRange(0, location.x(), width);
-          checkRange(0, location.y(), height);
+        // handleUserChoiceTileAndToken();
+        choice = indexOfGameBoardCouple(context, coordinates.x(), coordinates.y(), figureSize, environmentSquareWidth);
+      } while (!insideRectangle(coordinates.x(), coordinates.y(), x1_board, y1_board, x2_board, y2_board));
+      // System.out.println("You are inside game board rectangle");
+      // System.out.println("You choosed: " + choice);
+      System.err.println("after choosing tile and token");
 
-          area.draw(context, location.x(), location.y(), figureSize / 10, Color.BLACK);
-          // if (insideEnvSquare(location.x(), location.y(), x1, y1, x2, y2)) {
-          //   System.out.println("You are inside the validate name rectangle");
-          //   context.dispose();
-          //   return;
-          // }
-          // System.out.println("You clicked on: (" +
-          // (location.x() / figureSize - (width / 2 / figureSize))  + ", " +
-          // (location.y() / figureSize - (height / 2 / figureSize)) + ")");
-          // context.dispose();
-          // return;
-          if (insideEnvSquare(location.x(), location.y(), x1_board, y1_board, x2_board, y2_board)) {
-            System.out.println("You are inside game board rectangle");
-            // Usage
-            var index = indexOfGameBoardCouple(context, location.x(), location.y(), figureSize, environmentSquareWidth);
-            System.out.println("You choosed: " + index);
-            context.dispose();
-            return;
-          }
-          break;
-        }
-        case KeyboardEvent ke -> {
-          if (ke.key() == KeyboardEvent.Key.Q) {
-            context.dispose();
-            return;
-          }
-          switch (ke.action()) { // KeyboardEvent.Key.Q
-            case Action.KEY_RELEASED -> {
-              counter++;
+      var chosedTile = game.board().getTile(choice);
+      var chosedToken = game.board().getToken(choice);
 
-              // to show directly the key pressed
-              // drawString(context, "" + ke.key(), width / 2 - 200 + counter * 11, height / 2 + 100, 14, Color.WHITE);
+      handleTilePlacement(context, currentPlayer, chosedTile, width, height, figureSize);
+      handleTokenPlacement(context, currentPlayer, chosedToken, width, height, figureSize, tokenSize);
 
-            }
-            case Action.KEY_PRESSED -> {
-              System.out.println(ke.key());
-            }
-            default -> {}
-          }
-        }
-      }
+      handleTurnChange(game);
+
+      // var event = context.pollOrWaitEvent(1000);
+      // switch (event) {
+      //   case null -> {
+      //     continue;
+      //   }
+      //   case PointerEvent e -> {
+      //     var location = e.location();
+      //     checkRange(0, location.x(), width);
+      //     checkRange(0, location.y(), height);
+
+      //     area.draw(context, location.x(), location.y(), figureSize / 10, Color.BLACK);
+      //     // if (insideRectangle(location.x(), location.y(), x1, y1, x2, y2)) {
+      //     //   System.out.println("You are inside the validate name rectangle");
+      //     //   context.dispose();
+      //     //   return;
+      //     // }
+      //     // System.out.println("You clicked on: (" +
+      //     // (location.x() / figureSize - (width / 2 / figureSize))  + ", " +
+      //     // (location.y() / figureSize - (height / 2 / figureSize)) + ")");
+      //     // context.dispose();
+      //     // return;
+      //     // int choice = 0;
+      //     // do {
+      //     //   // handleUserChoiceTileAndToken();
+      //     //   choice = indexOfGameBoardCouple(context, location.x(), location.y(), figureSize, environmentSquareWidth);
+      //     // } while (!insideRectangle(location.x(), location.y(), x1_board, y1_board, x2_board, y2_board));
+      //     System.out.println("You are inside game board rectangle");
+      //     System.out.println("You choosed: " + choice);
+
+      //     // var chosedTile = game.board().getTile(choice);
+      //     // var chosedToken = game.board().getToken(choice);
+
+      //     // handleTilePlacement(context, currentPlayer, chosedTile, figureSize);
+      //     // handleTokenPlacement(context, currentPlayer, chosedToken, figureSize, tokenSize);
+
+      //     // handleTurnChange(game);
+      //     break;
+      //   }
+      //   case KeyboardEvent ke -> {
+      //     if (ke.key() == KeyboardEvent.Key.Q) {
+      //       context.dispose();
+      //       return;
+      //     }
+      //     switch (ke.action()) { // KeyboardEvent.Key.Q
+      //       case Action.KEY_RELEASED -> {
+      //         counter++;
+      //         // to show directly the key pressed
+      //         // drawString(context, "" + ke.key(), width / 2 - 200 + counter * 11, height / 2 + 100, 14, Color.WHITE);
+      //       }
+      //       case Action.KEY_PRESSED -> {
+      //         System.out.println(ke.key());
+      //       }
+      //       default -> {}
+      //     }
+      //   }
+      // }
+      // }
+
     }
 
   }
