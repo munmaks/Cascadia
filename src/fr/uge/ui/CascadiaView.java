@@ -50,10 +50,10 @@ public record CascadiaView(int xOrigin, int yOrigin, int height, int width, int 
     // Objects.requireNonNull(loader);
     // var squareSize = length / data.lines();
     // return new CascadiaView(
-    //     xOrigin, yOrigin,
-    //     length, data.columns() * squareSize,
-    //     squareSize, loader);
-        return null;
+    // xOrigin, yOrigin,
+    // length, data.columns() * squareSize,
+    // squareSize, loader);
+    return null;
   }
 
   /**

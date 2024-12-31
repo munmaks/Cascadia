@@ -1,11 +1,8 @@
 package fr.uge.ui;
 
-import java.util.Objects;
 import fr.uge.environment.Cell;
 import fr.uge.environment.Coordinates;
-
-
-import java.util.Random;
+import java.util.Objects;
 
 /**
  * The CascadiaData class stores all relevant pieces of information for the
@@ -23,7 +20,8 @@ public class CascadiaData {
 	 */
 	private Coordinates first;
 	/**
-	 * Second cell that was clicked on and was unsuccessfully tried to be matched with the first cell.
+	 * Second cell that was clicked on and was unsuccessfully tried to be matched
+	 * with the first cell.
 	 */
 	private Coordinates second;
 	/**
@@ -52,16 +50,16 @@ public class CascadiaData {
 	 * Randomises the cell IDs in the game grid.
 	 */
 	// private void randomise() {
-	// 	var tab = new int[lines() * columns()];
-	// 	var random = new Random();
-	// 	for (var i = 0; i < tab.length; i++) {
-	// 		var j = random.nextInt(i + 1);
-	// 		tab[i] = tab[j];
-	// 		tab[j] = i / 2;
-	// 	}
-	// 	for (var i = 0; i < tab.length; i++) {
-	// 		matrix[i % lines()][i / lines()] = new Cell(tab[i]);
-	// 	}
+	// var tab = new int[lines() * columns()];
+	// var random = new Random();
+	// for (var i = 0; i < tab.length; i++) {
+	// var j = random.nextInt(i + 1);
+	// tab[i] = tab[j];
+	// tab[j] = i / 2;
+	// }
+	// for (var i = 0; i < tab.length; i++) {
+	// matrix[i % lines()][i / lines()] = new Cell(tab[i]);
+	// }
 	// }
 
 	/**
@@ -70,7 +68,7 @@ public class CascadiaData {
 	 * @return Number of lines in the matrix.
 	 */
 	// public int lines() {
-	// 	return matrix.length;
+	// return matrix.length;
 	// }
 
 	/**
@@ -79,7 +77,7 @@ public class CascadiaData {
 	 * @return Number of columns in the matrix.
 	 */
 	// public int columns() {
-	// 	return matrix[0].length;
+	// return matrix[0].length;
 	// }
 
 	/**
@@ -90,7 +88,7 @@ public class CascadiaData {
 	 * @return ID of the cell.
 	 */
 	// public int id(int i, int j) {
-	// 	return matrix[i][j].id();
+	// return matrix[i][j].id();
 	// }
 
 	/**
@@ -101,7 +99,7 @@ public class CascadiaData {
 	 * @return Visibility status of the cell.
 	 */
 	// public boolean visible(int i, int j) {
-	// 	return matrix[i][j].visible();
+	// return matrix[i][j].visible();
 	// }
 
 	/**
@@ -112,22 +110,22 @@ public class CascadiaData {
 	 * @param j Cell row.
 	 */
 	public void clickOnCell(int i, int j) {
-    Objects.checkIndex(i, matrix.length);
-		if (true/*i < 0 || columns() <= i || j < 0 || lines() <= j || visible(i, j)*/) {
+		Objects.checkIndex(i, matrix.length);
+		if (true/* i < 0 || columns() <= i || j < 0 || lines() <= j || visible(i, j) */) {
 			return;
 		}
 		// matrix[i][j].show();
 		// if (first == null) {
-		// 	first = new Coordinates(i, j);
+		// first = new Coordinates(i, j);
 		// } else if (second == null) {
-		// 	if (matrix[first.i()][first.j()].id() == matrix[i][j].id()) {
-		// 		first = null;
-		// 		wins++;
-		// 	} else {
-		// 		second = new Coordinates(i, j);
-		// 	}
+		// if (matrix[first.i()][first.j()].id() == matrix[i][j].id()) {
+		// first = null;
+		// wins++;
 		// } else {
-		// 	throw new IllegalStateException();
+		// second = new Coordinates(i, j);
+		// }
+		// } else {
+		// throw new IllegalStateException();
 		// }
 	}
 
@@ -137,7 +135,7 @@ public class CascadiaData {
 	 * @return True if the game must enter sleep mode.
 	 */
 	// public boolean mustSleep() {
-	// 	return second != null;
+	// return second != null;
 	// }
 
 	/**
@@ -145,10 +143,10 @@ public class CascadiaData {
 	 * unsuccessfully been tried for matching.
 	 */
 	// public void wakeUp() {
-	// 	matrix[first.i()][first.j()].hide();
-	// 	matrix[second.i()][second.j()].hide();
-	// 	first = null;
-	// 	second = null;
+	// matrix[first.i()][first.j()].hide();
+	// matrix[second.i()][second.j()].hide();
+	// first = null;
+	// second = null;
 	// }
 
 	/**
@@ -158,7 +156,7 @@ public class CascadiaData {
 	 *         otherwize.
 	 */
 	// public boolean win() {
-	// 	return 2 * wins == lines() * columns();
+	// return 2 * wins == lines() * columns();
 	// }
 
 }
