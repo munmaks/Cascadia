@@ -5,7 +5,7 @@ import fr.uge.util.Constants;
 /**
  * Only one turn manager is created for the entire game.<br>
  * That's why we use static fields.
-*/
+ */
 public final class TurnManager {
   // private final List<Player> players;
   private int totalTurns = 0;
@@ -13,7 +13,7 @@ public final class TurnManager {
   private int numberOfPlayers = 0;
   private boolean needToTurn = false;
 
-  public TurnManager(/*List<Player> listOfPlayers*/ int numberOfPlayers, int version) {
+  public TurnManager(/* List<Player> listOfPlayers */ int numberOfPlayers, int version) {
     // Objects.requireNonNull(listOfPlayers);
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
@@ -27,7 +27,7 @@ public final class TurnManager {
   }
 
   // public final Player getCurrentPlayer() {
-  //   return this.players.get(this.currentPlayerIndex);
+  // return this.players.get(this.currentPlayerIndex);
   // }
 
   public final int getCurrentPlayerIndex() {
@@ -35,24 +35,22 @@ public final class TurnManager {
   }
 
   // public final Player getPlayerByIndex(int index) {
-  //   if (index < 0 || index >= this.numberOfPlayers) {
-  //     throw new IllegalArgumentException("Invalid index");  /* to improve later */
-  //   }
-  //   return this.players.get(index);
+  // if (index < 0 || index >= this.numberOfPlayers) {
+  // throw new IllegalArgumentException("Invalid index"); /* to improve later */
   // }
-  
-  
-  // public final List<Player> getAllPlayers(){
-  //   return this.players;
+  // return this.players.get(index);
   // }
 
+  // public final List<Player> getAllPlayers(){
+  // return this.players;
+  // }
 
   public final void changePlayer() {
     this.currentPlayerIndex++;
-//    if (this.currentPlayerIndex == this.playersLength - 1) {
-//      this.currentPlayerIndex = 0;
-//      needToTurn = true;
-//    }
+    // if (this.currentPlayerIndex == this.playersLength - 1) {
+    // this.currentPlayerIndex = 0;
+    // needToTurn = true;
+    // }
   }
 
   public final void nextTurn() {
@@ -62,15 +60,15 @@ public final class TurnManager {
       this.needToTurn = false;
     }
   }
-  
-  public final boolean getNeedToTurn(){
+
+  public final boolean getNeedToTurn() {
     return this.needToTurn;
   }
 
   public final int getTotalTurns() {
     return this.totalTurns;
   }
-  
+
   /**
    * Checks if the game has reached the end based on a set number of turns.
    * 

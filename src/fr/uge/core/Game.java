@@ -92,29 +92,26 @@ public final class Game {
     return 0;
   }
 
-
-/*
-  public int performCalculations() {
-    int totalScore = 0;
-    for (Player player : turnManager.getPlayers()) {
-      int score = calculatePlayerScore(player);
-      totalScore += score;
-    }
-    return totalScore;
-  }
-  
-
-  private int calculatePlayerScore(Player player) {
-    int score = 0;
-    // // Calculate score based on wildlife scoring card
-    // score += calculateWildlifeScore(player);
-    // // Calculate score based on habitat tiles
-    // score += calculateHabitatScore(player);
-    return score;
-  }
-*/
-
-
+  /*
+   * public int performCalculations() {
+   * int totalScore = 0;
+   * for (Player player : turnManager.getPlayers()) {
+   * int score = calculatePlayerScore(player);
+   * totalScore += score;
+   * }
+   * return totalScore;
+   * }
+   * 
+   * 
+   * private int calculatePlayerScore(Player player) {
+   * int score = 0;
+   * // // Calculate score based on wildlife scoring card
+   * // score += calculateWildlifeScore(player);
+   * // // Calculate score based on habitat tiles
+   * // score += calculateHabitatScore(player);
+   * return score;
+   * }
+   */
 
   /**
    * Initializes the game by placing the starter tiles for each player.
