@@ -444,7 +444,7 @@ public class GraphicSquare {
 
 
       // to check coordinates from user
-      var userCoordinates = getCoordinatesFromUser(context, figureSize);
+      var userCoordinates = getCoordinatesFromUser(context);
       if (userCoordinates == null) {
         System.err.println("Coordinates are invalid 1"); /* for tests, to delete later */
         return false;
@@ -476,13 +476,13 @@ public class GraphicSquare {
     return choice;
   }
 
-  private static Coordinates getCoordinatesFromUser(ApplicationContext context, int figureSize) {
+  private static Coordinates getCoordinatesFromUser(ApplicationContext context) {
     var screenInfo = context.getScreenInfo();
     var width = screenInfo.width();
     var height = screenInfo.height();
 
     do { 
-      var event = context.pollOrWaitEvent(10);
+      var event = context.pollOrWaitEvent(1000);
       switch (event) {
         case null -> {
           continue;
@@ -531,7 +531,7 @@ public class GraphicSquare {
 
   }
 
-  private static void handleTokenPlacement(
+  private static boolean handleTokenPlacement(
     ApplicationContext context, Player player,
     WildlifeType chosedToken, int width, int height,
     int figureSize, int tokenSize) {
@@ -542,23 +542,24 @@ public class GraphicSquare {
     // System.out.println("Now you need to place the wildlife token: " + chosedToken.toString());
     showPossibleTokenPlacement(context, player, chosedToken, figureSize, tokenSize);
 
-    var userCoordinates = getCoordinatesFromUser(context, figureSize);
+    var userCoordinates = getCoordinatesFromUser(context);
     if (userCoordinates == null) {
-      System.err.println("Coordinates are invalid 3"); /* for tests, to delete later */
-      return;
+      System.err.println("Coordinates are invalid WHEN PLACING TOKEN"); /* for tests, to delete later */
+      return false;
     }
+    System.err.println("Coordinates (TokenPlacement) : (" + userCoordinates.x() + "," + userCoordinates.y() + ")");
     var coordinatesForMap = new Coordinates(
       (int)((userCoordinates.y() - width / 2) / figureSize),
       (int)((userCoordinates.x() - height / 2) / figureSize));
     var currCell = player.getEnvironment().getCell(coordinatesForMap);
     var tokenWasPlaced = player.getEnvironment().placeAnimal(currCell, chosedToken);
-
     if (!tokenWasPlaced) {
       System.err.println("Token wasn't placed"); /* for tests, to delete later */
     }
+    return tokenWasPlaced;
   }
 
-  private static void handleTilePlacement(
+  private static boolean handleTilePlacement(
       ApplicationContext context, Player player,
       Tile chosedTile, int width, int height, int figureSize
     ) {
@@ -568,20 +569,24 @@ public class GraphicSquare {
 
     /* player has to place tile correctly */
     do {
-      var userCoordinates = getCoordinatesFromUser(context, figureSize);
+      var userCoordinates = getCoordinatesFromUser(context);
       if (userCoordinates == null) {
-        System.err.println("Coordinates are invalid 4"); /* for tests, to delete later */
-        return;
+        System.err.println("Coordinates are invalid WHEN PLACING TILE"); /* for tests, to delete later */
+        // return false;
+        context.dispose();
+        throw new IllegalStateException("You have to click on correct coordinates!\n");
       }
       var coordinatesForMap = new Coordinates(
-        (int)((userCoordinates.y() - width / 2) / figureSize),
-        (int)((userCoordinates.x() - height / 2) / figureSize));
-  
+        (int) ((userCoordinates.y() - (width / 2)) / figureSize), // (cell.getCoordinates().x() * figureSize) + (width / 2)
+        (int) ((userCoordinates.x() - (height / 2)) / figureSize));
+        
+      System.err.println("Coordinates (TilePlacement) : (" + coordinatesForMap.x() + "," + coordinatesForMap.y() + ")");
+      System.err.println("Possible coordinates: " + possibleCoordinates.toString());
       if (possibleCoordinates.stream().anyMatch(coordinates -> coordinates.equals(coordinatesForMap))) {
         var currCell = player.getEnvironment().getCell(coordinatesForMap);
         if (player.getEnvironment().placeTile(currCell, chosedTile)) {
           // System.out.println("Tile was placed successfully");
-          return;
+          return true;
         }
       }
     } while (true);
@@ -1099,27 +1104,37 @@ public class GraphicSquare {
       System.err.println("before choosing tile and token");
       int choice = 0;
       do {
-        coordinates = getCoordinatesFromUser(context, figureSize);
+        coordinates = getCoordinatesFromUser(context);
         if (coordinates == null){
-          System.err.println("Coordinates are invalid 5"); /* for tests, to delete later */
+          System.err.println("Coordinates are invalid in game board choice"); /* for tests, to delete later */
           context.dispose();
           return;
         }
         // handleUserChoiceTileAndToken();
         choice = indexOfGameBoardCouple(context, coordinates.x(), coordinates.y(), figureSize, environmentSquareWidth);
-      } while (!insideRectangle(coordinates.x(), coordinates.y(), x1_board, y1_board, x2_board, y2_board));
-      // System.out.println("You are inside game board rectangle");
-      // System.out.println("You choosed: " + choice);
+      } while (choice == -1
+      /*!insideRectangle(coordinates.x(), coordinates.y(), x1_board, y1_board, x2_board, y2_board)*/);
+      System.out.println("You are inside game board rectangle");
+      System.out.println("You choosed: " + choice);
       System.err.println("after choosing tile and token");
 
       var chosedTile = game.board().getTile(choice);
       var chosedToken = game.board().getToken(choice);
+      System.err.println("tile: " + chosedTile.toString() + " token: " + chosedToken.toString());
 
-      handleTilePlacement(context, currentPlayer, chosedTile, width, height, figureSize);
+      boolean flag;
+      do {
+        flag = handleTilePlacement(context, currentPlayer, chosedTile, width, height, figureSize);
+      } while (!flag);
+
+      System.err.println("Tile was placed successfully");
+      // refresh the screen
+      showPlayerEnvironmentAndGameBoard(context, currentPlayer, game.board(), width, height, figureSize);
+
       handleTokenPlacement(context, currentPlayer, chosedToken, width, height, figureSize, tokenSize);
 
       handleTurnChange(game);
-
+      System.err.println("Next player");
       // var event = context.pollOrWaitEvent(1000);
       // switch (event) {
       //   case null -> {
