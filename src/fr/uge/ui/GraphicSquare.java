@@ -28,6 +28,7 @@ import com.github.forax.zen.ApplicationContext;
 import com.github.forax.zen.KeyboardEvent;
 import com.github.forax.zen.KeyboardEvent.Action;
 import com.github.forax.zen.PointerEvent;
+// import com.github.forax.zen.PointerEvent.Action;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
@@ -281,14 +282,19 @@ public class GraphicSquare {
   private static void drawEnvironment(
       ApplicationContext context, Player player, int width, int height, int figureSize) {
     var listCells = player.getEnvironment().getCells();
-    // drawSquare(context, (int) (figureSize / 2), (int) (figureSize / 2), figureSize, Color.BLACK);
-    // drawSquare(context, (int) ((width / 2) + figureSize / 2), (int) ((height / 2) + figureSize / 2), figureSize, Color.WHITE);
-    // drawSquare(context, (int) (figureSize / 2) + figureSize, (int) (figureSize / 2) + figureSize, figureSize, Color.YELLOW);
-    // drawSquare(context, (int) (figureSize / 2), (int) (figureSize / 2) + figureSize, figureSize, Color.CYAN);
-    // drawSquare(context, (int) (figureSize / 2) + figureSize, (int) (figureSize / 2), figureSize, Color.ORANGE);
+    // drawSquare(context, (int) (figureSize / 2), (int) (figureSize / 2),
+    // figureSize, Color.BLACK);
+    // drawSquare(context, (int) ((width / 2) + figureSize / 2), (int) ((height / 2)
+    // + figureSize / 2), figureSize, Color.WHITE);
+    // drawSquare(context, (int) (figureSize / 2) + figureSize, (int) (figureSize /
+    // 2) + figureSize, figureSize, Color.YELLOW);
+    // drawSquare(context, (int) (figureSize / 2), (int) (figureSize / 2) +
+    // figureSize, figureSize, Color.CYAN);
+    // drawSquare(context, (int) (figureSize / 2) + figureSize, (int) (figureSize /
+    // 2), figureSize, Color.ORANGE);
 
     var images = new ImageLoader("img/tokens",
-    "bear.png", "elk.png", "hawk.png", "fox.png", "salmon.png");
+        "bear.png", "elk.png", "hawk.png", "fox.png", "salmon.png");
 
     for (var cell : listCells) {
       if (cell.isOccupiedByTile()) {
@@ -305,19 +311,24 @@ public class GraphicSquare {
         }
 
         int placement = 0;
-        if (cell.getAnimal() == null){
-          for (var animal : cell.getTile().animals()){
+        if (cell.getAnimal() == null) {
+          for (var animal : cell.getTile().animals()) {
             int scaledTokenSize = (int) (figureSize / 2);
             var xAnimal = (int) ((x - (figureSize / 2) + figureSize / 20) + placement * (figureSize / 2.5));
-            var yAnimal = (int) (y - (figureSize / 2) + figureSize / 4); //  + (placement * figureSize / 5)
+            var yAnimal = (int) (y - (figureSize / 2) + figureSize / 4); // + (placement * figureSize / 5)
             placement++;
             context.renderFrame(graphics -> {
               switch (animal) {
-                case BEAR -> drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaledTokenSize, scaledTokenSize);
-                case ELK -> drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaledTokenSize, scaledTokenSize);
-                case SALMON -> drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaledTokenSize, scaledTokenSize);
-                case HAWK -> drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaledTokenSize, scaledTokenSize);
-                case FOX -> drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaledTokenSize, scaledTokenSize);
+                case BEAR -> drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaledTokenSize,
+                    scaledTokenSize);
+                case ELK -> drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaledTokenSize,
+                    scaledTokenSize);
+                case SALMON -> drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaledTokenSize,
+                    scaledTokenSize);
+                case HAWK -> drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaledTokenSize,
+                    scaledTokenSize);
+                case FOX -> drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaledTokenSize,
+                    scaledTokenSize);
               }
             });
           }
@@ -341,7 +352,7 @@ public class GraphicSquare {
   private static void showGameBoard(
       ApplicationContext context,
       GameBoard board,
-      int figureSize, int tokenSize  /* int width, int height, int margin */
+      int figureSize, int tokenSize /* int width, int height, int margin */
   ) {
     final var RECTANGLE_X_OFFSET = 1.8f;
     final var ROW_MULTIPLIER = 1.8f;
@@ -353,7 +364,7 @@ public class GraphicSquare {
     var listOfTokens = board.getCopyOfTokens();
 
     var images = new ImageLoader("img/tokens",
-    "bear.png", "elk.png", "hawk.png", "fox.png", "salmon.png");
+        "bear.png", "elk.png", "hawk.png", "fox.png", "salmon.png");
 
     for (var i = 1; i <= 4; ++i) {
       var yPosition = (int) (figureSize * ROW_MULTIPLIER * i);
@@ -362,7 +373,8 @@ public class GraphicSquare {
       // calculate circle position relative to rectangle
       // var halfFigureSize = figureSize / 2f;
       // var halfTokenSize = tokenSize / 2f;
-      // var circleX = (int) (baseXOffset + (figureSize * CIRCLE_X_OFFSET) + halfFigureSize); // centered X for circle
+      // var circleX = (int) (baseXOffset + (figureSize * CIRCLE_X_OFFSET) +
+      // halfFigureSize); // centered X for circle
       // var circleY = (int) (yPosition + halfFigureSize); // centered Y for circle
       var circleX = (int) (baseXOffset + (figureSize * CIRCLE_X_OFFSET) + tokenSize / 5); // centered X for circle
       var circleY = (int) (yPosition + tokenSize / 5); // centered Y for circle
@@ -379,10 +391,10 @@ public class GraphicSquare {
       }
 
       int placement = 0;
-      for (var animal : tile.animals()){
+      for (var animal : tile.animals()) {
         var scale = (int) (figureSize / 2);
         var xAnimal = (int) ((baseXOffset + figureSize / 20) + placement * (figureSize / 2.5));
-        var yAnimal = (int) (yPosition + figureSize / 4); //  + (placement * figureSize / 5)
+        var yAnimal = (int) (yPosition + figureSize / 4); // + (placement * figureSize / 5)
         placement++;
         context.renderFrame(graphics -> {
           switch (animal) {
@@ -395,29 +407,33 @@ public class GraphicSquare {
         });
       }
 
-
       var token = listOfTokens.get(i - 1); // BEAR, ELK, SALMON, HAWK, FOX
       // draw Wildlife token (circle)
       // drawCircle(context, circleX, circleY, tokenSize, Color.RED);
 
-        // case BEAR -> drawCircle(context, circleX, circleY, tokenSize, Color.RED);
-        // case ELK -> drawCircle(context, circleX, circleY, tokenSize, Color.BLUE);
-        // case SALMON -> drawCircle(context, circleX, circleY, tokenSize, Color.GREEN);
-        // case HAWK -> drawCircle(context, circleX, circleY, tokenSize, Color.YELLOW);
-        // case FOX -> drawCircle(context, circleX, circleY, tokenSize, Color.CYAN);
+      // case BEAR -> drawCircle(context, circleX, circleY, tokenSize, Color.RED);
+      // case ELK -> drawCircle(context, circleX, circleY, tokenSize, Color.BLUE);
+      // case SALMON -> drawCircle(context, circleX, circleY, tokenSize, Color.GREEN);
+      // case HAWK -> drawCircle(context, circleX, circleY, tokenSize, Color.YELLOW);
+      // case FOX -> drawCircle(context, circleX, circleY, tokenSize, Color.CYAN);
 
-        context.renderFrame(graphics -> {
-          switch (token) {
-            case BEAR -> drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize,  scaledTokenSize);
-            case ELK -> drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize, scaledTokenSize);
-            case SALMON -> drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize, scaledTokenSize);
-            case HAWK -> drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize, scaledTokenSize);
-            case FOX -> drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize, scaledTokenSize);
-          }
-        });
+      context.renderFrame(graphics -> {
+        switch (token) {
+          case BEAR ->
+            drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize, scaledTokenSize);
+          case ELK ->
+            drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize, scaledTokenSize);
+          case SALMON ->
+            drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize, scaledTokenSize);
+          case HAWK ->
+            drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize, scaledTokenSize);
+          case FOX ->
+            drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize, scaledTokenSize);
+        }
+      });
 
-
-      // do not delete this code for now ! it's for internal use and see where the lines are
+      // do not delete this code for now ! it's for internal use and see where the
+      // lines are
       if (i != 4) {
         drawLine(context,
             (int) (figureSize / 3),
@@ -519,7 +535,7 @@ public class GraphicSquare {
 
       // restartRectangleWithText(context,
       // "Change Tokens", figureSize / 3, figureSize / 2, 15,
-        // figureSize, figureSize, figureSize, figureSize, Color.BLACK);
+      // figureSize, figureSize, figureSize, figureSize, Color.BLACK);
 
       // to check coordinates from user
       var userCoordinates = getCoordinatesFromUser(context);
@@ -561,36 +577,45 @@ public class GraphicSquare {
     var height = screenInfo.height();
 
     Coordinates coordinates = null;
-    // while (true) {
+    while (true) {
 
-      var event = context.pollOrWaitEvent(3000);
+      var event = context.pollOrWaitEvent(10);
       switch (event) {
         case null -> {
-          // continue;
+          continue;
         }
-        case PointerEvent e -> {
-          var location = e.location();
-          checkRange(0, location.x(), width);
-          checkRange(0, location.y(), height);
-          System.err.println("PRINT Coordinates (getCoordinatesFromUser) : (" + location.x() + ", " + location.y() + ")");
-          coordinates = new Coordinates(location.y(), location.x());
-          // return new Coordinates(location.y(), location.x());
+        case PointerEvent pe -> {
+
+          switch (pe.action()) {
+            case PointerEvent.Action.POINTER_UP -> {
+              var location = pe.location();
+              checkRange(0, location.x(), width);
+              checkRange(0, location.y(), height);
+              System.err
+                  .println("PRINT Coordinates (getCoordinatesFromUser) :(" +
+                      location.x() + ", " + location.y() + ")");
+              // coordinates = new Coordinates(location.y(), location.x());
+              return new Coordinates(location.y(), location.x());
+            }
+            case PointerEvent.Action.POINTER_DOWN -> {
+              continue;
+            }
+          }
+
         }
         case KeyboardEvent ke -> {
           if (ke.key() == KeyboardEvent.Key.Q) {
-            // return null;
+            return null;
           }
         }
         default -> {
-          // return null;
+          return null;
         }
       }
       return coordinates;
-    // }
+    }
 
   }
-
-
 
   private static void showPossibleTokenPlacement(
       ApplicationContext context, Player player,
@@ -616,11 +641,10 @@ public class GraphicSquare {
 
   }
 
-
   private static boolean handleTokenPlacement(
-    ApplicationContext context, Player player,
-    WildlifeType chosedToken, int width, int height,
-    int figureSize, int tokenSize) {
+      ApplicationContext context, Player player,
+      WildlifeType chosedToken, int width, int height,
+      int figureSize, int tokenSize) {
 
     Objects.requireNonNull(player);
     Objects.requireNonNull(chosedToken);
@@ -661,14 +685,18 @@ public class GraphicSquare {
         System.err.println("Coordinates are invalid WHEN PLACING TILE"); /* for tests, to delete later */
         return false;
         // context.dispose();
-        // throw new IllegalStateException("You have to click on correct coordinates!\n");
+        // throw new IllegalStateException("You have to click on correct
+        // coordinates!\n");
       }
       var coordinatesForMap = new Coordinates(
-        (int) (userCoordinates.y() / figureSize - (height / 2 / figureSize)),
-        (int) (userCoordinates.x() / figureSize - (width / 2 / figureSize))); // (cell.getCoordinates().x() * figureSize) + (width / 2)
+          (int) (userCoordinates.y() / figureSize - (height / 2 / figureSize)),
+          (int) (userCoordinates.x() / figureSize - (width / 2 / figureSize))); // (cell.getCoordinates().x() *
+                                                                                // figureSize) + (width / 2)
 
-      System.err.println("Coordinates (TilePlacement) : (" + coordinatesForMap.x() + ", " + coordinatesForMap.y() + ")");
-      // System.err.println("Possible coordinates: " + possibleCoordinates.toString());
+      System.err
+          .println("Coordinates (TilePlacement) : (" + coordinatesForMap.x() + ", " + coordinatesForMap.y() + ")");
+      // System.err.println("Possible coordinates: " +
+      // possibleCoordinates.toString());
 
       if (possibleCoordinates.stream().anyMatch(coordinates -> coordinates.equals(coordinatesForMap))) {
         var currCell = player.getEnvironment().getCell(coordinatesForMap);
@@ -808,8 +836,7 @@ public class GraphicSquare {
   // }
 
   private static int indexOfGameBoardCouple(
-      ApplicationContext context, int x, int y, int figureSize, int environmentSquareWidth
-    ) {
+      ApplicationContext context, int x, int y, int figureSize, int environmentSquareWidth) {
     for (var index = 0; index < 4; ++index) {
       Color[] colors = { Color.GREEN, Color.BLUE, Color.YELLOW, Color.GREEN };
       int[] yOffsets = { figureSize,
@@ -963,9 +990,7 @@ public class GraphicSquare {
   // Color.PINK);
   // }
 
-
-
-    /**
+  /**
    * Tries sleeping for a given duration.
    * 
    * @param duration Sleep duration, in milliseconds.
@@ -979,8 +1004,6 @@ public class GraphicSquare {
     }
     return true;
   }
-
-
 
   private static void cascadiaSquareGame(ApplicationContext context) {
     var counter = 0;
@@ -1004,7 +1027,7 @@ public class GraphicSquare {
     System.out.println("size of the screen (" + width + " x " + height + ")");
 
     // var images = new ImageLoader("img/tokens",
-    //     "bear.png", "elk.png", "hawk.png", "fox.png", "salmon.png");
+    // "bear.png", "elk.png", "hawk.png", "fox.png", "salmon.png");
 
     var firstPlayerName = "Alice"; // to be changed later
     var secondPlayerName = "Bob"; // to be changed later
@@ -1189,7 +1212,6 @@ public class GraphicSquare {
     // handleTurnChange(game);
     // }
 
-
     var test_coordinates = getCoordinatesFromUser(context);
     if (test_coordinates == null) {
       System.err.println("Coordinates are invalid in game board choice"); /* for tests, to delete later */
@@ -1197,7 +1219,6 @@ public class GraphicSquare {
       return;
     }
     System.err.println("TEST Coordinates 1: (" + test_coordinates.x() + ", " + test_coordinates.y() + ")");
-
 
     var test_coordinates2 = getCoordinatesFromUser(context);
     if (test_coordinates2 == null) {
@@ -1207,9 +1228,9 @@ public class GraphicSquare {
     }
     System.err.println("TEST Coordinates 2: (" + test_coordinates.x() + ", " + test_coordinates.y() + ")");
 
-
     while (!game.turnManager().isGameEnd()) {
-      // drawRectangle(context, 0, 0, width, height, Color.WHITE); /* clear the screen */
+      // drawRectangle(context, 0, 0, width, height, Color.WHITE); /* clear the screen
+      // */
 
       restartEnvironmentRectangle(context, width, height, environmentSquareWidth, environmentSquareHeight);
       restartGameBoardRectangle(context, figureSize, environmentSquareHeight);
@@ -1242,22 +1263,26 @@ public class GraphicSquare {
       while (true) {
         coordinates = getCoordinatesFromUser(context);
         if (coordinates == null) {
-            System.err.println("Coordinates are invalid in game board choice"); /* for tests, to delete later */
-            context.dispose();
-            return;
+          System.err.println("Coordinates are invalid in game board choice"); /* for tests, to delete later */
+          context.dispose();
+          return;
         }
         choice = indexOfGameBoardCouple(context, coordinates.x(), coordinates.y(), figureSize, environmentSquareWidth);
         if (choice != -1) {
-            break;
+          break;
         }
       }
-      /*!insideRectangle(coordinates.x(), coordinates.y(), x1_board, y1_board, x2_board, y2_board)*/
+      /*
+       * !insideRectangle(coordinates.x(), coordinates.y(), x1_board, y1_board,
+       * x2_board, y2_board)
+       */
       // System.out.println("You are inside game board rectangle");
       sleep(1000);
       // if (true){
-      //   System.err.println("Coordinates are invalid"); /* for tests, to delete later */
-      //   context.dispose();
-      //   return;
+      // System.err.println("Coordinates are invalid"); /* for tests, to delete later
+      // */
+      // context.dispose();
+      // return;
       // }
       System.out.println("You choosed: " + choice);
 
@@ -1265,7 +1290,6 @@ public class GraphicSquare {
       var chosedToken = game.board().getToken(choice);
       System.err.println("tile: " + chosedTile.toString() + " token: " + chosedToken.toString());
 
-      
       // System.err.println("Changing Tokens");
       restartRectangleWithText(context,
           "Place a tile", (int) (width - (environmentSquareWidth / 3.5)), figureSize / 2,
@@ -1274,7 +1298,8 @@ public class GraphicSquare {
 
       // boolean flag;
       // do {
-      //   flag = handleTilePlacement(context, currentPlayer, chosedTile, width, height, figureSize);
+      // flag = handleTilePlacement(context, currentPlayer, chosedTile, width, height,
+      // figureSize);
       // } while (!flag);
       handleTilePlacement(context, currentPlayer, chosedTile, width, height, figureSize);
       System.err.println("Tile was placed successfully");
@@ -1285,7 +1310,6 @@ public class GraphicSquare {
           "Place a token", (int) (width - (environmentSquareWidth / 3.5)), figureSize / 2,
           (int) (width * coeffFontSizeInstructions),
           width, environmentSquareWidth, environmentSquareHeight, Color.BLACK);
-
 
       handleTokenPlacement(context, currentPlayer, chosedToken, width, height, figureSize, tokenSize);
 
