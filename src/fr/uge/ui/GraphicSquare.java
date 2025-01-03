@@ -656,7 +656,7 @@ public class GraphicSquare {
               x * figureSize + (figureSize / 2),
               y * figureSize + (figureSize / 2),
               tokenSize,
-              Color.ORANGE);
+              Color.MAGENTA);
         }
       }
     }
@@ -707,19 +707,13 @@ public class GraphicSquare {
       if (userCoordinates == null) {
         System.err.println("Coordinates are invalid WHEN PLACING TILE"); /* for tests, to delete later */
         return false;
-        // context.dispose();
-        // throw new IllegalStateException("You have to click on correct
-        // coordinates!\n");
       }
       var coordinatesForMap = new Coordinates(
-          (int) (userCoordinates.y() / figureSize - (height / 2 / figureSize)),
-          (int) (userCoordinates.x() / figureSize - (width / 2 / figureSize))); // (cell.getCoordinates().x() *
-                                                                                // figureSize) + (width / 2)
+          (int) (userCoordinates.y() / figureSize - height / 2 / figureSize),
+          (int) (userCoordinates.x() / figureSize - width / 2 / figureSize));
 
       System.err.println("Coordinates (TilePlacement) : (" +
                   coordinatesForMap.x() + ", " + coordinatesForMap.y() + ")");
-      // System.err.println("Possible coordinates: " +
-      // possibleCoordinates.toString());
 
       if (possibleCoordinates.stream().anyMatch(coordinates -> coordinates.equals(coordinatesForMap))) {
         var currCell = player.getEnvironment().getCell(coordinatesForMap);
@@ -1421,13 +1415,3 @@ public class GraphicSquare {
   }
 
 }
-
-
-/*
- * for (var machin : cards){  // 5 animals
- *  for (var animal : types_card) {// de A à D
- *  // drawMachin(machin, animal);
- * }
- * }
- * 
- */
