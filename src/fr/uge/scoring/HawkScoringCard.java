@@ -26,9 +26,9 @@ enum HawkScoringType {
 
 
 
-public record HawkScoringCard(HawkScoringType version) implements WildlifeScoringCard {
+public final class HawkScoringCard implements WildlifeScoringCard {
 
-  public HawkScoringCard {
+  public HawkScoringCard(HawkScoringType version) {
     
   }
   

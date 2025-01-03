@@ -26,9 +26,9 @@ enum BearScoringType {
 }
 
 
-public record BearScoringCard(BearScoringType version) implements WildlifeScoringCard {
+public final class BearScoringCard implements WildlifeScoringCard {
 
-  public BearScoringCard {
+  public BearScoringCard(BearScoringType version) {
     
   }
 

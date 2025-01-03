@@ -3,11 +3,10 @@ package fr.uge.environment;
 import java.util.Objects;
 import java.util.Set;
 
-public record Tile (
+public record Tile(
     TileType firstHabitat,
     TileType secondHabitat,
-    Set<WildlifeType> animals
-  ) {
+    Set<WildlifeType> animals) {
   /*
    * configTilesWithTwoAnimals.txt
    * 45 Tiles : with two animals
@@ -27,12 +26,11 @@ public record Tile (
    * Check if the tile is a keystone tile
    * 
    * @return <b>true</b> if the tile is a keystone tile
-   *        <b>false</b> otherwise
+   *         <b>false</b> otherwise
    */
-  public final boolean isKeystone(){
+  public final boolean isKeystone() {
     return firstHabitat.equals(secondHabitat);
   }
-
 
   /* to improve later */
   private String habitatsAndAnimalsAsString() {
@@ -42,7 +40,7 @@ public record Tile (
       builder.append(secondHabitat);
     }
     var separator = ": (";
-    for (var animal : this.animals) {  /* two or three animals */
+    for (var animal : this.animals) { /* two or three animals */
       builder.append(separator).append(animal);
       separator = ", ";
     }
@@ -50,8 +48,6 @@ public record Tile (
     return builder.toString();
   }
 
-  
-  
   @Override
   public String toString() {
     var builder = new StringBuilder();
@@ -59,5 +55,3 @@ public record Tile (
     return builder.toString();
   }
 }
-
-

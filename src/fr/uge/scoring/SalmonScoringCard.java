@@ -10,20 +10,20 @@ Runs may not have any other salmon adjacent to them. There are card clarificatio
         plus one point for each adjacent animal token, regardless of the type of animal.
 */
 
-enum SalmonScoringType {
+// enum SalmonScoringType {
 
-  FIRST,    /* Score for each run based on size, up to a maximum size of 7. */
+//   FIRST,    /* Score for each run based on size, up to a maximum size of 7. */
 
-  SECOND,   /* Score for each run based on size, up to a maximum size of 5. */
+//   SECOND,   /* Score for each run based on size, up to a maximum size of 5. */
 
-  THIRD,    /* Score for each run based on size, with sizes between 3 and 5. */
+//   THIRD,    /* Score for each run based on size, with sizes between 3 and 5. */
 
-  FOURTH;   /* Score for each run of salmon, earning one point for each salmon in the run,
-               plus one point for each adjacent animal token, regardless of the type of animal. */
+//   FOURTH;   /* Score for each run of salmon, earning one point for each salmon in the run,
+//                plus one point for each adjacent animal token, regardless of the type of animal. */
 
-}
+// }
 
-public record SalmonScoringCard(SalmonScoringType version) implements WildlifeScoringCard {
+public record SalmonScoringCard(CardType cardType) implements WildlifeScoringCard {
 
   public SalmonScoringCard {
     

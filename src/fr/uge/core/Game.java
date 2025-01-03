@@ -2,36 +2,39 @@ package fr.uge.core;
 
 import fr.uge.environment.Coordinates;
 import fr.uge.util.Constants;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * Game class represents the main game object that contains the game board and the turn manager.<br>
- * It is responsible for initializing the game components and starting the game loop.
+ * Game class represents the main game object that contains the game board and
+ * the turn manager.<br>
+ * It is responsible for initializing the game components and starting the game
+ * loop.
  */
 public final class Game {
-  private final GameBoard board;          // available: tiles and/or tokens 
-  private final TurnManager turnManager;  // 20 turns for entire game
-  
-  private final int version;
-  private final int playerCount;     // number of players
+  private final GameBoard board; // available: tiles and/or tokens
+  private final TurnManager turnManager; // 20 turns for entire game
+  private final List<Player> players; // list of players
 
+  private final int version;
+  private final int playerCount; // number of players
 
   public Game(
-      GameBoard board,          /* 1 game board */
-      TurnManager turnManager,  /* 20 turns for entire game */
-      int playerCount,          /* number of players */
-      int version
-    ){
+      GameBoard board, /* 1 game board */
+      TurnManager turnManager, /* 20 turns for entire game */
+      // int playerCount, /* number of players */
+      List<Player> players, /* list of players */
+      int version) {
     this.board = Objects.requireNonNull(board);
     this.turnManager = Objects.requireNonNull(turnManager);
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
     }
     this.version = version;
-    if (playerCount < 1 || playerCount > 4) {
-      throw new IllegalArgumentException("Invalid number of players");
-    }
-    this.playerCount = playerCount;
+
+    // this.playerCount = playerCount;
+    this.playerCount = players.size();
+    this.players = Objects.requireNonNull(players);
     initializeGame();
   }
 
@@ -49,6 +52,17 @@ public final class Game {
     return this.board;
   }
 
+  public final List<Player> getPlayers() {
+    return List.copyOf(this.players);
+  }
+
+  public final Player getPlayerByIndex(int index) {
+    if (index < 0 || index >= this.playerCount) {
+      throw new IllegalArgumentException("Invalid index");
+    }
+    return this.players.get(index);
+  }
+
   /**
    * @return the turn manager.
    */
@@ -56,18 +70,17 @@ public final class Game {
     return this.turnManager;
   }
 
-  
-
   public void startGame() {
     /* Initialize game components and start the game loop */
   }
 
   public void endGame() {
-    /* ends the game and performs final scoring */ 
+    /* ends the game and performs final scoring */
   }
 
   public int performCalculations() {
-    /* for every player we calculate their score
+    /*
+     * for every player we calculate their score
      * based on WildlifeScoringCard for every animal
      * 
      * After, we must add additional score
@@ -75,9 +88,30 @@ public final class Game {
      * if player has the most habitat tile type than other players
      * so he gets +1 points on each habitat type.
      * 
-     * */
+     */
     return 0;
   }
+
+  /*
+   * public int performCalculations() {
+   * int totalScore = 0;
+   * for (Player player : turnManager.getPlayers()) {
+   * int score = calculatePlayerScore(player);
+   * totalScore += score;
+   * }
+   * return totalScore;
+   * }
+   * 
+   * 
+   * private int calculatePlayerScore(Player player) {
+   * int score = 0;
+   * // // Calculate score based on wildlife scoring card
+   * // score += calculateWildlifeScore(player);
+   * // // Calculate score based on habitat tiles
+   * // score += calculateHabitatScore(player);
+   * return score;
+   * }
+   */
 
   /**
    * Initializes the game by placing the starter tiles for each player.
@@ -93,50 +127,48 @@ public final class Game {
 
   /**
    * Places the starter tiles for a player at the center of the board.
-   * @param playerIndex the index of the player.
+   * 
+   * @param playerIndex       the index of the player.
    * @param centerCoordinates the center coordinates of the board.
    */
   private void placeStarterTiles(int playerIndex, Coordinates centerCoordinates) {
     /**
      * Hexagonal version:
-     *   X
-     * Y   Z
+     * X
+     * Y Z
      * 
      * Square version:
      * X
      * Y Z
-    */
+     */
     if (this.version == Constants.VERSION_HEXAGONAL) {
       placeStarterTilesHexagonal(playerIndex, centerCoordinates, 2, 3);
     } else {
       placeStarterTilesSquare(playerIndex, centerCoordinates, 1, 2);
     }
-
     // cells.add(new Cell(centerCoordinates, topTile));
     // var cell = getCell(tile.coordinates());
     // placeTile(cell, tile);
   }
 
-
   private void placeStarterTilesSquare(
       int playerIndex,
       Coordinates centerCoordinates,
       int leftNeighborNumber,
-      int rightNeighborNumber
-    ) {
-    var starter = board.getBag().getStarter();  /* 3 tiles */
-    var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).getEnvironment();
+      int rightNeighborNumber) {
+    var starter = board.getBag().getStarter(); /* 3 tiles */
+    var playerEnvironment = players.get(playerIndex).getEnvironment();
 
     var cell = playerEnvironment.getCell(centerCoordinates); /* main cell */
     playerEnvironment.placeTile(cell, starter[0]);
 
-    var neighborCell = playerEnvironment.getOneNeighbor(cell, leftNeighborNumber);     /* on down from current cell - 1 */
+    var neighborCell = playerEnvironment.getOneNeighbor(cell, leftNeighborNumber); /* on down from current cell - 1 */
     playerEnvironment.placeTile(neighborCell, starter[1]);
 
-    neighborCell = playerEnvironment.getOneNeighbor(neighborCell, rightNeighborNumber); /* on right from neighbor cell - 3*/
+    /* on right from neighbor cell - 3 */
+    neighborCell = playerEnvironment.getOneNeighbor(neighborCell, rightNeighborNumber);
     playerEnvironment.placeTile(neighborCell, starter[2]);
   }
-
 
   private void placeStarterTilesHexagonal(
       int playerIndex,
@@ -144,26 +176,17 @@ public final class Game {
       int leftNeighborNumber,
       int rightNeighborNumber
     ) {
-    var starter = board.getBag().getStarter();  /* 3 tiles */
-    var playerEnvironment = turnManager.getPlayerByIndex(playerIndex).getEnvironment();
+    var starter = board.getBag().getStarter(); /* 3 tiles */
+    var playerEnvironment = players.get(playerIndex).getEnvironment();
 
     var cell = playerEnvironment.getCell(centerCoordinates); /* main cell */
     playerEnvironment.placeTile(cell, starter[0]);
 
-    var neighborCell = playerEnvironment.getOneNeighbor(cell, leftNeighborNumber);    /* left down cell - 2*/
+    var neighborCell = playerEnvironment.getOneNeighbor(cell, leftNeighborNumber); /* left down cell - 2 */
     playerEnvironment.placeTile(neighborCell, starter[1]);
 
     neighborCell = playerEnvironment.getOneNeighbor(cell, rightNeighborNumber);
-    playerEnvironment.placeTile(neighborCell, starter[2]);     /* right down cell - 3*/
+    playerEnvironment.placeTile(neighborCell, starter[2]); /* right down cell - 3 */
   }
-
-
-
-
-  
-
-  
-  
-
 
 }

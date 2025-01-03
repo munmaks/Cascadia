@@ -1,0 +1,24 @@
+package fr.uge.environment;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+
+final class UtilsEnvironment {
+  
+  private UtilsEnvironment() {
+    throw new IllegalStateException("Utility class");
+  }
+
+  public List<Cell> getNeighbors(Cell cell, int numberOfNeighbors) {
+      Objects.requireNonNull(cell, "Cell can't be null in getNeighbors()");
+      return IntStream.range(0, numberOfNeighbors)
+                      .mapToObj(direction -> getOneNeighbor(cell, direction))
+                      // .filter(Objects::nonNull)    // no need to filter, because we create new cell if not exists
+                      .collect(Collectors.toUnmodifiableList());
+  }
+
+
+}

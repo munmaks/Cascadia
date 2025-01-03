@@ -29,9 +29,9 @@ enum ElkScoringType {
 
 
 
-public record ElkScoringCard(ElkScoringType version) implements WildlifeScoringCard {
+public final class ElkScoringCard implements WildlifeScoringCard {
 
-  public ElkScoringCard {
+    public ElkScoringCard(ElkScoringType version) {
     
   }
 }

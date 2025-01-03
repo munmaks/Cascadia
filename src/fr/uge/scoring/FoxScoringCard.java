@@ -39,9 +39,9 @@ enum FoxScoringType {
 }
 
 
-public record FoxScoringCard() implements WildlifeScoringCard {
+public final class FoxScoringCard implements WildlifeScoringCard {
 
-  public FoxScoringCard {
+  public FoxScoringCard(FoxScoringType type) {
     
   }
 

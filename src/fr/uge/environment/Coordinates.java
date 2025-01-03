@@ -6,9 +6,10 @@ package fr.uge.environment;
  * @param y - row
  * @param x - column
  */
-public record Coordinates(int y, int x){
+public record Coordinates(int y, int x) {
 
-  public Coordinates { }
+  public Coordinates {
+  }
 
   @Override
   public final String toString() {
