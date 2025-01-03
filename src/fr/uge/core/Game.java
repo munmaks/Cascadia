@@ -146,7 +146,6 @@ public final class Game {
     } else {
       placeStarterTilesSquare(playerIndex, centerCoordinates, 1, 2);
     }
-
     // cells.add(new Cell(centerCoordinates, topTile));
     // var cell = getCell(tile.coordinates());
     // placeTile(cell, tile);
@@ -166,10 +165,8 @@ public final class Game {
     var neighborCell = playerEnvironment.getOneNeighbor(cell, leftNeighborNumber); /* on down from current cell - 1 */
     playerEnvironment.placeTile(neighborCell, starter[1]);
 
-    neighborCell = playerEnvironment.getOneNeighbor(neighborCell, rightNeighborNumber); /*
-                                                                                         * on right from neighbor cell -
-                                                                                         * 3
-                                                                                         */
+    /* on right from neighbor cell - 3 */
+    neighborCell = playerEnvironment.getOneNeighbor(neighborCell, rightNeighborNumber);
     playerEnvironment.placeTile(neighborCell, starter[2]);
   }
 
@@ -177,7 +174,8 @@ public final class Game {
       int playerIndex,
       Coordinates centerCoordinates,
       int leftNeighborNumber,
-      int rightNeighborNumber) {
+      int rightNeighborNumber
+    ) {
     var starter = board.getBag().getStarter(); /* 3 tiles */
     var playerEnvironment = players.get(playerIndex).getEnvironment();
 

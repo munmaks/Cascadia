@@ -151,8 +151,13 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
         .sum();
   }
 
-  private void addValidNeighborsToQueue(Environment env, Cell cell, WildlifeType token, Set<Cell> visited,
-      Queue<Cell> queue) {
+  private void addValidNeighborsToQueue(
+      Environment env,
+      Cell cell,
+      WildlifeType token,
+      Set<Cell> visited,
+      Queue<Cell> queue
+    ) {
     env.getNeighbors(cell).stream()
         .filter(neighbor -> isValidNeighbor(neighbor, token, visited))
         .forEach(neighbor -> {
