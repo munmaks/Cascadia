@@ -121,7 +121,7 @@ class HexagonalPointyTop {
       graphics.fillPolygon(xPoints, yPoints, 6);
 
       // show a new hexagon at the position of the pointer
-      graphics.setColor(Color.MAGENTA);
+      graphics.setColor(Color.RED);
       for (var i = 0; i < 6; i++) {
         xPoints[i] = (int) (x + size * Math.cos(i * Math.PI / 3 + Math.PI / 6));
         yPoints[i] = (int) (y + size * Math.sin(i * Math.PI / 3 + Math.PI / 6));
@@ -553,9 +553,10 @@ public class GraphicSquare {
       return true;
     } else if (game.board().tokensCanBeUpdated()) {
 
-      // restartRectangleWithText(context,
-      // "Change Tokens", figureSize / 3, figureSize / 2, 15,
-      // figureSize, figureSize, figureSize, figureSize, Color.BLACK);
+      restartRectangleWithText(context,
+        "Click here to change", 0, 0, 15,
+        figureSize, figureSize * 3, figureSize * 2, Color.BLACK);
+
 
       // to check coordinates from user
       var userCoordinates = getCoordinatesFromUser(context);
@@ -564,8 +565,7 @@ public class GraphicSquare {
         return false;
       }
       if (insideRectangle(userCoordinates.x(), userCoordinates.y(), 0, 0, figureSize, figureSize)) {
-        // if player wants to change tokens he must click on the rectangle "(Change
-        // Tokens)"
+        // if player wants to change tokens he must click on the rectangle "(Change Tokens)"
         System.out.println("tokens are now updated");
         game.board().updateTokens();
       }
@@ -580,8 +580,9 @@ public class GraphicSquare {
     Objects.requireNonNull(game);
     game.turnManager().changePlayer();
     game.turnManager().nextTurn();
-    game.board().setDefaultTokensAreUpdated(); // that means, next person can change tokens (if needed)
+    game.board().setDefaultTokensAreUpdated(); /* that means, next person can change tokens (if needed) */
   }
+
 
   private static int handleUserChoiceTileAndToken() {
     int choice;
@@ -595,53 +596,44 @@ public class GraphicSquare {
     var screenInfo = context.getScreenInfo();
     var width = screenInfo.width();
     var height = screenInfo.height();
-
     Coordinates coordinates = null;
-    while (true) {
 
+    do {
       var event = context.pollOrWaitEvent(10);
       switch (event) {
         case null -> {
           continue;
         }
         case PointerEvent pe -> {
-
           switch (pe.action()) {
-            case PointerEvent.Action.POINTER_UP -> {
+            case POINTER_UP -> {
               var location = pe.location();
               checkRange(0, location.x(), width);
               checkRange(0, location.y(), height);
-              System.err
-                    .println("PRINT Coordinates (getCoordinatesFromUser) :(" +
-                              location.x() + ", " + location.y() + ")");
               coordinates = new Coordinates(location.y(), location.x());
-              System.err.println("Pointer up");
-              return coordinates;
             }
-            case PointerEvent.Action.POINTER_DOWN -> {
-              System.err.println("Pointer down");
+            case POINTER_DOWN, POINTER_MOVE -> {
+              /* POINTER_DOWN: nothing to do, user clicked, but didn't release the button or moved the mouse
+              * POINTER_MOVE: user moves his mouse*/
               break;
             }
           }
-
         }
         case KeyboardEvent ke -> {
           if (ke.key() == KeyboardEvent.Key.Q) {
             return null;
           }
         }
-        default -> {
-          // return null;
-        }
+        default -> { /* do nothing */ }
       }
-    }
-    // return coordinates;
-
+    } while (coordinates == null);
+    return coordinates;
   }
 
   private static void showPossibleTokenPlacement(
-      ApplicationContext context, Player player,
-      WildlifeType token, int figureSize, int tokenSize) {
+      ApplicationContext context, Player player, WildlifeType token,
+      int width, int height,
+      int figureSize, int tokenSize) {
     Objects.requireNonNull(player, "player is null in showPossibleTokenPlacement()");
     Objects.requireNonNull(token, "token is null in showPossibleTokenPlacement()");
 
@@ -652,11 +644,16 @@ public class GraphicSquare {
         if (cell.canBePlaced(token)) {
           var x = cell.getCoordinates().x();
           var y = cell.getCoordinates().y();
+          // drawSquare(context,
+          //     (int) ((x + width / 2 / figureSize) * figureSize + (figureSize / 2)),
+          //     (int) ((y + height / 2 / figureSize) * figureSize + (figureSize / 2)),
+          //     figureSize,
+          //     Color.RED);
           drawCircle(context,
-              x * figureSize + (figureSize / 2),
-              y * figureSize + (figureSize / 2),
-              tokenSize,
-              Color.MAGENTA);
+              (int)((x + width / 2 / figureSize) * figureSize + (figureSize / 2)),
+              (int)((y + height / 2 / figureSize) * figureSize + (figureSize / 2)),
+              (int)(tokenSize / 3),
+              Color.BLACK);
         }
       }
     }
@@ -674,7 +671,7 @@ public class GraphicSquare {
     /* chosed token from `choice` */
     // System.out.println("Now you need to place the wildlife token: " +
     // chosedToken.toString());
-    showPossibleTokenPlacement(context, player, chosedToken, figureSize, tokenSize);
+    showPossibleTokenPlacement(context, player, chosedToken, width, height, figureSize, tokenSize);
 
     var userCoordinates = getCoordinatesFromUser(context);
     if (userCoordinates == null) {
@@ -835,7 +832,8 @@ public class GraphicSquare {
   }
 
   private static boolean insideRectangle(int x, int y, int x1, int y1, int x2, int y2) {
-    return x >= x1 && x <= x2 && y >= y1 && y <= y2;
+    return x >= x1 && x <= x2 &&
+           y >= y1 && y <= y2;
   }
 
   // private static int insideGameBoardSquare(int x, int y, int x1, int y1, int
@@ -976,14 +974,13 @@ public class GraphicSquare {
         environmentSquareHeight,
         figureSize,
         environmentSquareHeight / 10,
-        Color.MAGENTA);
+        Color.PINK);
   }
 
   private static void restartRectangleWithText(
       ApplicationContext context,
       String text, int x, int y, int fontSize,
-      int width,
-      int environmentSquareWidth, int environmentSquareHeight, Color color) {
+      int width, int environmentSquareWidth, int environmentSquareHeight, Color color) {
     drawRoundRectangle(context,
         width - (environmentSquareWidth / 3), // center of the screen - x
         0, // center of the screen - y
@@ -1270,7 +1267,7 @@ public class GraphicSquare {
         if (handleTokenChange(context, game, figureSize)) {
           System.err.println("Changing Tokens");
           restartRectangleWithText(context,
-              "Change Tokens", (int) (width - (environmentSquareWidth / 3.5)), figureSize / 2,
+              "Changing tokens Tokens", (int) (width - (environmentSquareWidth / 3.5)), figureSize / 2,
               (int) (width * coeffFontSizeInstructions),
               width, environmentSquareWidth, environmentSquareHeight, Color.BLACK);
         }
