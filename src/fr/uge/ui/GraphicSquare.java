@@ -531,16 +531,12 @@ public class GraphicSquare {
 
   }
 
-  private static void showPlayerEnvironmentAndGameBoard(
-      ApplicationContext context, Player player, GameBoard board, int width, int height, int figureSize) {
-    Objects.requireNonNull(player);
-    Objects.requireNonNull(board);
-    // showEnvironment(player);
-    drawEnvironment(context, player, width, height, figureSize);
-    // showPossibleCoordinates(player);
-    showPossibleCoordinates(context, player, width, height, figureSize);
-    showGameBoard(context, board, figureSize, figureSize);
-  }
+  // private static void showPlayerEnvironmentAndGameBoard(
+  //     ApplicationContext context, Player player, GameBoard board, int width, int height, int figureSize) {
+  //   drawEnvironment(context, player, width, height, figureSize);
+  //   showPossibleCoordinates(context, player, width, height, figureSize);
+  //   showGameBoard(context, board, figureSize, figureSize);
+  // }
 
   private static boolean handleTokenChange(
       ApplicationContext context, Game game, int figureSize) {
@@ -620,8 +616,15 @@ public class GraphicSquare {
           }
         }
         case KeyboardEvent ke -> {
-          if (ke.key() == KeyboardEvent.Key.Q) {
-            return null;
+          switch (ke.action()) {
+            case KEY_PRESSED -> {
+              System.out.println("Key pressed: " + ke.key());
+            }
+            case KEY_RELEASED -> {
+              if (ke.key() == KeyboardEvent.Key.ESCAPE || ke.key() == KeyboardEvent.Key.Q) {
+                return null;
+              }
+            }
           }
         }
         default -> { /* do nothing */ }
@@ -650,10 +653,10 @@ public class GraphicSquare {
           //     figureSize,
           //     Color.RED);
           drawCircle(context,
-              (int)((x + width / 2 / figureSize) * figureSize + (figureSize / 2)),
-              (int)((y + height / 2 / figureSize) * figureSize + (figureSize / 2)),
+              (int)((x + width / 2 / figureSize) * figureSize + (figureSize / 10)),
+              (int)((y + height / 2 / figureSize) * figureSize + (figureSize / 10)),
               (int)(tokenSize / 3),
-              Color.BLACK);
+              Color.WHITE);
         }
       }
     }
@@ -715,7 +718,7 @@ public class GraphicSquare {
       if (possibleCoordinates.stream().anyMatch(coordinates -> coordinates.equals(coordinatesForMap))) {
         var currCell = player.getEnvironment().getCell(coordinatesForMap);
         if (player.getEnvironment().placeTile(currCell, chosedTile)) {
-          // System.out.println("Tile was placed successfully");
+          // System.out.println("Tile was placed successfully"); // for test, to delete later
           return true;
         }
       }
@@ -962,7 +965,7 @@ public class GraphicSquare {
         environmentSquareHeight,
         figureSize,
         environmentSquareHeight / 10,
-        Color.CYAN);
+        Color.PINK);
   }
 
   private static void restartScoringCardRectangle(
@@ -1254,8 +1257,9 @@ public class GraphicSquare {
         var currIndex = game.turnManager().getCurrentPlayerIndex();
         var currentPlayer = game.getPlayerByIndex(currIndex);
   
-        showPlayerEnvironmentAndGameBoard(context, currentPlayer, game.board(), width, height, figureSize);
-  
+        drawEnvironment(context, currentPlayer, width, height, figureSize);
+        showGameBoard(context, game.board(), figureSize, figureSize);
+
         restartRectangleWithText(context,
             currentPlayer.getName() + ", Game Board",
             (int) (width - (environmentSquareWidth / 3.5)),
@@ -1274,7 +1278,7 @@ public class GraphicSquare {
         // System.err.println("after handleTokenChange");
   
         // while (true) {
-  
+
         Coordinates coordinates = null;
         System.err.println("before choosing tile and token");
         int choice = 0;
@@ -1285,7 +1289,8 @@ public class GraphicSquare {
             context.dispose();
             return;
           }
-          choice = indexOfGameBoardCouple(context, coordinates.x(), coordinates.y(), figureSize, environmentSquareWidth);
+          choice = indexOfGameBoardCouple(context, coordinates.x(), coordinates.y(),
+                                          figureSize, environmentSquareWidth);
           if (choice != -1) {
             break;
           }
@@ -1305,9 +1310,8 @@ public class GraphicSquare {
         System.out.println("You choosed: " + choice);
   
         var chosedTile = game.board().getTile(choice);
-        var chosedToken = game.board().getToken(choice);
-        System.err.println("tile: " + chosedTile.toString() + " token: " + chosedToken.toString());
-  
+        showPossibleCoordinates(context, currentPlayer, width, height, figureSize);
+
         // System.err.println("Changing Tokens");
         restartRectangleWithText(context,
             "Place a tile", (int) (width - (environmentSquareWidth / 3.5)), figureSize / 2,
@@ -1319,18 +1323,23 @@ public class GraphicSquare {
         // flag = handleTilePlacement(context, currentPlayer, chosedTile, width, height,
         // figureSize);
         // } while (!flag);
+        showPossibleCoordinates(context, currentPlayer, width, height, figureSize);
+
         handleTilePlacement(context, currentPlayer, chosedTile, width, height, figureSize);
-        System.err.println("Tile was placed successfully");
-        // refresh the screen
-        showPlayerEnvironmentAndGameBoard(context, currentPlayer, game.board(), width, height, figureSize);
-  
+
+        /* refresh the screen */
+        drawEnvironment(context, currentPlayer, width, height, figureSize);
+
+        var chosedToken = game.board().getToken(choice);
+        // System.err.println("tile: " + chosedTile.toString() + " token: " + chosedToken.toString());  // for tests, to delete later
+
         restartRectangleWithText(context,
-            "Place a " + chosedToken, (int) (width - (environmentSquareWidth / 3.5)), figureSize / 2,
+            "Place " + chosedToken + " token", (int) (width - (environmentSquareWidth / 3.5)), figureSize / 2,
             (int) (width * coeffFontSizeInstructions),
             width, environmentSquareWidth, environmentSquareHeight, Color.BLACK);
   
         handleTokenPlacement(context, currentPlayer, chosedToken, width, height, figureSize, tokenSize);
-  
+
         handleTurnChange(game);
         System.out.println("Next player");
         if (game.turnManager().isGameEnd()){
@@ -1338,70 +1347,7 @@ public class GraphicSquare {
           context.dispose();
           return;
         }
-    
-  
-    
-      // var event = context.pollOrWaitEvent(1000);
-      // switch (event) {
-      // case null -> {
-      // continue;
-      // }
-      // case PointerEvent e -> {
-      // var location = e.location();
-      // checkRange(0, location.x(), width);
-      // checkRange(0, location.y(), height);
-
       // area.draw(context, location.x(), location.y(), figureSize / 10, Color.BLACK);
-      // // if (insideRectangle(location.x(), location.y(), x1, y1, x2, y2)) {
-      // // System.out.println("You are inside the validate name rectangle");
-      // // context.dispose();
-      // // return;
-      // // }
-      // // System.out.println("You clicked on: (" +
-      // // (location.x() / figureSize - (width / 2 / figureSize)) + ", " +
-      // // (location.y() / figureSize - (height / 2 / figureSize)) + ")");
-      // // context.dispose();
-      // // return;
-      // // int choice = 0;
-      // // do {
-      // // // handleUserChoiceTileAndToken();
-      // // choice = indexOfGameBoardCouple(context, location.x(), location.y(),
-      // figureSize, environmentSquareWidth);
-      // // } while (!insideRectangle(location.x(), location.y(), x1_board, y1_board,
-      // x2_board, y2_board));
-      // System.out.println("You are inside game board rectangle");
-      // System.out.println("You choosed: " + choice);
-
-      // // var chosedTile = game.board().getTile(choice);
-      // // var chosedToken = game.board().getToken(choice);
-
-      // // handleTilePlacement(context, currentPlayer, chosedTile, figureSize);
-      // // handleTokenPlacement(context, currentPlayer, chosedToken, figureSize,
-      // tokenSize);
-
-      // // handleTurnChange(game);
-      // break;
-      // }
-      // case KeyboardEvent ke -> {
-      // if (ke.key() == KeyboardEvent.Key.Q) {
-      // context.dispose();
-      // return;
-      // }
-      // switch (ke.action()) { // KeyboardEvent.Key.Q
-      // case Action.KEY_RELEASED -> {
-      // counter++;
-      // // to show directly the key pressed
-      // // drawString(context, "" + ke.key(), width / 2 - 200 + counter * 11, height
-      // / 2 + 100, 14, Color.WHITE);
-      // }
-      // case Action.KEY_PRESSED -> {
-      // System.out.println(ke.key());
-      // }
-      // default -> {}
-      // }
-      // }
-      // }
-      // }
 
     }
 
