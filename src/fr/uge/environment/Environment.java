@@ -13,7 +13,6 @@ public sealed interface Environment permits SquareEnvironment, HexagonalEnvironm
     Cell getOneNeighbor(Cell cell, int direction);
     List<Cell> getNeighbors(Cell cell);
     boolean canBePlacedWildlifeToken(WildlifeType token);
-
     Map<TileType, Integer> calculateTileScore();
     void printAllNeighbors(Coordinates coordinates);    // for terminal version, to think if we can do better
 }

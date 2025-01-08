@@ -276,7 +276,6 @@ public final class HexagonalEnvironment implements Environment {
   
   
 
-
   private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
     Objects.requireNonNull(tileType, "TileType can't be null in dfs()");
     Objects.requireNonNull(cell, "Cell can't be null in dfs()");

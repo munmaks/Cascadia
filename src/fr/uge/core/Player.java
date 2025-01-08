@@ -16,7 +16,7 @@ public final class Player {
   private final String name;    /* just for counting later */
   private final Environment environment;
   private int natureTokens = 0;
-  private int score = 0;
+  public int score = 0;
 
   /**
    * To think later how we get here all wildlife scoring card?

@@ -12,6 +12,11 @@ There are card clarifications:
 - (D) Score for groups of bears with sizes ranging from 2 to 4.
 */
 
+import fr.uge.core.*;
+import fr.uge.environment.*;
+import java.util.*;
+import static fr.uge.environment.WildlifeType.BEAR;
+
 
 enum BearScoringType {
 
@@ -26,10 +31,36 @@ enum BearScoringType {
 }
 
 
-public record BearScoringCard(BearScoringType version) implements WildlifeScoringCard {
+public record BearScoringCard(BearScoringType version, Player player) implements WildlifeScoringCard {
 
-  public BearScoringCard {
-    
+  public ArrayList<Integer> numberBear(Player player){
+    List<Cell> cells = player.getEnvironment().getCells();
+    ArrayList<Integer> numbers = new ArrayList<>();
+    numbers.add(0); // solo
+    numbers.add(0); // pair
+    numbers.add(0); // trio
+    numbers.add(0); // quatuor
+    // parcourt la grille et récupère dans des variables le nombre de groupe de différentes tailles
+    var onlyBear = cells.stream().filter(cell -> cell.getAnimal() == BEAR) // récupère uniquement les cellules avec des ours
+                    .toList();
+    List<Integer> res = WildlifeScoringCard.calculateGroupScore(onlyBear, player); // renvoie une liste avec la taille des groupes
+    for(var each : res){
+      if(each>0 && each < 5) numbers.set(each, numbers.get(each) + 1); // vérifie si each est entre 1 et 4 inclus (on compte pas des groupes de 5 ou plus)
+    }
+    return numbers;
   }
 
+  public BearScoringCard {
+    // si version 1, points gqgnés = twoBear
+    // si version 2, points gqgnés = threeBear
+    // si version 3, points gqgnés = oneBear + twoBear + threeBear + 3 pts bonus si trois groupes non nulles
+    // si version 4, points gqgnés = twoBear + threeBear + fourBear
+    ArrayList<Integer> numbers = numberBear(player);
+    switch(version){
+      case FIRST: player.score += WildlifeScoringCard.pointConversionBear(numbers, true, false, false);
+      case SECOND: player.score += numbers.get(1) * 10;
+      case THIRD: player.score += WildlifeScoringCard.pointConversionBear(numbers, false, true, false);
+      case FOURTH: player.score += WildlifeScoringCard.pointConversionBear(numbers, false, false, true);
+    }
+  }
 }

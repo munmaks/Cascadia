@@ -19,7 +19,6 @@ import java.util.Scanner;
 
 // import java.awt.*;
 // import com.github.forax.zen.*;
-// import com.github.forax.zen.Event;  // do we need it? because you already imported all classes from `com.github.forax.zen.*`
 
 
 
@@ -228,19 +227,19 @@ public final class MainMenu {
   }
 
 
-  private void handleTokenPlacement(Player player, WildlifeType chosedToken){
+  private void handleTokenPlacement(Player player, WildlifeType choosedToken){
     Objects.requireNonNull(player);
-    Objects.requireNonNull(chosedToken);
+    Objects.requireNonNull(choosedToken);
 
     /* chosed token from `choice` */
-    System.out.println("Now you need to place the wildlife token: " + chosedToken.toString());
-    showPossibleTokenPlacement(player, chosedToken);
+    System.out.println("Now you need to place the wildlife token: " + choosedToken.toString());
+    showPossibleTokenPlacement(player, choosedToken);
 
     var userCoordinatesString = IO.readln("Give me coordinates of tile, that you want to place the token on (format: \"x, y\"): ");
 
     var userCoordinates = getCoordinatesFromUser(userCoordinatesString);
     var currCell = player.getEnvironment().getCell(userCoordinates);
-    var tokenWasPlaced = player.getEnvironment().placeAnimal(currCell, chosedToken);
+    var tokenWasPlaced = player.getEnvironment().placeAnimal(currCell, choosedToken);
 
     if (!tokenWasPlaced){
       System.err.println("Token wasn't placed");  /* for tests, to delete later */
