@@ -47,7 +47,12 @@ enum FoxScoringType {
 
 public record FoxScoringCard(HawkScoringType version, Player player) implements WildlifeScoringCard {
 
-
+  /**
+   * Search in the map whose Wildlife type is the most present and return it
+   *
+   * @param speciesCount a Map whose list the Wildlife type and the number of it
+   * @return the most present Wildlife type in speciesCount
+   */
   public WildlifeType getMostCommonWildlifeType(Map<WildlifeType, Integer> speciesCount) {
     WildlifeType result = null;
     int max=0;
@@ -84,6 +89,14 @@ public record FoxScoringCard(HawkScoringType version, Player player) implements 
   // juste regarder autour et compter
   // attention pour onlyMorePresentAnimal, il faudra dabord trouver l'animal le plus présent puis le compter uniquement lui
   // pour pairAloneWithoutFox, à voir si on peut compter plusieurs fois les meme animaux ou non
+
+  /**
+   * Check all the cells in player's environment and count the number of Fox fill the card's conditions.
+   * Convert directly the result in points and stock them in a List
+   *
+   * @param player player which we want to calculate his score
+   * @return a list of integer who list the points earned for each formation of fox
+   */
   public ArrayList<Integer> numberFox(Player player){
     List<Cell> cells = player.getEnvironment().getCells();
     ArrayList<Integer> numbers = new ArrayList<>();
@@ -105,6 +118,12 @@ public record FoxScoringCard(HawkScoringType version, Player player) implements 
     return numbers;
   }
 
+  /**
+   * Take the list of points for each formation and associate in function of the version chose
+   *
+   * @param version the version of card that the player choose
+   * @param player the player that we want to actualise his score
+   */
   public FoxScoringCard {
     // Ne pas oublier de compter correctement les points
     // si version 1, points gqgnés = aloneWithFox
@@ -113,9 +132,9 @@ public record FoxScoringCard(HawkScoringType version, Player player) implements 
     // si version 4, points gqgnés = pairAloneWithoutFox
     ArrayList<Integer> numbers = numberFox(player);
     switch (version) {
-      case FIRST:
-      case SECOND:
-      case THIRD:
+      case FIRST: player.score += numbers.get(0);
+      case SECOND: player.score += numbers.get(1);
+      case THIRD: player.score += numbers.get(2);
     }
   }
 

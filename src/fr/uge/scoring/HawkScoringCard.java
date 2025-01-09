@@ -15,9 +15,7 @@ There are card clarifications:
 import fr.uge.core.Player;
 import fr.uge.environment.Cell;
 import fr.uge.environment.WildlifeType;
-
 import java.util.*;
-
 import static fr.uge.environment.WildlifeType.HAWK;
 
 enum HawkScoringType {
@@ -36,13 +34,29 @@ enum HawkScoringType {
 
 public record HawkScoringCard(HawkScoringType version, Player player) implements WildlifeScoringCard {
 
+  /**
+   * Checks if the given cell is aligned with the value of the directions
+   *
+   * @param otherCell a Cell where we want to check his alignment
+   * @param sameY the horizontal value
+   * @param sameDiagonalUp the diagonal up value
+   * @param sameDiagonalDown the diagonal down value
+   * @return true if otherCell is aligned with the reference for one of the directions, false otherwise
+   */
   private boolean isAligned(Cell otherCell, int sameY, int sameDiagonalUp, int sameDiagonalDown) {
     return otherCell.getCoordinates().y() == sameY ||
             (otherCell.getCoordinates().x() - otherCell.getCoordinates().y()) == sameDiagonalUp ||
             (otherCell.getCoordinates().x() + otherCell.getCoordinates().y()) == sameDiagonalDown;
   }
 
-  int hawkAligned(List<Cell> onlyHawk, Player player){ // rajoute un boolean hawk pour un cas spécifique
+  /**
+   * Check for each possible direction in a list of Hawk if they are aligned between them and return the number of it
+   *
+   * @param onlyHawk A list of Cell with all the Hawk in the player's environment
+   * @param player current player which we want to calculate his score
+   * @return the number of hawk who is aligned between them
+   */
+  int hawkAligned(List<Cell> onlyHawk, Player player){
     Set<Cell> visited = new HashSet<>();
     Set<Cell> alignedCells = new HashSet<>();
     for (Cell currentCell : onlyHawk) {
@@ -63,8 +77,13 @@ public record HawkScoringCard(HawkScoringType version, Player player) implements
     return alignedCells.size();
   }
 
-  // faire attention à pair to One qui accepte un autre aigle à proximité alors que alone non, possiblement faire une méthode à part pour pairToOne
-  // pour alone, pair et multiplePair, on exclut automatiquement les aigles à proximité d'où les cas comme celui de la carte C (deux aigles à coté mais ignorer pour revenir dessus apres)
+  /**
+   * Create a list with only the Hawk tile in it and use it for find the number of Hawk alone, aligned and line between them
+   * Then stock this value in a list
+   *
+   * @param player current player which we want to calculate his score
+   * @return a list of integer who stock the number of hawk alone, aligned, and the number of bond between them
+   */
   public ArrayList<Integer> numberHawk(Player player){
     ArrayList<Integer> numbers = new ArrayList<>();
     List<Cell> cells = player.getEnvironment().getCells();
@@ -85,6 +104,12 @@ public record HawkScoringCard(HawkScoringType version, Player player) implements
     return numbers;
   }
 
+  /**
+   * Reclaim the list of numberHawk then convert it in points then associate this points in the score of the player
+   *
+   * @param version the version of card that the player choose
+   * @param player the player that we want to actualise his score
+   */
   public HawkScoringCard {
     // Ne pas oublier de compter correctement les points
     // si version 1, points gqgnés = alone

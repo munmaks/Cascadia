@@ -31,13 +31,19 @@ enum SalmonScoringType {
 
 public record SalmonScoringCard(SalmonScoringType version, Player player) implements WildlifeScoringCard {
 
+  /**
+   * Count the salmon in group in the environment of player and convert this value in point and return the list of it
+   *
+   * @param player current player which we want to calculate his score
+   * @return a list of integer who stock the points earned by the player for each group of salmon
+   */
   public ArrayList<Integer> numberSalmon(Player player){
     ArrayList<Integer> numbers = new ArrayList<>();
     int maxSeven= 0, maxFive = 0, threeToFive =0;
     List<Cell> cells = player.getEnvironment().getCells();
     var onlySalmon = cells.stream().filter(cell -> cell.getAnimal() == SALMON) // récupère uniquement les cellules avec des aigles
             .toList();
-    List<Integer> numberSalmon = WildlifeScoringCard.calculateGroupScore(onlySalmon, player);
+    List<Integer> numberSalmon = WildlifeScoringCard.calculateGroupScore(onlySalmon, player, SALMON);
     for(var each : numberSalmon) { // convertis pour chaque groupe son equivalent en point
       maxSeven += WildlifeScoringCard.pointConversionSalmon(each, true, false, false);
       maxFive += WildlifeScoringCard.pointConversionSalmon(each, false, true, false);
@@ -49,6 +55,13 @@ public record SalmonScoringCard(SalmonScoringType version, Player player) implem
     return numbers;
   }
 
+  /**
+   * actualise the score of the player with the value in the list return by numberSalmon
+   * The value depend on the version who chose the player
+   *
+   * @param version the version of card that the player choose
+   * @param player the player that we want to actualise his score
+   */
   public SalmonScoringCard {
     // Ne pas oublier de compter correctement les points
     // si version 1, points gqgnés = maxSeven

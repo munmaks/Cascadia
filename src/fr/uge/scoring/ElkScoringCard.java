@@ -32,15 +32,17 @@ enum ElkScoringType {
   FOURTH;   /* Elk groups must be arranged in a circular formation as illustrated. */
 }
 
-public record ElkScoringCard(ElkScoringType version) implements WildlifeScoringCard {
+public record ElkScoringCard(ElkScoringType version, Player player) implements WildlifeScoringCard {
 
-
+  /**
+   * Check for all the directions possible if centerCell is part of a triangle of Elk
+   *
+   * @param centerCell The cell we check if it's part of a triangle
+   * @param onlyElk A list of Cell withal the Elk in the player's environment
+   * @return true if the centerCell is part of a triangle of Elk, false otherwise
+   */
   private boolean isPartOfTriangle(Cell centerCell, List<Cell> onlyElk) {
-    int[][] directions = {
-            {-1, 0}, {1, 0},
-            {-1, -1}, {1, 1},
-            {0, -1}, {0, 1}
-    };
+    int[][] directions = {{-1, 0}, {1, 0},{0, -1}, {0, 1},{1, -1}, {-1, 1}}; // direction pour une grille hexagonal
     for (int i = 0; i < directions.length; i++) {
       for (int j = i + 1; j < directions.length; j++) {
         Cell cell1 = getNextCell(centerCell, directions[i][0], directions[i][1], onlyElk);
@@ -53,13 +55,18 @@ public record ElkScoringCard(ElkScoringType version) implements WildlifeScoringC
     return false;
   }
 
+  /**
+   * Check with the directions and the nearly cells if centerCell is a part of a diamond of Elk
+   * Make a list of possible value for diamond then confirm it and return the result
+   *
+   * @param centerCell The cell we check if it's part of a diamond
+   * @param onlyElk A list of Cell with all the Elk's tile in the player's environment
+   * @return true if the centerCell is a part of a diamond of Elk, false otherwise
+   */
   private boolean isPartOfDiamond(Cell centerCell, List<Cell> onlyElk) {
-    int[][] directions = {
-            {-1, 0}, {1, 0},
-            {0, -1}, {0, 1}
-    };
+    int[][] directions = {{-1, 0}, {1, 0},{0, -1}, {0, 1},{1, -1}, {-1, 1}};
     List<Cell> potentialDiamond = new ArrayList<>();
-    for (int[] dir : directions) {
+    for (var dir : directions) {
       Cell adjacentCell = getNextCell(centerCell, dir[0], dir[1], onlyElk);
       if (adjacentCell != null) {
         potentialDiamond.add(adjacentCell);
@@ -71,6 +78,12 @@ public record ElkScoringCard(ElkScoringType version) implements WildlifeScoringC
     return false;
   }
 
+  /**
+   * Check if the cell in cells have the shape of a diamond
+   *
+   * @param cells A list of cells who is maybe a part of a diamond
+   * @return true if all the cell in cells are adjacent between them, false otherwise
+   */
   private boolean areDiamondAdjacent(List<Cell> cells) {
     for (int i = 0; i < cells.size(); i++) {
       for (int j = i + 1; j < cells.size(); j++) {
@@ -82,24 +95,64 @@ public record ElkScoringCard(ElkScoringType version) implements WildlifeScoringC
     return true;
   }
 
+
+  /**
+   * Take two cells and determine if they are adjacent or not
+   *
+   * @param cell1 First cell
+   * @param cell2 Second cell
+   * @return true if adjacent and false if not
+   */
   private boolean areAdjacent(Cell cell1, Cell cell2) {
     int dx = Math.abs(cell1.getCoordinates().x() - cell2.getCoordinates().x());
     int dy = Math.abs(cell1.getCoordinates().y() - cell2.getCoordinates().y());
     return (dx == 1 && dy == 0) || (dx == 0 && dy == 1) || (dx == 1 && dy == 1);
   }
 
+  /**
+   * Fill visitedInDiamonds if centerCell is a part of a diamond
+   * Check for each direction possible in a hexagonal grid if other cell is present
+   * Then if they exist, check if these two cells are adjacent
+   *
+   * @param centerCell A cell that we want to check if it belongs to a diamond
+   * @param onlyElk A list of Cell with all the Elk's tile in the player's environment
+   * @param visitedInDiamonds A Set of cell who stock the cells who make a diamond
+   */
+  private void addDiamondCellsToVisited(Cell centerCell, List<Cell> onlyElk, Set<Cell> visitedInDiamonds) {
+    int[][] directions = {{-1, 0}, {1, 0},{0, -1}, {0, 1},{1, -1}, {-1, 1}};
+    for (int i = 0; i < directions.length; i++) {
+      for (int j = i + 1; j < directions.length; j++) {
+        Cell cell1 = getNextCell(centerCell, directions[i][0], directions[i][1], onlyElk);
+        Cell cell2 = getNextCell(centerCell, directions[j][0], directions[j][1], onlyElk);
+        if (cell1 != null && cell2 != null && areAdjacent(cell1, cell2)) {
+          visitedInDiamonds.add(centerCell);
+          visitedInDiamonds.add(cell1);
+          visitedInDiamonds.add(cell2);
+        }
+      }
+    }
+  }
 
-
-  public List <Integer> countTrianglesAndDiamonds(List<Cell> onlyElk) {
-    List <Integer> groupCounts = new ArrayList<>();
+  /**
+   * Search and count in the Elk's Cells whose are part of diamond and triangle shape in player's environment
+   * Take care of firstly count the diamond one and stock it in a list.
+   * Thanks to this, we're sure that the triangle count don't count the diamond one as a triangle
+   *
+   * @param onlyElk A list of Cell with all the Elk's tile in the player's environment
+   * @return a list who count the number of triangle and diamond in the player's environment
+   */
+  public List<Integer> countTrianglesAndDiamonds(List<Cell> onlyElk) {
+    List<Integer> groupCounts = new ArrayList<>();
+    Set<Cell> visitedInDiamonds = new HashSet<>();
     int triangleCount = 0;
     int diamondCount = 0;
     for (Cell cell : onlyElk) {
-      if (isPartOfTriangle(cell, onlyElk)) {
-        triangleCount++;
-      }
-      if (isPartOfDiamond(cell, onlyElk)) {
+      // vérifier les losanges en priorité
+      if (!visitedInDiamonds.contains(cell) && isPartOfDiamond(cell, onlyElk)) {
         diamondCount++;
+        addDiamondCellsToVisited(cell, onlyElk, visitedInDiamonds);
+      } else if (isPartOfTriangle(cell, onlyElk)) {
+        triangleCount++;
       }
     }
     groupCounts.add(triangleCount);
@@ -107,6 +160,12 @@ public record ElkScoringCard(ElkScoringType version) implements WildlifeScoringC
     return groupCounts;
   }
 
+  /**
+   * Search and count for each Elk's cells whose is a part of a line of 4 Elk or less
+   *
+   * @param onlyElk A list of Cell with all the Elk's tile in the player's environment
+   * @return a map with the length of the line for the key and the number of it in the value
+   */
   public Map<Integer, Integer> countAlignedElk(List<Cell> onlyElk) {
     Map<Cell, Integer> cellToLineLength = new HashMap<>();
     Map<Integer, Integer> lineLengthCountMap = new HashMap<>();
@@ -121,6 +180,14 @@ public record ElkScoringCard(ElkScoringType version) implements WildlifeScoringC
     return lineLengthCountMap;
   }
 
+  /**
+   * Finds all the lines of Elk aligned in a specific direction from a given starting cell.
+   *
+   * @param startCell A cell where the aligned line may start
+   * @param onlyElk A list of Cell with all the Elk's tile in the player's environment
+   * @param cellToLineLength A map that stores the length of the line to which a given cell belongs
+   * @return A list representing the lengths of the aligned lines. Their lengths are between 1 and 4
+   */
   private List<Integer> findAlignedLines(Cell startCell, List<Cell> onlyElk, Map<Cell, Integer> cellToLineLength) {
     List<Integer> lineLengths = new ArrayList<>();
     int[] directionsX = { -1, 1, -1, -1, 1, 1 };
@@ -151,6 +218,15 @@ public record ElkScoringCard(ElkScoringType version) implements WildlifeScoringC
     return lineLengths;
   }
 
+  /**
+   * Search for a given cell a following cell who is aligned with it
+   *
+   * @param currentCell a cell who we search if his following cell is aligned
+   * @param dx direction for x
+   * @param dy direction for y
+   * @param onlyElk A list of Cell with all the Elk's tile in the player's environment
+   * @return the first cell which is aligned with currentCell
+   */
   private Cell getNextCell(Cell currentCell, int dx, int dy, List<Cell> onlyElk) {
     int nextX = currentCell.getCoordinates().x() + dx;
     int nextY = currentCell.getCoordinates().y() + dy;
@@ -160,13 +236,20 @@ public record ElkScoringCard(ElkScoringType version) implements WildlifeScoringC
             .orElse(null);
   }
 
+  /**
+   * Check all the cells in player's environment and count the number of Elk whose in a row, group or shape's formation.
+   * Convert directly the result in points and stock them in a List
+   *
+   * @param player current player which we want to calculate his score
+   * @return a list of integer with the points earned for the row, shape, and group's formation
+   */
   public ArrayList<Integer> numberElk(Player player){
     ArrayList<Integer> numbers = new ArrayList<>();
     int row = 0, shape = 0, group =0;
     List<Cell> cells = player.getEnvironment().getCells();
     var onlyElk = cells.stream().filter(cell -> cell.getAnimal() == ELK)
             .toList();
-    List<Integer> numberElk = WildlifeScoringCard.calculateGroupScore(onlyElk, player);
+    List<Integer> numberElk = WildlifeScoringCard.calculateGroupScore(onlyElk, player, ELK);
     for(var each : numberElk) { // convertis pour chaque groupe son equivalent en point
       group += WildlifeScoringCard.pointConversionElk(each, false, true);
     }
@@ -187,12 +270,18 @@ public record ElkScoringCard(ElkScoringType version) implements WildlifeScoringC
     return numbers;
   }
 
+  /**
+   * Take the list of points for each formation and associate in function of the version chose
+   *
+   * @param version the version of card that the player choose
+   * @param player the player that we want to actualise his score
+   */
   public ElkScoringCard {
+    ArrayList<Integer> numbers = numberElk(player);
     switch (version) {
-      case FIRST:
-      case SECOND:
-      case THIRD:
-      case FOURTH:
+      case FIRST: player.score += numbers.get(0); // line
+      case SECOND: player.score += numbers.get(1); // shape
+      case THIRD: player.score += numbers.get(2); // group
     }
   }
 }

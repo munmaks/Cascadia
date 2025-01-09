@@ -33,6 +33,12 @@ enum BearScoringType {
 
 public record BearScoringCard(BearScoringType version, Player player) implements WildlifeScoringCard {
 
+  /**
+   * This method take all the tiles in the player's environment and stock the number of group of Bear in a List
+   *
+   * @param player The player whose score is calculated
+   * @return list of number of 1, 2, 3 and 4 groups of bear
+   */
   public ArrayList<Integer> numberBear(Player player){
     List<Cell> cells = player.getEnvironment().getCells();
     ArrayList<Integer> numbers = new ArrayList<>();
@@ -43,13 +49,19 @@ public record BearScoringCard(BearScoringType version, Player player) implements
     // parcourt la grille et récupère dans des variables le nombre de groupe de différentes tailles
     var onlyBear = cells.stream().filter(cell -> cell.getAnimal() == BEAR) // récupère uniquement les cellules avec des ours
                     .toList();
-    List<Integer> res = WildlifeScoringCard.calculateGroupScore(onlyBear, player); // renvoie une liste avec la taille des groupes
+    List<Integer> res = WildlifeScoringCard.calculateGroupScore(onlyBear, player, BEAR); // renvoie une liste avec la taille des groupes
     for(var each : res){
       if(each>0 && each < 5) numbers.set(each, numbers.get(each) + 1); // vérifie si each est entre 1 et 4 inclus (on compte pas des groupes de 5 ou plus)
     }
     return numbers;
   }
 
+  /**
+   * Take the list of group of bear, converts them into points and associates them with the player's score
+   *
+   * @param version Which Card the player choose
+   * @param player The player whose score is calculated
+   */
   public BearScoringCard {
     // si version 1, points gqgnés = twoBear
     // si version 2, points gqgnés = threeBear
