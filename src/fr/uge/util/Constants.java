@@ -132,8 +132,8 @@ public final class Constants {
   // "Invalid coordinates, must be between (0, 0) and " +
   // "(" + MAX_ROW + ", " + MAX_COL + ")\n";
 
-  public static final String ILLEGAL_NUMBER_OF_PLAYERS = "Number of Players must be between " + MIN_PLAYERS + " and "
-      + MAX_PLAYERS + "\n";
+  public static final String ILLEGAL_NUMBER_OF_PLAYERS = "Number of Players must be between " +
+      MIN_PLAYERS + " and " + MAX_PLAYERS + "\n";
 
   public static final String ILLEGAL_VERSION = "Version must be between " +
       VERSION_SQUARE + " and " + VERSION_HEXAGONAL + "\n";
