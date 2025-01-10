@@ -46,8 +46,6 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
   /**
    * Constructs a new instance of the FamilyAndIntermediateScoringCards class.
    *
-   * @param env The player's environment.
-   * @param version The game version.
    * @param isIntermediateScoringCard <b>true</b> if the card is an intermediate scoring card, <b>false</b> if it is a family scoring card.
    */
   public FamilyAndIntermediateScoringCards(

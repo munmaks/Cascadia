@@ -52,8 +52,11 @@ public final class MainMenu {
   //       }}});}
 
 
-
-
+  /**
+   * depends on the version, display the menu of the game
+   *
+   * @param version the version that the player want to play, can be hexagonal or square
+   */
   public MainMenu(int version) {
     if (!Constants.isValidVersion(version)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_VERSION);
@@ -101,7 +104,11 @@ public final class MainMenu {
   // });
 
 
-
+  /**
+   * display the environment of the given player
+   *
+   * @param player the player that we want to display his environment
+   */
   private void showEnvironment(Player player){
     Objects.requireNonNull(player);
     System.out.println("\n\nIt's " + player.getName() + "'s turn!");
@@ -116,7 +123,11 @@ public final class MainMenu {
     }
   }
 
-
+  /**
+   * display the gameBoard given
+   *
+   * @param board the board that we want to display
+   */
   private void showGameBoard(GameBoard board){
     Objects.requireNonNull(board);
     System.out.println("\nHere is the game board: ");
@@ -130,7 +141,11 @@ public final class MainMenu {
     System.out.println("");
   }
 
-
+  /**
+   * show to the given player the possible coordinates of the tile that he can place
+   *
+   * @param player the player that want to place a tile
+   */
   private void showPossibleCoordinates(Player player){
     Objects.requireNonNull(player);
     System.out.println("\nHere are the possible coordinates:\n`empty (x, y)` - neighbor tile");
@@ -141,7 +156,12 @@ public final class MainMenu {
   }
 
 
-
+  /**
+   * show the possible emplacement for the token
+   *
+   * @param player the player that want to place a token
+   * @param token the token that want to be place
+   */
   private void showPossibleTokenPlacement(Player player, WildlifeType token){
     Objects.requireNonNull(player, "player is null in showPossibleTokenPlacement()");
     Objects.requireNonNull(token, "token is null in showPossibleTokenPlacement()");
@@ -174,7 +194,12 @@ public final class MainMenu {
     // }
   }
 
-
+  /**
+   * Convert the message of the player to a couple of Coordinates (x and y)
+   *
+   * @param message the coordinates that the player gave
+   * @return a couple of Coordinates (x and y) according to the message of the player
+   */
   private Coordinates getCoordinatesFromUser(String message){
     int x, y;
     try (Scanner s = new Scanner(message).useDelimiter(",\\s*")){
@@ -187,8 +212,14 @@ public final class MainMenu {
 
   // don't forget to check if already was changed and if so we don't change it
   // setToDefault in `src/fr/uge/core/TurnManager.java`
+
   /**
-   * */
+   * handle the update process in the game when it occurs
+   * if 4 tokens are the same, he changes instantly their value
+   * if 3 tokens are the same, he let the decision to the player
+   *
+   * @param game the current game instance
+   */
   private void handleTokenChange(Game game){
     Objects.requireNonNull(game);
     if (game.board().tokensNeedUpdate()){
@@ -209,7 +240,11 @@ public final class MainMenu {
   }
 
 
-
+  /**
+   * ask and retrieve the couple (Tile, Token) that the player chose
+   *
+   * @return the couple chose by the player
+   */
   private int handleUserChoiceTileAndToken(){
     int choice;
     do {
@@ -218,7 +253,11 @@ public final class MainMenu {
     return choice;
   }
 
-
+  /**
+   * handle the update of the turn when it occurs in the game
+   *
+   * @param game the current game instance
+   */
   private void handleTurnChange(Game game){
     game.board().setDefaultTokensAreUpdated();  // that means, next person can change tokens (if needed)
     game.turnManager().changePlayer();
@@ -226,7 +265,12 @@ public final class MainMenu {
     // System.out.println("Turns left: " + (Constants.MAX_GAME_TURNS - game.turnManager().getTotalTurns()));
   }
 
-
+  /**
+   * handle the token placement in the game depends on the environment's player and the token that he chose
+   *
+   * @param player the current player of the game
+   * @param choosedToken the chose token that want to be placed by the player
+   */
   private void handleTokenPlacement(Player player, WildlifeType choosedToken){
     Objects.requireNonNull(player);
     Objects.requireNonNull(choosedToken);
@@ -246,7 +290,12 @@ public final class MainMenu {
     }
   }
 
-
+  /**
+   * handle the tile placement in the game depends on the environment's player and the tile that he chose
+   *
+   * @param player the current player of the game
+   * @param chosedTile the chose tile that want to be placed by the player
+   */
   private void handleTilePlacement(Player player, Tile chosedTile){
     Objects.requireNonNull(player);
     Objects.requireNonNull(chosedTile);
@@ -268,7 +317,12 @@ public final class MainMenu {
     } while (true);
   }
 
-
+  /**
+   * display the environment of the player and the board of the game
+   *
+   * @param player the current player of the game
+   * @param board the gameboard of the game
+   */
   private void showPlayerEnvironmentAndGameBoard(Player player, GameBoard board){
     showEnvironment(player);
     showPossibleCoordinates(player);
@@ -298,7 +352,12 @@ public final class MainMenu {
   //   // to do later
   // }
 
-
+  /**
+   * create a string representation of the score for each tile type
+   *
+   * @param scoreTile the scoreTile that permits the player to earn points
+   * @return
+   */
   private String showScoreTile(Map<TileType, Integer> scoreTile){
     var builder = new StringBuilder();
     for (var entry : scoreTile.entrySet()){
@@ -307,7 +366,12 @@ public final class MainMenu {
     return builder.toString();
   }
 
-
+  /**
+   * displays the points associated with each wildlife token for the current player based on the selected family and intermediate scoring card
+   *
+   * @param player the current player of the game
+   * @param card the card that the player chose between the family and the intermediate possibility
+   */
   private void showTokensMap(Player player, FamilyAndIntermediateScoringCards card){
     Objects.requireNonNull(player);
     Objects.requireNonNull(card);
@@ -321,6 +385,12 @@ public final class MainMenu {
   }
 
 
+  /**
+   * displays the final score of the player, including the score based on the family and intermediate scoring card, the tile score, and the token map
+   *
+   * @param player the current player of the game
+   * @param card the card that the player chose between the family and the intermediate possibility
+   */
   private void showPlayerScore(Player player, FamilyAndIntermediateScoringCards card) {
     var score = card.getScore(player.getEnvironment());
     System.out.println("\n" + player.getName() + " your final score: " + (score + player.calculateScore()));
@@ -329,10 +399,14 @@ public final class MainMenu {
     System.out.println("Based on the scoring card: \n" + showScoreTile(scoreTile) + "\n");
 
     showTokensMap(player, card);
-
   }
 
-
+  /**
+   * calculates and displays the scores for each player based on the selected family or intermediate scoring card
+   *
+   * @param game the current game
+   * @param familyOrIntermediate the version of the scoring card that the player chose
+   */
   private void calculateAndShowScore(Game game, int familyOrIntermediate){
     // var listOfPlayerScores = calculateListOfScores(game);
     var scoringCard = new FamilyAndIntermediateScoringCards(familyOrIntermediate);
@@ -344,14 +418,22 @@ public final class MainMenu {
     // showScore(game);
   }
 
-  
-  
+
+  /**
+   * reset the parameter setDefaultTokensAreUpdated for permits to the next player to change his couple of (Tile, Token) if he want to
+   *
+   * @param game  the current game
+   */
   private void resetForNextTurn(Game game) {
     Objects.requireNonNull(game);
     game.board().setDefaultTokensAreUpdated();  // that means, next person can change
   }
-  
 
+  /**
+   * handle the flow of the game by continuously iterating through player's turn until the end of the game
+   *
+   * @param game the current game
+   */
   // under test
   private void gameLoopVersionSquare(Game game){
     Objects.requireNonNull(game);
@@ -375,7 +457,9 @@ public final class MainMenu {
 
   }
 
-
+  /**
+   *  the display if we want to play in the terminal with a square grid
+   */
   private void playSquareTerminal(){
     System.out.println("Welcome to the Cascadia game (terminal version)!");
     System.out.println("We have two players, please introduce yourselves.\n");
