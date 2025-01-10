@@ -40,6 +40,11 @@ public final class SquareBag implements Bag {
 
   private static final int MAX_TILES_FOR_GAME = Constants.MAX_TILES_SQUARE - 1;
 
+  /**
+   * constructor for creating a SquareBag with a specified number of players
+   *
+   * @param numberOfPlayers the number of player in the game
+   */
   public SquareBag(int numberOfPlayers) {
     if (!Constants.isValidNbPlayers(numberOfPlayers)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_NUMBER_OF_PLAYERS);
@@ -144,7 +149,13 @@ public final class SquareBag implements Bag {
 
 
 
-
+  /**
+   * Draws a random WildlifeType from the deck.<br>
+   * If the selected type has no tokens left,<br>
+   * it retries until a type with available tokens is found. <br>
+   *
+   * @return WildlifeType - the randomly selected token.
+   */
   @Override
   public final WildlifeType getRandomToken() {
     return BagUtils.getRandomToken(this.animals);

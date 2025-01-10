@@ -45,6 +45,11 @@ public final class HexagonalBag implements Bag {
   
   private int indexStarterHabitatTile = -1;
 
+  /**
+   * constructor for creating a HexagonalBag with a specified number of players
+   *
+   * @param numberOfPlayers the number of player in the game
+   */
   public HexagonalBag(int numberOfPlayers){
     if (!Constants.isValidNbPlayers(numberOfPlayers)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_NUMBER_OF_PLAYERS);
@@ -98,17 +103,31 @@ public final class HexagonalBag implements Bag {
         //     }
         //   }
         // }
-        
 
 
+  /**
+   * read the tile of the three tile animals
+   *
+   * @throws IOException if an error occur while reading the file
+   */
   private void readHabitatTilesThreeAnimals() throws IOException {           /* tile,   tile,  animal, animal, animal */
     BagUtils.readTiles(Constants.PATH_HABITAT_TILE_THREE_ANIMALS, row -> tiles.add(getHabitatTile(row[0], row[1], row[2], row[3], row[4])));
   }
 
+  /**
+   * read the tile of the two tile animals
+   *
+   * @throws IOException if an error occur while reading the file
+   */
   private void readHabitatTilesTwoAnimals() throws IOException {            /* tile,   tile,  animal, animal */
     BagUtils.readTiles(Constants.PATH_HABITAT_TILE_TWO_ANIMALS, row -> tiles.add(getHabitatTile(row[0], row[1], row[2], row[3])));
   }
 
+  /**
+   * read the tile of the keystone tile animals
+   *
+   * @throws IOException if an error occur while reading the file
+   */
   private void readKeystoneTiles() throws IOException {           /* tile,  animal */
     BagUtils.readTiles(Constants.PATH_KEYSTONE_TILE, row -> tiles.add(getKeystoneTile(row[0], row[1])));
   }
@@ -168,7 +187,11 @@ public final class HexagonalBag implements Bag {
     return BagUtils.getRandomTile(this.tiles);
   }
 
-
+  /**
+   * retrieve the next starter habitat tile from the set of starter tiles
+   *
+   * @return an array of tiles representing the next starter habitat
+   */
   @Override
   public Tile[] getStarter(){
     if (this.indexStarterHabitatTile >= Constants.MAX_STARTER_HABITATS) {  /* prevent overflow ... */
