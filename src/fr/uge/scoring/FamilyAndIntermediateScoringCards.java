@@ -78,7 +78,13 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
   }
 
 
-
+  /**
+   * create a map where each key represent a group size and the value the count of this group
+   *
+   * @param env the environment to search for groups of cells containing the wildlife token
+   * @param token the wildlife token to find in the environment
+   * @return a map where keys are group size and values are the counts of groups of that size in the environment
+   */
   public Map<Integer, Integer> getWildlifeTokenMap(Environment env, WildlifeType token) {
     Objects.requireNonNull(env);
     Objects.requireNonNull(token);
@@ -118,7 +124,14 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
   // }
 
 
-
+  /**
+   * check if the neighbor's cell is a valid cell for the given token
+   *
+   * @param neighbor the neighbor's cell to validate
+   * @param token the wildlife token to compare with the animal in the neighbor cell
+   * @param visited a set of cells that have already been visited
+   * @return true if the neighbor is valid, false otherwise
+   */
   private static boolean isValidNeighbor(Cell neighbor, WildlifeType token, Set<Cell> visited) {
     return visited.contains(neighbor) && token.equals(neighbor.getAnimal());
   }
@@ -179,6 +192,12 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
   }
 
 
+  /**
+   * calculate the points associated with a group size based on the current scoring card type
+   *
+   * @param groupSize the size of the group for which to calculate points
+   * @return the points corresponding to the given group size based on the scoring card type
+   */
   public final int getFamilyAndIntermediateGroupSizeToPoints(int groupSize) {
     if (isIntermediateScoringCard == 2) {
       return INTERMEDIATE_GROUP_SIZE_TO_POINTS.getOrDefault(groupSize, Constants.INTERMEDIATE_FOUR_AND_PLUS);
@@ -188,7 +207,12 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
   }
 
 
-
+  /**
+   *  calculate the total score for the player based on the given environment
+   *
+   * @param environment the environment of the player
+   * @return the total score calculated from the player's environment
+   */
   public final int getScore(Environment environment) {
     int score = 0;
     var wildlifeTokens = WildlifeType.values();  /* get all wildlife tokens */
@@ -198,8 +222,6 @@ public final class FamilyAndIntermediateScoringCards implements WildlifeScoringC
       var map = getWildlifeTokenMap(environment, token);
       score += calculateScore(map);
     }
-
     return score;
   }
-  
 }
