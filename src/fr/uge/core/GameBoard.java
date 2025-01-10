@@ -112,13 +112,21 @@ public final class GameBoard {
   //   this.tokensAreUpdated = true;
   // }
 
-
+  /**
+   * accessor for the WildlifeType of token after an update
+   *
+   * @param token the token that we want to update
+   * @return the new WildlifeType of the token
+   */
   private WildlifeType updateToken(WildlifeType token) {
     return this.bag.updateToken(token);
   }
 
 
-
+  /**
+   * update the token with 3 or more occurrences in the tokens list
+   * if tokens have already been updated for the current turn, an error message is displayed
+   */
   public final void updateTokens(){
     if (this.tokensAreUpdated) {
       System.err.println("Tokens are already updated, wait next turn please");
@@ -139,16 +147,30 @@ public final class GameBoard {
     this.tokensAreUpdated = true;
   }
 
-
+  /**
+   * accessor for the tiles in GameBoard
+   *
+   * @return a copy of the tiles in GameBoard
+   */
   public final List<Tile> getCopyOfTiles() {
     return List.copyOf(GameBoard.tiles);  // we sent a copy
   }
 
+  /**
+   * accessor for the tokens in GameBoard
+   *
+   * @return a copy of the tokens in GameBoard
+   */
   public final List<WildlifeType> getCopyOfTokens() {
     return List.copyOf(GameBoard.tokens);  // we sent a copy
   }
-  
 
+  /**
+   * retrieve the tile at the given index in the GameBoard's tiles list
+   *
+   * @param index the index which we want the tile in the list tiles
+   * @return the tile at the given index
+   */
   public Tile getTile(int index){
     if (index < 0 || index >= Constants.TILES_ON_BOARD) {
       throw new IllegalArgumentException("Index of tile out of bounds");
@@ -158,7 +180,12 @@ public final class GameBoard {
     return tile;
   }
 
-
+  /**
+   * retrieve the token at the given index in the GameBoard's tokens list
+   *
+   * @param index the index which we want the tile in the list tokens
+   * @return the token at the given index
+   */
   public WildlifeType getToken(int index){
     if (index < 0 || index >= Constants.TOKENS_ON_BOARD) {
       throw new IllegalArgumentException("Index of wildlife token out of bounds");
@@ -168,7 +195,11 @@ public final class GameBoard {
     return token;
   }
 
-
+  /**
+   * accessor for the bag of GameBoard
+   *
+   * @return the bag of GameBoard
+   */
   public Bag getBag() {
     return this.bag;
   }

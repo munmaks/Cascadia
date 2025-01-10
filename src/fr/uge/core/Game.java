@@ -15,7 +15,14 @@ public final class Game {
   private final int version;
   private final int playerCount;     // number of players
 
-
+  /**
+   * constructs a new Game instance with the specified parameters
+   *
+   * @param board the game board where the game will be played
+   * @param turnManager the manager responsible for controlling the turns during the game
+   * @param playerCount the number of players in the game
+   * @param version the version of the game
+   */
   public Game(
       GameBoard board,          /* 1 game board */
       TurnManager turnManager,  /* 20 turns for entire game */
@@ -117,7 +124,14 @@ public final class Game {
     // placeTile(cell, tile);
   }
 
-
+  /**
+   * places three tiles, one in the center cell and the others in the neighboring cells in a square grid
+   *
+   * @param playerIndex the index of the player whose tiles are being placed
+   * @param centerCoordinates the coordinates of the main cell
+   * @param leftNeighborNumber the number indicating the left neighbor cell relative to the center cell
+   * @param rightNeighborNumber the number indicating the right neighbor cell relative to the center cell
+   */
   private void placeStarterTilesSquare(
       int playerIndex,
       Coordinates centerCoordinates,
@@ -137,7 +151,14 @@ public final class Game {
     playerEnvironment.placeTile(neighborCell, starter[2]);
   }
 
-
+  /**
+   * places three tiles, one in the center cell and the others in the neighboring cells in a hexagonal grid
+   *
+   * @param playerIndex the index of the player whose tiles are being placed
+   * @param centerCoordinates the coordinates of the main cell
+   * @param leftNeighborNumber the number indicating the left neighbor cell relative to the center cell
+   * @param rightNeighborNumber the number indicating the right neighbor cell relative to the center cell
+   */
   private void placeStarterTilesHexagonal(
       int playerIndex,
       Coordinates centerCoordinates,
@@ -156,14 +177,4 @@ public final class Game {
     neighborCell = playerEnvironment.getOneNeighbor(cell, rightNeighborNumber);
     playerEnvironment.placeTile(neighborCell, starter[2]);     /* right down cell - 3*/
   }
-
-
-
-
-  
-
-  
-  
-
-
 }

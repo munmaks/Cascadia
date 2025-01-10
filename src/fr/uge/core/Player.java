@@ -33,20 +33,38 @@ public final class Player {
                         new SquareEnvironment();
   }
 
-
+  /**
+   * accessor for the environment of the player
+   *
+   * @return the environment of the player
+   */
   public final Environment getEnvironment() {
     return this.environment;
   }
 
+  /**
+   * accessor for the natureTokens of the player
+   *
+   * @return the natureTokens of the player
+   */
   public final int getNatureTokens() {
     return this.natureTokens;
   }
 
+  /**
+   * accessor for the name of the player
+   *
+   * @return the name of the player
+   */
   public final String getName() {
     return this.name;
   }
 
-
+  /**
+   * check if the player have a nature token or not
+   *
+   * @return true if the player have at least one nature token, false otherwise
+   */
   public boolean canUseNatureTokens(){
     return this.natureTokens > 0;
   }
@@ -90,7 +108,7 @@ public final class Player {
 
   
   public final int calculateBearScore(BearScoringCard card) {
-    
+
     return 0;
   }
   
