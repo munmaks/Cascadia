@@ -25,23 +25,41 @@ public final class SquareCell implements Cell {
     this.tile = null;  /* default tile */
   }
 
-
+  /**
+   * accessor for the number of neighbor for a square cell
+   *
+   * @return the number of neighbor in a square grill
+   */
   @Override
   public final int getNumberOfNeighbors() {
     return Constants.NB_NEIGHBORS_SQUARE;
   }
 
-
+  /*
+   * @return possibility to place tile on the cell
+   */
   @Override
   public final boolean isOccupiedByTile() {
     return this.occupiedByTile;
   }
 
+
+  /**
+   * accessor for the tile
+   *
+   * @return the tile
+   */
   @Override
   public final Tile getTile(){
     return this.tile;
   }
 
+  /**
+   * check if the tile has been placed or not and if not, place tileToPlace in the tile
+   *
+   * @param tileToPlace the tile that we want to place
+   * @return false if an animal is already occupied, true otherwise
+   */
   @Override
   public final boolean placeTile(Tile tileToPlace) {
     Objects.requireNonNull(tileToPlace, "tileToPlace is null in CellSquare.placeTile()");
@@ -52,19 +70,33 @@ public final class SquareCell implements Cell {
     this.occupiedByTile = true;
     return this.occupiedByTile;
   }
-  
 
 
+  /**
+   * accessor for the coordinates
+   *
+   * @return the coordinates
+   */
   @Override
   public final Coordinates getCoordinates() {
     return this.coordinates;
   }
 
-
+  /**
+   * accessor for occupiedByAnimal
+   *
+   * @return if the tile is occupied by an animal or not
+   */
   private boolean isOccupiedByAnimal() {
     return this.occupiedByAnimal;
   }
 
+  /**
+   * check if the token can be place or not
+   *
+   * @param token token that we want to place
+   * @return true if the tile can be place well, false otherwise
+   */
   @Override
   public boolean canBePlaced(WildlifeType token) {
     Objects.requireNonNull(token, "token must not be null in HabitatTile.canBePlaced()");
@@ -74,6 +106,12 @@ public final class SquareCell implements Cell {
     return this.tile.animals().contains(token);
   }
 
+  /**
+   * place token in the square cell if it's possible otherwise do nothing
+   *
+   * @param token the token that we want to place in the square cell
+   * @return true if the token has been well place, false otherwise
+   */
   @Override
   public boolean placeAnimal(WildlifeType token){
     Objects.requireNonNull(token, "token is null in CellSquare.placeAnimal()");
@@ -89,6 +127,11 @@ public final class SquareCell implements Cell {
     return this.occupiedByTile;    /* we placed animal */
   }
 
+  /**
+   * accessor for placedAnimal
+   *
+   * @return the WildlifeType of the animal placed in the tile
+   */
   @Override
   public WildlifeType getAnimal(){
     return this.placedAnimal;

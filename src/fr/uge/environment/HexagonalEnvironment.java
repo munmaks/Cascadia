@@ -52,6 +52,13 @@ public final class HexagonalEnvironment implements Environment {
 //    tiles.add(tile);
 //  }
 
+  /**
+   * Give the neighbor's cell of the current cell in the direction wanted
+   *
+   * @param cell the cell that we want to get the neighbor
+   * @param direction the direction of the neighbor that we want to get
+   * @return the neighbor of cell for the direction wanted
+   */
   @Override
   public Cell getOneNeighbor(Cell cell, int direction) {
     var parity = cell.getCoordinates().y() & 1;  /* parity: 0 - even rows, 1 - odd rows */
@@ -117,7 +124,11 @@ public final class HexagonalEnvironment implements Environment {
   // }
 
 
-  
+  /**
+   * adds the coordinates of unoccupied neighboring cells of the given cell to the set
+   *
+   * @param cell the cell whose unoccupied neighbors' coordinates will be added to the set
+   */
   private void addNeighborsInSet(Cell cell) {
     Objects.requireNonNull(cell, "cell can't be null in addNeighborsInSet()");
     var neighbors = getNeighbors(cell);
@@ -161,7 +172,7 @@ public final class HexagonalEnvironment implements Environment {
 
 
   /**
-   * Determine possibility to placed a wildlife token on player's environment. 
+   * Determine possibility to place a wildlife token on player's environment.
    * */
   @Override
   public final boolean canBePlacedWildlifeToken(WildlifeType token) {
@@ -175,6 +186,13 @@ public final class HexagonalEnvironment implements Environment {
     return false;
   }
 
+  /**
+   * attempts to place an animal token on the given cell
+   *
+   * @param cell the cell on which the animal is to be placed
+   * @param token the WildlifeType of the animal to be placed
+   * @return true if the animal was successfully placed, false otherwise
+   */
   @Override
   public final boolean placeAnimal(Cell cell, WildlifeType token) {
     Objects.requireNonNull(cell);
@@ -211,8 +229,13 @@ public final class HexagonalEnvironment implements Environment {
   public final List<Cell> getCells() {
     return List.copyOf(this.cellsMap.values());
   }
-  
 
+
+  /**
+   * accessor for the set of cells of a player
+   *
+   * @return a set of all the tiles placed by one player
+   */
   @Override
   public final Set<Coordinates> getPossibleCells() {
 
@@ -273,9 +296,16 @@ public final class HexagonalEnvironment implements Environment {
     // }
     return builder.toString();
   }
-  
-  
 
+
+  /**
+   * do a depth first research for calculate the size of a connected group of cells with the same tileType
+   *
+   * @param tileType the tileType that we want to find the size of the group
+   * @param cell the starting cell for the research
+   * @param visited a set of already visited cells
+   * @return the size of the connected group of cells sharing the specified tile type
+   */
   private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
     Objects.requireNonNull(tileType, "TileType can't be null in dfs()");
     Objects.requireNonNull(cell, "Cell can't be null in dfs()");
@@ -295,7 +325,11 @@ public final class HexagonalEnvironment implements Environment {
   }
 
 
-
+  /**
+   * calculate the maximum score for each `TileType` based on the largest connected group of cells sharing the same tile type in the environment
+   *
+   * @return a map where the key is the `TileType` and the value is the size of the largest connected group of tiles for this TileType
+   */
   @Override
   public final Map<TileType, Integer> calculateTileScore() {
     var tileTypes = TileType.values();
@@ -311,7 +345,6 @@ public final class HexagonalEnvironment implements Environment {
     }
     return map;
   }
-  
-  
+
 }
 

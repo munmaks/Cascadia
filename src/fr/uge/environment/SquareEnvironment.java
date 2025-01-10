@@ -43,7 +43,13 @@ public final class SquareEnvironment implements Environment {
   }
 
 
-
+  /**
+   * calculate the coordinates of a neighbor cell in a specified direction
+   *
+   * @param coordinates the current coordinates of the cell
+   * @param direction the direction in which to find the neighboring cell
+   * @return the coordinates of the neighboring cell in the specified direction
+   */
   private Coordinates getNeighborCoordinates(Coordinates coordinates, int direction) {
     var diff = SQUARE_DIRECTION_DIFFERENCES[direction];
     return new Coordinates(
@@ -93,7 +99,11 @@ public final class SquareEnvironment implements Environment {
   }
 
 
-
+  /**
+   * added to cellsSet the neighbor of the cell with an animal in the tile
+   *
+   * @param cell the cell that we want his neighbor to be added in cellsSet
+   */
   private void addNeighborsInSet(Cell cell) {
     // don't need to check again if cell is null, because we did it in placeTile()
     // Objects.requireNonNull(cell, "cell can't be null in addNeighborsInSet()");
@@ -148,7 +158,13 @@ public final class SquareEnvironment implements Environment {
     return false;
   }
 
-
+  /**
+   * check if the given cell is occupied and if not place the given token in the given cell
+   *
+   * @param cell the cell that we want the animal to be place
+   * @param token the token that we want to place in the cell
+   * @return true if the token has been place in the cell, false otherwise
+   */
   @Override
   public final boolean placeAnimal(Cell cell, WildlifeType token) {
     Objects.requireNonNull(cell);
@@ -180,7 +196,11 @@ public final class SquareEnvironment implements Environment {
     return List.copyOf(this.cellsMap.values());
   }
 
-
+  /**
+   * accessor for the cellSet who stock all the placed tiles by one player
+   *
+   * @return a copy of the cellsSet
+   */
   @Override
   public final Set<Coordinates> getPossibleCells() {
     return Set.copyOf(this.cellsSet);
@@ -258,7 +278,14 @@ public final class SquareEnvironment implements Environment {
   */
 
 
-
+  /**
+   * calculate the size of a connected group of cells with the same tileType
+   *
+   * @param tileType the tileType that we want to find the size of the group
+   * @param cell the starting cell for the research
+   * @param visited a set of already visited cells
+   * @return the size of the connected group of cells sharing the specified tile type
+   */
   private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
     Objects.requireNonNull(tileType, "TileType can't be null in dfs()");
     Objects.requireNonNull(cell, "Cell can't be null in dfs()");
@@ -272,7 +299,12 @@ public final class SquareEnvironment implements Environment {
   }
 
 
-  
+  /**
+   * search the score for a specific tile type by finding the size of the largest connected group of cells that contain tiles of the specified type in the environment
+   *
+   * @param tileType the tileType that we want to calculate his score
+   * @return the score calculated of the tileType
+   */
   private int calculateScoreTileType(TileType tileType) {
     return this.cellsMap.values().stream()
                                  .mapToInt(cell -> dfs(tileType, cell, new HashSet<>()))
@@ -281,6 +313,11 @@ public final class SquareEnvironment implements Environment {
   }
 
 
+  /**
+   * calculate the score for all the tileType
+   *
+   * @return a map where the keys are the different tile types and the values are the corresponding scores
+   */
   @Override
   public final Map<TileType, Integer> calculateTileScore(){
     return Collections.unmodifiableMap(

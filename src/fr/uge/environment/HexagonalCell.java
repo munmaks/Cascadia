@@ -18,7 +18,7 @@ public final class HexagonalCell implements Cell {
    */
   private boolean occupiedByAnimal;  /* idle */
 
-  /* by default it's empty type of tile on this cell */
+  /* by default, it's empty type of tile on this cell */
   private Tile tile;
 
   private WildlifeType placedAnimal = null;
@@ -30,15 +30,24 @@ public final class HexagonalCell implements Cell {
    * */
   private int currentRotation = 0;
 
+  /**
+   * constructor of the hexagonal cell, need only the coordinates for create it
+   *
+   * @param coordinates coordinates of the new created cell
+   */
   public HexagonalCell(Coordinates coordinates) {
 
     this.coordinates = Objects.requireNonNull(coordinates);
-
     this.occupiedByTile = false;
     this.occupiedByAnimal = false;
     this.tile = null;
   }
-  
+
+  /**
+   * accessor for the number of neighbor for a hexagonal cell
+   *
+   * @return the number of neighbor in a hexagonal grill
+   */
   @Override
   public final int getNumberOfNeighbors() {
     return Constants.NB_NEIGHBORS_HEXAGONAL;
@@ -57,7 +66,12 @@ public final class HexagonalCell implements Cell {
     return this.occupiedByAnimal;
   }
 
-
+  /**
+   * check if the tile has been placed or not and if not, place tileToPlace in the tile
+   *
+   * @param tileToPlace the tile that we want to place
+   * @return false if an animal is already occupied, true otherwise
+   */
   @Override
   public final boolean placeTile(Tile tileToPlace) {
     Objects.requireNonNull(tileToPlace);
@@ -68,12 +82,22 @@ public final class HexagonalCell implements Cell {
     this.occupiedByTile = true;
     return this.occupiedByTile;
   }
-  
+
+  /**
+   * accessor for the tile
+   *
+   * @return the tile
+   */
   @Override
   public final Tile getTile() {
     return this.tile;
   }
 
+  /**
+   * accessor for the animal placed in the tile
+   *
+   * @return the WildlifeType of the tile
+   */
   @Override
   public final WildlifeType getAnimal() {
     return this.placedAnimal;
@@ -101,6 +125,12 @@ public final class HexagonalCell implements Cell {
   }
 
 
+  /**
+   * check if the token can be place or not
+   *
+   * @param token token that we want to place
+   * @return true if the tile can be place well, false otherwise
+   */
   @Override
   public boolean canBePlaced(WildlifeType token) {
     Objects.requireNonNull(token, "token must not be null in HabitatTile.canBePlaced()");
@@ -111,6 +141,12 @@ public final class HexagonalCell implements Cell {
   }
 
 
+  /**
+   * place token in the hexagonal cell if it's possible otherwise do nothing
+   *
+   * @param token the token that we want to place in the hexagonal cell
+   * @return true if the token has been well place, false otherwise
+   */
   @Override
   public boolean placeAnimal(WildlifeType token){
     Objects.requireNonNull(token, "animal must not be null in placeToken()");
@@ -135,6 +171,11 @@ public final class HexagonalCell implements Cell {
     return builder.toString();
   }
 
+  /**
+   * accessor for the coordinates of the cell
+   *
+   * @return the coordinates of the cell
+   */
   @Override
   public final Coordinates getCoordinates() {
     return this.coordinates;
