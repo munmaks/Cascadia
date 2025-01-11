@@ -10,6 +10,7 @@ import fr.uge.core.Game;
 import fr.uge.core.TurnManager;
 import fr.uge.util.Constants;
 
+
 import java.io.IO;
 import java.util.List;
 import java.util.Objects;
@@ -58,25 +59,6 @@ class RectangleSquare {
       // hide the previous rectangle
       graphics.setColor(Color.WHITE);
       graphics.fill(rectangle);
-
-      // show a new rectangle at the position of the pointer
-      // MAGENTA (TEST)
-      // graphics.setColor(Color.MAGENTA);
-
-      // CYAN
-      // graphics.setColor(Color.CYAN);
-
-      // BLUE
-      // graphics.setColor(Color.BLUE);
-
-      // YELLOW
-      // graphics.setColor(Color.YELLOW);
-
-      // GREEN (FOREST)
-      // graphics.setColor(Color.GREEN);
-
-      // LIGHT GRAY (MOUNTAIN)
-      // graphics.setColor(Color.LIGHT_GRAY);
 
       // WHITE (MOUNTAIN)
       graphics.setColor(color);
@@ -542,13 +524,13 @@ public class GraphicSquare {
   private static boolean handleTokenChange(
       ApplicationContext context, Game game, int figureSize, int fontSize) {
     Objects.requireNonNull(game);
-    if (game.board().tokensNeedUpdate()) {
-      game.board().updateTokens();
+    if (game.board().tokensNeedUpdate()) {   // done in CascadiaData.java
+      game.board().updateTokens();   // done in CascadiaData.java
       // System.out.println("Tokens were updated, because one token had 4
       // occurences");
       showGameBoard(context, game.board(), figureSize, figureSize);
       return true;
-    } else if (game.board().tokensCanBeUpdated()) {
+    } else if (game.board().tokensCanBeUpdated()) {  // done in CascadiaData.java
 
       restartRectangleWithText(context,
           "Click here to change", figureSize / 2, figureSize / 2, fontSize,
@@ -571,7 +553,7 @@ public class GraphicSquare {
         // if player wants to change tokens he must click on the rectangle "(Change
         // Tokens)"
         System.out.println("tokens are now updated");
-        game.board().updateTokens();
+        game.board().updateTokens();   // done in CascadiaData.java
       }
 
       drawRectangle(context, (int) (figureSize / 6), 0,
@@ -584,6 +566,7 @@ public class GraphicSquare {
     return false;
   }
 
+   // done in CascadiaData.java
   private static void handleTurnChange(Game game) {
     Objects.requireNonNull(game);
     game.turnManager().changePlayer();
@@ -677,16 +660,16 @@ public class GraphicSquare {
 
   private static boolean handleTokenPlacement(
       ApplicationContext context, Player player,
-      WildlifeType chosedToken, int width, int height,
+      WildlifeType chosenToken, int width, int height,
       int figureSize, int tokenSize) {
 
     Objects.requireNonNull(player);
-    Objects.requireNonNull(chosedToken);
+    Objects.requireNonNull(chosenToken);
 
-    /* chosed token from `choice` */
+    /* chosen token from `choice` */
     // System.out.println("Now you need to place the wildlife token: " +
-    // chosedToken.toString());
-    showPossibleTokenPlacement(context, player, chosedToken, width, height, figureSize, tokenSize);
+    // chosenToken.toString());
+    showPossibleTokenPlacement(context, player, chosenToken, width, height, figureSize, tokenSize);
 
     var userCoordinates = getCoordinatesFromUser(context);
     if (userCoordinates == null) {
@@ -698,7 +681,7 @@ public class GraphicSquare {
         (int) ((userCoordinates.y() / figureSize) - height / 2 / figureSize),
         (int) ((userCoordinates.x() / figureSize) - width / 2 / figureSize));
     var currCell = player.getEnvironment().getCell(coordinatesForMap);
-    var tokenWasPlaced = player.getEnvironment().placeAnimal(currCell, chosedToken);
+    var tokenWasPlaced = player.getEnvironment().placeAnimal(currCell, chosenToken);
     /* for tests, to delete later */
     System.err.println(tokenWasPlaced ? "Token was placed successfully" : "Token wasn't placed");
     return tokenWasPlaced;
@@ -706,9 +689,9 @@ public class GraphicSquare {
 
   private static boolean handleTilePlacement(
       ApplicationContext context, Player player,
-      Tile chosedTile, int width, int height, int figureSize) {
+      Tile chosenTile, int width, int height, int figureSize) {
     Objects.requireNonNull(player);
-    Objects.requireNonNull(chosedTile);
+    Objects.requireNonNull(chosenTile);
     var possibleCoordinates = player.getEnvironment().getPossibleCells();
 
     /* player has to place tile correctly */
@@ -727,7 +710,7 @@ public class GraphicSquare {
 
       if (possibleCoordinates.stream().anyMatch(coordinates -> coordinates.equals(coordinatesForMap))) {
         var currCell = player.getEnvironment().getCell(coordinatesForMap);
-        if (player.getEnvironment().placeTile(currCell, chosedTile)) {
+        if (player.getEnvironment().placeTile(currCell, chosenTile)) {
           // System.out.println("Tile was placed successfully"); // for test, to delete
           // later
           return true;
@@ -759,11 +742,11 @@ public class GraphicSquare {
   // tokens */
 
   // int choice = handleUserChoiceTileAndToken();
-  // var chosedTile = game.board().getTile(choice - 1);
-  // var chosedToken = game.board().getToken(choice - 1);
+  // var chosenTile = game.board().getTile(choice - 1);
+  // var chosenToken = game.board().getToken(choice - 1);
 
-  // handleTilePlacement(context, currentPlayer, chosedTile, figureSize);
-  // handleTokenPlacement(context, currentPlayer, chosedToken, figureSize,
+  // handleTilePlacement(context, currentPlayer, chosenTile, figureSize);
+  // handleTokenPlacement(context, currentPlayer, chosenToken, figureSize,
   // tokenSize);
 
   // handleTurnChange(game);
@@ -991,6 +974,7 @@ public class GraphicSquare {
         Color.PINK);
   }
 
+
   private static void restartRectangleWithText(
       ApplicationContext context,
       String text, int x, int y, int fontSize,
@@ -1033,7 +1017,7 @@ public class GraphicSquare {
     return true;
   }
 
-  private static void cascadiaSquareGame(ApplicationContext context) {
+  public static void cascadiaSquareGame(ApplicationContext context) {
     var counter = 0;
     var screenInfo = context.getScreenInfo();
     var width = screenInfo.width();
@@ -1079,32 +1063,28 @@ public class GraphicSquare {
 
     drawRectangle(context, 0, 0, width, height, Color.WHITE);
 
-    // drawSquares(context, width, height, figureSize);
+    drawSquares(context, width, height, figureSize);
 
-    /*
-     * // ask players for their names
-     * drawRoundRectangle(context,
-     * width / 2 - (environmentSquareWidth / 4), // center of the screen - x
-     * height / 2 - (environmentSquareHeight / 4), // center of the screen - y
-     * environmentSquareWidth / 2,
-     * environmentSquareHeight / 2,
-     * environmentSquareWidth / 15,
-     * environmentSquareHeight / 10,
-     * Color.RED);
-     * drawString(context, "Welcome to the Cascadia game!", width / 2 - 150, height
-     * / 2, 20, Color.WHITE);
-     * 
-     * drawRoundRectangle(context,
-     * width / 2 + (environmentSquareWidth / 4), // center of the screen - x
-     * height / 2 - (environmentSquareHeight / 4), // center of the screen - y
-     * environmentSquareWidth / 4,
-     * environmentSquareHeight / 2,
-     * environmentSquareWidth / 15,
-     * environmentSquareHeight / 10,
-     * Color.MAGENTA);
-     * drawString(context, "Validate", (int) (width / 2 + (environmentSquareWidth /
-     * 3)), height / 2, 20, Color.WHITE);
-     */
+    // ask players for their names
+    // drawRoundRectangle(context,
+    //   width / 2 - (environmentSquareWidth / 4), // center of the screen - x
+    //   height / 2 - (environmentSquareHeight / 4), // center of the screen - y
+    //   environmentSquareWidth / 2,
+    //   environmentSquareHeight / 2,
+    //   environmentSquareWidth / 15,
+    //   environmentSquareHeight / 10,
+    //   Color.RED);
+    // drawString(context, "Welcome to the Cascadia game!", width / 2 - 150, height / 2, 20, Color.WHITE);
+
+    // drawRoundRectangle(context,
+    //   width / 2 + (environmentSquareWidth / 4), // center of the screen - x
+    //   height / 2 - (environmentSquareHeight / 4), // center of the screen - y
+    //   environmentSquareWidth / 4,
+    //   environmentSquareHeight / 2,
+    //   environmentSquareWidth / 15,
+    //   environmentSquareHeight / 10,
+    //   Color.MAGENTA);
+    // drawString(context, "Validate", (int) (width / 2 + (environmentSquareWidth / 3)), height / 2, 20, Color.WHITE);
 
     var x1 = width / 2 + (environmentSquareWidth / 4);
     var y1 = height / 2 - (environmentSquareHeight / 4);
@@ -1220,50 +1200,10 @@ public class GraphicSquare {
 
     // gameLoopVersionSquare(context, game, width, height, figureSize, tokenSize);
 
-    // while (!game.turnManager().isGameEnd()) {
-    // var currIndex = game.turnManager().getCurrentPlayerIndex();
-    // var currentPlayer = game.getPlayerByIndex(currIndex);
-    // showPlayerEnvironmentAndGameBoard(context, currentPlayer, game.board(),
-    // width, height, figureSize);
+    
+    for(;;) {
 
-    // handleTokenChange(context, game, figureSize); /* if we need to update tokens
-    // */
-
-    // int choice = handleUserChoiceTileAndToken();
-    // var chosedTile = game.board().getTile(choice - 1);
-    // var chosedToken = game.board().getToken(choice - 1);
-
-    // handleTilePlacement(context, currentPlayer, chosedTile, figureSize);
-    // handleTokenPlacement(context, currentPlayer, chosedToken, figureSize,
-    // tokenSize);
-
-    // handleTurnChange(game);
-    // }
-
-    // var test_coordinates = getCoordinatesFromUser(context);
-    // if (test_coordinates == null) {
-    // System.err.println("Coordinates are invalid in game board choice"); /* for
-    // tests, to delete later */
-    // context.dispose();
-    // return;
-    // }
-    // System.err.println("TEST Coordinates 1: (" + test_coordinates.x() + ", " +
-    // test_coordinates.y() + ")");
-
-    // var test_coordinates2 = getCoordinatesFromUser(context);
-    // if (test_coordinates2 == null) {
-    // System.err.println("Coordinates are invalid in game board choice"); /* for
-    // tests, to delete later */
-    // context.dispose();
-    // return;
-    // }
-    // System.err.println("TEST Coordinates 2: (" + test_coordinates.x() + ", " +
-    // test_coordinates.y() + ")");
-
-    while (true) {
-
-      // drawRectangle(context, 0, 0, width, height, Color.WHITE); /* clear the screen
-      // */
+      drawRectangle(context, 0, 0, width, height, Color.WHITE); /* clear the screen */
 
       restartEnvironmentRectangle(context, width, height, environmentSquareWidth, environmentSquareHeight);
       restartGameBoardRectangle(context, figureSize, environmentSquareHeight);
@@ -1297,7 +1237,7 @@ public class GraphicSquare {
       Coordinates coordinates = null;
       System.err.println("before choosing tile and token");
       int choice = 0;
-      while (true) {
+      for(;;) {
         coordinates = getCoordinatesFromUser(context);
         if (coordinates == null) {
           System.err.println("Coordinates are invalid in game board choice"); /* for tests, to delete later */
@@ -1324,7 +1264,7 @@ public class GraphicSquare {
       // }
       System.out.println("You choosed: " + choice);
 
-      var chosedTile = game.board().getTile(choice);
+      var chosenTile = game.board().getTile(choice);  // done in CascadiaData.java
       showPossibleCoordinates(context, currentPlayer, width, height, figureSize);
 
       // System.err.println("Changing Tokens");
@@ -1335,26 +1275,26 @@ public class GraphicSquare {
 
       // boolean flag;
       // do {
-      // flag = handleTilePlacement(context, currentPlayer, chosedTile, width, height,
+      // flag = handleTilePlacement(context, currentPlayer, chosenTile, width, height,
       // figureSize);
       // } while (!flag);
       showPossibleCoordinates(context, currentPlayer, width, height, figureSize);
 
-      handleTilePlacement(context, currentPlayer, chosedTile, width, height, figureSize);
+      handleTilePlacement(context, currentPlayer, chosenTile, width, height, figureSize);
 
       /* refresh the screen */
       drawEnvironment(context, currentPlayer, width, height, figureSize);
 
-      var chosedToken = game.board().getToken(choice);
-      // System.err.println("tile: " + chosedTile.toString() + " token: " +
-      // chosedToken.toString()); // for tests, to delete later
+      var chosenToken = game.board().getToken(choice);   // done in CascadiaData.java
+      // System.err.println("tile: " + chosenTile.toString() + " token: " +
+      // chosenToken.toString()); // for tests, to delete later
 
       restartRectangleWithText(context,
-          "Place " + chosedToken + " token", (int) (width - (environmentSquareWidth / 3.5)), figureSize / 2,
+          "Place " + chosenToken + " token", (int) (width - (environmentSquareWidth / 3.5)), figureSize / 2,
           (int) (width * coeffFontSizeInstructions),
           width, environmentSquareWidth, environmentSquareHeight, Color.BLACK);
 
-      handleTokenPlacement(context, currentPlayer, chosedToken, width, height, figureSize, tokenSize);
+      handleTokenPlacement(context, currentPlayer, chosenToken, width, height, figureSize, tokenSize);
 
       handleTurnChange(game);
       System.out.println("Next player");
@@ -1369,8 +1309,8 @@ public class GraphicSquare {
 
   }
 
-  public static void main(String[] args) {
-    Application.run(Color.WHITE, GraphicSquare::cascadiaSquareGame);
-  }
+  // public static void main(String[] args) {
+  //   Application.run(Color.WHITE, GraphicSquare::cascadiaSquareGame);
+  // }
 
 }

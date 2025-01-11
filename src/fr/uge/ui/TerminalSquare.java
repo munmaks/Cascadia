@@ -27,9 +27,7 @@ final class TerminalSquare {
   }
 
   /**
-   * 1 for Family, 2 for Intermediate
-   * 
-   * Still need to improve it
+   * 1 for Family, 2 for Intermediate Still need to improve it
    */
   private int chooseVersion() {
     System.out.println("Choose scoring card: ");
@@ -101,14 +99,14 @@ final class TerminalSquare {
    */
   private void showScore(Game game) {
     Objects.requireNonNull(game);
-    System.out.println("Game is over!\nThank you for playing!");
 
-    //
     // Objects.requireNonNull(game);
     // var players = game.players();
     // for (var player : players){
     // System.out.println(player.name() + " has " + player.getScore() + " points");
     // }
+
+    System.out.println("Game is over!\nThank you for playing!");
   }
 
   private Coordinates getCoordinatesFromUser(String message) {
@@ -189,8 +187,7 @@ final class TerminalSquare {
           .readln("Give me coordinates of cell, that you want to place the tile on (format: \"x, y\"): ");
       var userCoordinates = getCoordinatesFromUser(userCoordinatesString);
 
-      if (possibleCoordinates.stream()
-          .anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
+      if (possibleCoordinates.stream().anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
         var currCell = player.getEnvironment().getCell(userCoordinates);
         if (player.getEnvironment().placeTile(currCell, chosedTile)) {
           System.out.println("Tile was placed successfully"); // for test, to delete later

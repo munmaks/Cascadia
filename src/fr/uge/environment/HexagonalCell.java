@@ -132,8 +132,7 @@ public final class HexagonalCell implements Cell {
   @Override
   public final String toString() {
     var builder = new StringBuilder();
-    builder.append(this.coordinates).append(" ")
-        .append(tile.toString()).append(" ");
+    builder.append(this.coordinates).append(" ").append(tile.toString()).append(" ");
     // builder.append("\n");
     return builder.toString();
   }
