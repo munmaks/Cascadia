@@ -1,5 +1,6 @@
 package fr.uge.ui;
 
+
 import fr.uge.core.Game;
 import fr.uge.core.GameBoard;
 import fr.uge.core.Player;
@@ -31,7 +32,8 @@ public class CascadiaData {
    * @param turnManager Turn manager.
    * @param version     Version of the game.
    */
-  public CascadiaData(GameBoard gameBoard, TurnManager turnManager, List<Player> players, int version) {
+  public CascadiaData(GameBoard gameBoard, TurnManager turnManager, List<Player> players,
+      int version) {
     this.game = new Game(gameBoard, turnManager, players, version);
 
   }
@@ -42,9 +44,7 @@ public class CascadiaData {
    * @param choice Choice of the tile.
    * @return Tile
    */
-  public Tile getTileByChoice(int choice) {
-    return game.board().getTile(choice);
-  }
+  public Tile getTileByChoice(int choice) { return game.board().getTile(choice); }
 
   /**
    * Gets the Animal type by choice.
@@ -71,45 +71,35 @@ public class CascadiaData {
    * 
    * @return Game board.
    */
-  public GameBoard getGameBoard() {
-    return game.board();
-  }
+  public GameBoard getGameBoard() { return game.board(); }
 
   /**
    * Gets the players.
    * 
    * @return List of players.
    */
-  public List<Player> getPlayers() {
-    return game.getPlayers();
-  }
+  public List<Player> getPlayers() { return game.getPlayers(); }
 
   /**
    * Tests whether the tokens must be updated.
    * 
    * @return True if the tokens must be updated.
    */
-  public boolean tokensMustBeUpdated() {
-    return game.board().tokensNeedUpdate();
-  }
+  public boolean tokensMustBeUpdated() { return game.board().tokensNeedUpdate(); }
 
   /**
    * Tests whether the tokens could be updated.
    * 
    * @return True if the tokens could be updated.
    */
-  public boolean tokensCouldBeUpdated() {
-    return game.board().tokensCanBeUpdated();
-  }
+  public boolean tokensCouldBeUpdated() { return game.board().tokensCanBeUpdated(); }
 
   /**
    * Updates the tokens.
    * 
    * @return void
    */
-  public void updateTokens() {
-    game.board().updateTokens();
-  }
+  public void updateTokens() { game.board().updateTokens(); }
 
   /**
    * Handles the turn change.
@@ -119,7 +109,9 @@ public class CascadiaData {
   public void handleTurnChange() {
     game.turnManager().changePlayer();
     game.turnManager().nextTurn();
-    game.board().setDefaultTokensAreUpdated(); /* that means, next person can change tokens (if needed) */
+
+    /* that means, next person can change tokens (if needed) */
+    game.board().setDefaultTokensAreUpdated();
   }
 
   /**
@@ -127,9 +119,7 @@ public class CascadiaData {
    * 
    * @return True if the game has ended.
    */
-  public boolean isGameEnd() {
-    return game.turnManager().isGameEnd();
-  }
+  public boolean isGameEnd() { return game.turnManager().isGameEnd(); }
 
   /**
    * Gets the cell from the coordinates.
@@ -173,7 +163,8 @@ public class CascadiaData {
    * @return True if the animal was placed successfully.
    */
   public boolean placeAnimalIfPossible(WildlifeType chosenAnimal, Coordinates chosenCoordinates) {
-    return getCurrentPlayer().getEnvironment().placeAnimal(getCellFromCoordinates(chosenCoordinates), chosenAnimal);
+    return getCurrentPlayer().getEnvironment()
+        .placeAnimal(getCellFromCoordinates(chosenCoordinates), chosenAnimal);
   }
 
   /**
@@ -182,7 +173,5 @@ public class CascadiaData {
    * @return True if the player has won by finding all pairs of objects, and False
    *         otherwize.
    */
-  public boolean win() {
-    return game.turnManager().isGameEnd();
-  }
+  public boolean win() { return game.turnManager().isGameEnd(); }
 }

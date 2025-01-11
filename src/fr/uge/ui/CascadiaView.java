@@ -7,20 +7,30 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.IO;
+import java.util.Objects;
 import java.awt.RenderingHints; // to think if we need it
 import java.awt.Graphics2D;
+import java.awt.Font;
+import java.awt.Point;
 
-import java.util.Objects;
-
-import com.github.forax.zen.Application;
+// import com.github.forax.zen.Application;
 import com.github.forax.zen.ApplicationContext;
+import com.github.forax.zen.Event;
+// import com.github.forax.zen.KeyboardEvent.Action;
+// import com.github.forax.zen.PointerEvent;
 import com.github.forax.zen.KeyboardEvent;
-import com.github.forax.zen.KeyboardEvent.Action;
+import com.github.forax.zen.PointerEvent;
 
+import fr.uge.core.Game;
 import fr.uge.core.GameBoard;
 import fr.uge.core.Player;
-
-import com.github.forax.zen.PointerEvent;
+import fr.uge.environment.Cell;
+import fr.uge.environment.Coordinates;
+import fr.uge.environment.Tile;
+import fr.uge.environment.TileType;
+import fr.uge.environment.WildlifeType;
+import fr.uge.util.Constants;
 
 // final class HexagonalPointyTop {
 // private final int[] xPoints = new int[6];
@@ -61,7 +71,7 @@ import com.github.forax.zen.PointerEvent;
  *                   memorized.
  */
 public record CascadiaView(int xOrigin, int yOrigin, int height, int width, int squareSize,
-    ImageLoader loader) {
+CascadiaData data, ImageLoader loader) {
 
   private static final Color COLOR_FOREST = Color.GREEN; // new Color(46, 111, 64); // 39, 66, 26
   private static final Color COLOR_WETLAND = new Color(166, 185, 111);
@@ -110,7 +120,7 @@ public record CascadiaView(int xOrigin, int yOrigin, int height, int width, int 
    * @param size     side of the square.
    * @param color    color of the square.
    */
-  private static void drawSquare(Graphics2D graphics, float x, float y, int size, Color color) {
+  private void drawSquare(Graphics2D graphics, float x, float y, int size, Color color) {
     var rectangle = new Rectangle2D.Float(0, 0, 0, 0);
     // hide the previous rectangle
     // graphics.setColor(Color.WHITE);
@@ -122,7 +132,7 @@ public record CascadiaView(int xOrigin, int yOrigin, int height, int width, int 
     graphics.fill(rectangle);
   }
 
-  private static void drawRectangle(Graphics2D graphics, float x, float y, int width, int height,
+  private void drawRectangle(Graphics2D graphics, float x, float y, int width, int height,
       Color color) {
 
     var rectangle = new Rectangle2D.Float(x, y, width, height);
@@ -142,7 +152,7 @@ public record CascadiaView(int xOrigin, int yOrigin, int height, int width, int 
 
   }
 
-  private static void drawCircle(Graphics2D graphics, float x, float y, int size, Color color) {
+  private void drawCircle(Graphics2D graphics, float x, float y, int size, Color color) {
     var ellipse = new Ellipse2D.Float(0, 0, 0, 0);
 
     // hide the previous rectangle
@@ -156,13 +166,13 @@ public record CascadiaView(int xOrigin, int yOrigin, int height, int width, int 
 
   }
 
-  public static void drawLine(Graphics2D graphics, int x1, int y1, int x2, int y2, Color color) {
+  public void drawLine(Graphics2D graphics, int x1, int y1, int x2, int y2, Color color) {
     graphics.setColor(color);
     graphics.drawLine(x1, y1, x2, y2);
-    ;
+    
   }
 
-  private static void drawRoundRectangle(Graphics2D graphics, float x, float y, float width,
+  private void drawRoundRectangle(Graphics2D graphics, float x, float y, float width,
       float height, float arcw, float arch, Color color) {
 
     var qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
@@ -187,7 +197,7 @@ public record CascadiaView(int xOrigin, int yOrigin, int height, int width, int 
 
   }
 
-  private static void drawImage(Graphics2D graphics, BufferedImage image, float x, float y,
+  private void drawImage(Graphics2D graphics, BufferedImage image, float x, float y,
       float dimX, float dimY) {
     var width = image.getWidth();
     var height = image.getHeight();
@@ -197,209 +207,746 @@ public record CascadiaView(int xOrigin, int yOrigin, int height, int width, int 
     graphics.drawImage(image, transform, null);
   }
 
-  private static void drawEnvironment(Graphics2D graphics, Player player, int width, int height,
+
+  /**
+   * Draws one animal image using the provided ImageLoader.
+   */
+  private void drawAnimal(Graphics2D graphics, ImageLoader images, WildlifeType animal,
+      int x, int y, int size) {
+    // If you prefer a switch block, you can still switch on 'animal',
+    // but using 'animal.ordinal()' directly is usually enough.
+    drawImage(graphics, images.image(animal.ordinal()), x, y, size, size);
+  }
+
+  /**
+   * Draws the habitat square with the specified habitat type.
+   */
+  private void drawHabitatSquare(Graphics2D graphics, TileType habitatType, int x, int y,
+      int figureSize) {
+    switch (habitatType) {
+    case FOREST->drawSquare(graphics, x, y, figureSize, COLOR_FOREST);
+    case WETLAND->drawSquare(graphics, x, y, figureSize, COLOR_WETLAND);
+    case MOUNTAIN->drawSquare(graphics, x, y, figureSize, COLOR_MOUNTAIN);
+    case RIVER->drawSquare(graphics, x, y, figureSize, COLOR_RIVER);
+    case PRAIRIE -> drawSquare(graphics, x, y, figureSize, COLOR_PRAIRIE);}
+  }
+
+  /**
+   * Draws multiple animals from the tile.
+   */
+  private void drawMultipleAnimals(Graphics2D graphics, ImageLoader images, Cell cell, int x,
+      int y, int figureSize) {
+    int placement = 0;
+    for (var animal :
+    cell.getTile().animals()) {
+      final int scaledTokenSize = (int) (figureSize / 2.0);
+      final int xAnimal = (int) ((x - (figureSize / 2.0) + figureSize / 20.0)
+          + placement * (figureSize / 2.5));
+      final int yAnimal = (int) (y - (figureSize / 2.0) + figureSize / 4.0);
+      placement++;
+
+      drawAnimal(graphics, images, animal, xAnimal, yAnimal, scaledTokenSize);
+    }
+  }
+
+  /**
+   * Draws any animals found on the given cell.
+   */
+  private void drawAnimalsOnCell(Graphics2D graphics, ImageLoader images, Cell cell, int x,
+      int y, int figureSize) {
+    if (cell.getAnimal() == null) {
+      // Multiple animals from the tile
+      drawMultipleAnimals(graphics, images, cell, x, y, figureSize);
+    } else {
+      // Single animal
+      drawSingleAnimal(graphics, images, cell.getAnimal(), x, y, figureSize);
+    }
+  }
+
+  /**
+   * Draws a single animal if the cell has exactly one animal.
+   */
+  private void drawSingleAnimal(Graphics2D graphics, ImageLoader images, WildlifeType animal,
+      int x, int y, int figureSize) {
+    int scaledTokenSize = (int) (figureSize / 1.5);
+    int xAnimal = x - figureSize / 3;
+    int yAnimal = y - figureSize / 3;
+
+    drawAnimal(graphics, images, animal, xAnimal, yAnimal, scaledTokenSize);
+  }
+
+  private void drawEnvironment(Graphics2D graphics, Player player, int width, int height,
       int figureSize) {
     var listCells = player.getEnvironment().getCells();
-    // drawSquare(context, (int) (figureSize / 2), (int) (figureSize / 2),
-    // figureSize, Color.BLACK);
-    // drawSquare(context, (int) ((width / 2) + figureSize / 2), (int) ((height / 2)
-    // + figureSize / 2), figureSize, Color.WHITE);
-    // drawSquare(context, (int) (figureSize / 2) + figureSize, (int) (figureSize /
-    // 2) + figureSize, figureSize, Color.YELLOW);
-    // drawSquare(context, (int) (figureSize / 2), (int) (figureSize / 2) +
-    // figureSize, figureSize, Color.CYAN);
-    // drawSquare(context, (int) (figureSize / 2) + figureSize, (int) (figureSize /
-    // 2), figureSize, Color.ORANGE);
-
     var images = new ImageLoader("img/tokens", "bear.png", "elk.png", "hawk.png", "fox.png",
         "salmon.png");
 
     for (var cell : listCells) {
-      if (cell.isOccupiedByTile()) {
-        var habitatType = cell.getTile().firstHabitat();
+      if (!cell.isOccupiedByTile()) {
+        continue;
+      }
+      var habitatType = cell.getTile().firstHabitat();
+
+      /* Calculate screen coordinates relative to the center. */
+      int x = (int) (((cell.getCoordinates().x() + width / (2.0 * figureSize)) * figureSize)
+          + figureSize / 2.0);
+      int y = (int) (((cell.getCoordinates().y() + height / (2.0 * figureSize)) * figureSize)
+          + figureSize / 2.0);
+
+      drawHabitatSquare(graphics, habitatType, x, y, figureSize);
+      drawAnimalsOnCell(graphics, images, cell, x, y, figureSize);
+    }
+  }
+
+  // private static void drawEnvironment(Graphics2D graphics, Player player, int
+  // width, int height,
+  // int figureSize) {
+  // var listCells = player.getEnvironment().getCells();
+
+  // var images = new ImageLoader("img/tokens", "bear.png", "elk.png", "hawk.png",
+  // "fox.png",
+  // "salmon.png");
+
+  // for (var cell : listCells) {
+  // if (cell.isOccupiedByTile()) {
+  // var habitatType = cell.getTile().firstHabitat();
+  // var x = (int) (((cell.getCoordinates().x() + width / 2 / figureSize)) *
+  // figureSize)
+  // + figureSize / 2;
+  // var y = (int) (((cell.getCoordinates().y() + height / 2 / figureSize)) *
+  // figureSize)
+  // + figureSize / 2;
+
+  // switch (habitatType) {
+  // case FOREST->drawSquare(graphics, x, y, figureSize, COLOR_FOREST);
+  // case WETLAND->drawSquare(graphics, x, y, figureSize, COLOR_WETLAND);
+  // case MOUNTAIN->drawSquare(graphics, x, y, figureSize, COLOR_MOUNTAIN);
+  // case RIVER->drawSquare(graphics, x, y, figureSize, COLOR_RIVER);
+  // case PRAIRIE -> drawSquare(graphics, x, y, figureSize, COLOR_PRAIRIE);
+  // }
+
+  // int placement = 0;
+  // if (cell.getAnimal() == null) {
+  // for (var animal :
+  // cell.getTile().animals()) {
+
+  // int scaledTokenSize = (int) (figureSize / 2);
+  // var xAnimal = (int) ((x - (figureSize / 2) + figureSize / 20)
+  // + placement * (figureSize / 2.5));
+  // var yAnimal = (int) (y - (figureSize / 2) + figureSize / 4); // + (placement
+  // *
+  // // figureSize / 5)
+  // placement++;
+
+  // switch (animal) {
+  // case BEAR->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal,
+  // scaledTokenSize, scaledTokenSize);
+  // case ELK->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal,
+  // scaledTokenSize, scaledTokenSize);
+  // case SALMON->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal,
+  // scaledTokenSize, scaledTokenSize);
+  // case HAWK->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal,
+  // scaledTokenSize, scaledTokenSize);
+  // case FOX->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal,
+  // scaledTokenSize, scaledTokenSize);}
+
+  // }
+
+  // }else {
+  // var animal = cell.getAnimal();
+  // int scaledTokenSize = (int) (figureSize / 1.5);
+  // var xAnimal = (int) (x - figureSize / 3);
+  // var yAnimal = (int) (y - figureSize / 3);
+
+  // switch (animal) {
+  // case BEAR->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal,
+  // scaledTokenSize, scaledTokenSize);
+  // case ELK->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal,
+  // scaledTokenSize, scaledTokenSize);
+  // case SALMON->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal,
+  // scaledTokenSize, scaledTokenSize);
+  // case HAWK->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal,
+  // scaledTokenSize, scaledTokenSize);
+  // case FOX->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal,
+  // scaledTokenSize, scaledTokenSize);}
+  // ;}
+  // // drawSquare(graphics, cell.getCoordinates().x(), cell.getCoordinates().y(),
+  // // figureSize, Color.RED);
+  // // System.out.println(cell.toString());
+  // }
+  // }
+  // }
+
+  //
+  //
+  //
+
+  private void showGameBoard(Graphics2D graphics, GameBoard board, int figureSize,
+      int tokenSize) {
+    final float RECTANGLE_X_OFFSET = 1.8f;
+    final float ROW_MULTIPLIER = 1.8f;
+    final float CIRCLE_X_OFFSET = 1.05f;
+    var baseXOffset = (int) (figureSize / RECTANGLE_X_OFFSET);
+
+    var listOfTiles = board.getCopyOfTiles();
+    var listOfTokens = board.getCopyOfTokens();
+    var images = new ImageLoader("img/tokens", "bear.png", "elk.png", "hawk.png", "fox.png",
+        "salmon.png");
+
+    for (int i = 0; i < 4; i++) {
+      int yPosition = (int) (figureSize * ROW_MULTIPLIER * (i + 1));
+      drawTileAndAnimals(graphics, listOfTiles.get(i), images, baseXOffset, yPosition, figureSize);
+      drawWildlifeToken(graphics, listOfTokens.get(i), images, tokenSize,
+          (int) (baseXOffset + figureSize * CIRCLE_X_OFFSET + tokenSize / 5),
+          (int) (yPosition + tokenSize / 5));
+      if (i != 3) { // draw a line for separation
+        drawLine(graphics, (int) (figureSize / 3), (int) (yPosition + figureSize * 1.4),
+            (int) (figureSize / 3 + figureSize * 2.35), (int) (yPosition + figureSize * 1.4),
+            Color.BLACK);
+      }
+    }
+  }
+
+  private void drawTileAndAnimals(Graphics2D graphics, Tile tile, ImageLoader images, int x,
+      int y, int figureSize) {
+    // Draw habitat rectangle
+    switch (tile.firstHabitat()) {
+    case FOREST->drawRectangle(graphics, x, y, figureSize, figureSize, COLOR_FOREST);
+    case WETLAND->drawRectangle(graphics, x, y, figureSize, figureSize, COLOR_WETLAND);
+    case MOUNTAIN->drawRectangle(graphics, x, y, figureSize, figureSize, COLOR_MOUNTAIN);
+    case RIVER->drawRectangle(graphics, x, y, figureSize, figureSize, COLOR_RIVER);
+    case PRAIRIE -> drawRectangle(graphics, x, y, figureSize, figureSize, COLOR_PRAIRIE);
+    }
+
+    // Draw Animals
+    int placement = 0;
+    for (var animal :
+    tile.animals()) {
+      int scaled = figureSize / 2;
+      int xAnimal = (int) (x + figureSize / 20.0 + placement * (figureSize / 2.5));
+      int yAnimal = y + figureSize / 4;
+      placement++;
+      drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaled, scaled);
+    }
+  }
+
+  private void drawWildlifeToken(Graphics2D graphics, WildlifeType token, ImageLoader images,
+      int tokenSize, int circleX, int circleY) {
+    int scaledTokenSize = (int) (tokenSize / 1.5);
+    drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize,
+        scaledTokenSize);
+  }
+
+  // another class showGameBoard
+  // private static void showGameBoard(Graphics2D graphics, GameBoard board, int
+  // figureSize,
+  // int tokenSize /* int width, int height, int margin */
+  // ) {
+  // final var RECTANGLE_X_OFFSET = 1.8f;
+  // final var ROW_MULTIPLIER = 1.8f;
+  // final var CIRCLE_X_OFFSET = 1.05f;
+
+  // var baseXOffset = (int) (figureSize / RECTANGLE_X_OFFSET); // common X offset
+  // // for both shapes
+
+  // var listOfTiles = board.getCopyOfTiles();
+  // var listOfTokens = board.getCopyOfTokens();
+
+  // var images = new ImageLoader("img/tokens", "bear.png", "elk.png", "hawk.png",
+  // "fox.png",
+  // "salmon.png");
+
+  // for (var i = 1; i <= 4; ++i) {
+  // var yPosition = (int) (figureSize * ROW_MULTIPLIER * i);
+
+  // var scaledTokenSize = (int) (tokenSize / 1.5);
+  // // calculate circle position relative to rectangle
+  // // var halfFigureSize = figureSize / 2f;
+  // // var halfTokenSize = tokenSize / 2f;
+  // // var circleX = (int) (baseXOffset + (figureSize * CIRCLE_X_OFFSET) +
+  // // halfFigureSize); // centered X for circle
+  // // var circleY = (int) (yPosition + halfFigureSize); // centered Y for circle
+  // var circleX = (int) (baseXOffset + (figureSize * CIRCLE_X_OFFSET) + tokenSize
+  // / 5); // centered
+  // // X
+  // // for
+  // // circle
+  // var circleY = (int) (yPosition + tokenSize / 5); // centered Y for circle
+
+  // var tile = listOfTiles.get(i - 1);
+
+  // // draw Habitat tile (rectangle)
+  // switch (tile.firstHabitat()) {
+  // case FOREST->drawRectangle(graphics, baseXOffset, yPosition, figureSize,
+  // figureSize,
+  // COLOR_FOREST);
+  // case WETLAND->drawRectangle(graphics, baseXOffset, yPosition, figureSize,
+  // figureSize,
+  // COLOR_WETLAND);
+  // case MOUNTAIN->drawRectangle(graphics, baseXOffset, yPosition, figureSize,
+  // figureSize,
+  // COLOR_MOUNTAIN);
+  // case RIVER->drawRectangle(graphics, baseXOffset, yPosition, figureSize,
+  // figureSize,
+  // COLOR_RIVER);
+  // case PRAIRIE -> drawRectangle(graphics, baseXOffset, yPosition, figureSize,
+  // figureSize,
+  // COLOR_PRAIRIE);
+  // }
+
+  // int placement = 0;
+  // for (var animal :
+  // tile.animals()) {
+  // var scale = (int) (figureSize / 2);
+  // var xAnimal = (int) ((baseXOffset + figureSize / 20) + placement *
+  // (figureSize / 2.5));
+  // var yAnimal = (int) (yPosition + figureSize / 4); // + (placement *
+  // figureSize / 5)
+  // placement++;
+
+  // switch (animal) {
+  // case BEAR->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal, scale,
+  // scale);
+  // case ELK->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal, scale,
+  // scale);
+  // case SALMON->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal, scale,
+  // scale);
+  // case HAWK->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal, scale,
+  // scale);
+  // case FOX->drawImage(graphics, images.image(animal.ordinal()), xAnimal,
+  // yAnimal, scale,
+  // scale);}
+  // ;}
+
+  // var token = listOfTokens.get(i - 1); // BEAR, ELK, SALMON, HAWK, FOX
+  // // draw Wildlife token (circle)
+  // // drawCircle(context, circleX, circleY, tokenSize, Color.RED);
+
+  // // case BEAR -> drawCircle(context, circleX, circleY, tokenSize, Color.RED);
+  // // case ELK -> drawCircle(context, circleX, circleY, tokenSize, Color.BLUE);
+  // // case SALMON -> drawCircle(context, circleX, circleY, tokenSize,
+  // Color.GREEN);
+  // // case HAWK -> drawCircle(context, circleX, circleY, tokenSize,
+  // Color.YELLOW);
+  // // case FOX -> drawCircle(context, circleX, circleY, tokenSize, Color.CYAN);
+
+  // switch (token) {
+  // case BEAR->drawImage(graphics, images.image(token.ordinal()), circleX,
+  // circleY,
+  // scaledTokenSize, scaledTokenSize);
+  // case ELK->drawImage(graphics, images.image(token.ordinal()), circleX,
+  // circleY,
+  // scaledTokenSize, scaledTokenSize);
+  // case SALMON->drawImage(graphics, images.image(token.ordinal()), circleX,
+  // circleY,
+  // scaledTokenSize, scaledTokenSize);
+  // case HAWK->drawImage(graphics, images.image(token.ordinal()), circleX,
+  // circleY,
+  // scaledTokenSize, scaledTokenSize);
+  // case FOX -> drawImage(graphics, images.image(token.ordinal()), circleX,
+  // circleY,
+  // scaledTokenSize, scaledTokenSize);}
+  // ;
+
+  // // do not delete this code for now ! it's for internal use and see where the
+  // // lines are
+  // if (i != 4) {
+  // drawLine(graphics, (int) (figureSize / 3), (int) (yPosition + figureSize *
+  // 1.4), // y
+  // // (int)
+  // // (figureSize
+  // // *
+  // // 1.8f
+  // // *
+  // // i);
+  // (int) (figureSize / 3 + figureSize * 2.35), (int) (yPosition + figureSize *
+  // 1.4),
+  // Color.BLACK);
+  // }
+
+  // /*
+  // * Previos code used for draw game board // drawRectangle(context, // (int)
+  // * (figureSize / 1.8), // (int) ((figureSize * 1.8 * i) + (figureSize * 1.8)),
+  // * // figureSize, figureSize, COLOR_RIVER); // drawCircle(context, // (int)
+  // * (figureSize / 1.8 + (figureSize * 1.05)) + (figureSize / 2), // (int)
+  // * ((figureSize * 1.8 * i) + (figureSize * 1.8)) + (figureSize / 2), // (int)
+  // * tokenSize, Color.RED);
+  // */
+  // }
+  // }
+
+  private void showScoringCard(Graphics2D graphics, int x, int y, int width, int height,
+      int figureSize, boolean isFamilyScoringCard) {
+    /*
+     * drawRoundRectangle(context, width - (int) (figureSize * 2.35) - (int)
+     * (figureSize / 3), // width figureSize, // height (int) (figureSize * 2.35),
+     * environmentSquareHeight, figureSize, environmentSquareHeight / 10,
+     * Color.MAGENTA);
+     */
+
+    drawRectangle(graphics, x, y + (height / 4), // x, y
+        (int) (width), // width
+        (int) (height / 2), // height
+        // figureSize, height / 10,
+        Color.RED);
+  }
+
+  private void showPossibleCoordinates(Graphics2D graphics, Player player, int width,
+      int height, int figureSize) {
+    Objects.requireNonNull(player);
+    var listOfCells = player.getEnvironment().getCells();
+    for (var cell : listOfCells) {
+      if (cell == null) {
+        throw new IllegalArgumentException("cell is null in showPossibleCoordinates()");
+      }
+      if (!cell.isOccupiedByTile()) {
+        // var x = cell.getCoordinates().x() * figureSize + width / 2;
+        // var y = cell.getCoordinates().y() * figureSize + height / 2;
         int x = (int) (((cell.getCoordinates().x() + width / 2 / figureSize)) * figureSize)
             + figureSize / 2;
         int y = (int) (((cell.getCoordinates().y() + height / 2 / figureSize)) * figureSize)
             + figureSize / 2;
 
-        switch (habitatType) {
-        case FOREST->drawSquare(graphics, x, y, figureSize, COLOR_FOREST);
-        case WETLAND->drawSquare(graphics, x, y, figureSize, COLOR_WETLAND);
-        case MOUNTAIN->drawSquare(graphics, x, y, figureSize, COLOR_MOUNTAIN);
-        case RIVER->drawSquare(graphics, x, y, figureSize, COLOR_RIVER);
-        case PRAIRIE -> drawSquare(graphics, x, y, figureSize, COLOR_PRAIRIE);
+        drawSquare(graphics, x, y, figureSize, Color.RED);
+      }
+    }
+  }
+
+
+
+  // to improve later this method
+  private Coordinates getCoordinatesFromPointerEvent(PointerEvent pe, int width, int height) {
+    switch (pe.action()) {
+      case POINTER_UP -> {
+        var location = pe.location();
+        checkRange(0, location.x(), width);
+        checkRange(0, location.y(), height);
+        return new Coordinates(location.y(), location.x());
+      }
+      // case POINTER_DOWN, POINTER_MOVE -> {
+      //   return null;
+      // }
+      default -> {
+        return null;
+      }
+    }
+  }
+
+
+  /**
+   * Handles the keyboard event.
+   * 
+   * @param ke     the keyboard event
+   * @param width  the width of the area
+   * @param height the height of the area
+   * @return the coordinates from the keyboard event, or null if not applicable
+   */
+  private boolean handleKeyboardEvent(KeyboardEvent ke, int width, int height) {
+    if (ke.action() == KeyboardEvent.Action.KEY_RELEASED) {
+      if (ke.key() == KeyboardEvent.Key.ESCAPE ||
+          ke.key() == KeyboardEvent.Key.Q) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /*
+   * POINTER_DOWN: nothing to do, user clicked, but didn't release the button or
+   * moved the mouse
+   * POINTER_MOVE: user moves his mouse
+   */
+  private Coordinates getCoordinatesFromUser(ApplicationContext context, int width, int height) {
+    for (;;){
+      var event = context.pollOrWaitEvent(10);
+      switch (event) {
+        case PointerEvent pe -> {
+          var coords = getCoordinatesFromPointerEvent(pe, width, height);
+          if (coords != null) {
+            return coords;
+          }
         }
+        case KeyboardEvent ke -> {
+          if (handleKeyboardEvent(ke, width, height)) {
+            return null;
+          }
+        }
+        default -> { /* do nothing */ }
+      }
+    }
+  }
 
-        int placement = 0;
-        if (cell.getAnimal() == null) {
-          for (var animal :
-          cell.getTile().animals()) {
 
-            int scaledTokenSize = (int) (figureSize / 2);
-            var xAnimal = (int) ((x - (figureSize / 2) + figureSize / 20)
-                + placement * (figureSize / 2.5));
-            var yAnimal = (int) (y - (figureSize / 2) + figureSize / 4); // + (placement *
-                                                                         // figureSize / 5)
-            placement++;
 
-            switch (animal) {
-            case BEAR->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal,
-                scaledTokenSize, scaledTokenSize);
-            case ELK->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal,
-                scaledTokenSize, scaledTokenSize);
-            case SALMON->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal,
-                scaledTokenSize, scaledTokenSize);
-            case HAWK->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal,
-                scaledTokenSize, scaledTokenSize);
-            case FOX->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal,
-                scaledTokenSize, scaledTokenSize);}
+  private boolean handleTokenChange(
+      ApplicationContext context, Game game,
+      int width, int height, int figureSize, int fontSize) {
+    if (data.tokensMustBeUpdated()) {
+      data.updateTokens();
+      context.renderFrame(graphics -> {
+        showGameBoard(graphics, game.board(), figureSize, figureSize);
+      });
+      return true;
+    } else if (data.tokensCouldBeUpdated()) { // done in CascadiaData.java
+      context.renderFrame(graphics -> {
+        restartRectangleWithText(graphics, "Click here to change", figureSize / 2, figureSize / 2,
+            fontSize, (int) (figureSize * 3.5), figureSize * 10, figureSize * 8, Color.BLACK);
+      });
 
-              }
-
-              }else {
-                var animal = cell.getAnimal();
-                int scaledTokenSize = (int) (figureSize / 1.5);
-                var xAnimal = (int) (x - figureSize / 3);
-                var yAnimal = (int) (y - figureSize / 3); // + (placement * figureSize / 5)
-                // placement++;
-
-                switch (animal) {
-                case BEAR->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal,
-                    scaledTokenSize, scaledTokenSize);
-                case ELK->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal,
-                    scaledTokenSize, scaledTokenSize);
-                case SALMON->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal,
-                    scaledTokenSize, scaledTokenSize);
-                case HAWK->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal,
-                    scaledTokenSize, scaledTokenSize);
-                case FOX->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal,
-                    scaledTokenSize, scaledTokenSize);}
-                  ;}
-                  // drawSquare(graphics, cell.getCoordinates().x(), cell.getCoordinates().y(),
-                  // figureSize, Color.RED);
-                  // System.out.println(cell.toString());
-                  }
-
-                  }
-
-                  }
-
-                  // comment
-                  private static void showGameBoard(Graphics2D graphics, GameBoard board,
-                      int figureSize, int tokenSize /* int width, int height, int margin */
-                  ) {
-                    final var RECTANGLE_X_OFFSET = 1.8f;
-                    final var ROW_MULTIPLIER = 1.8f;
-                    final var CIRCLE_X_OFFSET = 1.05f;
-
-                    var baseXOffset = (int) (figureSize / RECTANGLE_X_OFFSET); // common X offset
-                                                                               // for both shapes
-
-                    var listOfTiles = board.getCopyOfTiles();
-                    var listOfTokens = board.getCopyOfTokens();
-
-                    var images = new ImageLoader("img/tokens", "bear.png", "elk.png", "hawk.png",
-                        "fox.png", "salmon.png");
-
-                    for (var i = 1; i <= 4; ++i) {
-                      var yPosition = (int) (figureSize * ROW_MULTIPLIER * i);
-
-                      var scaledTokenSize = (int) (tokenSize / 1.5);
-                      // calculate circle position relative to rectangle
-                      // var halfFigureSize = figureSize / 2f;
-                      // var halfTokenSize = tokenSize / 2f;
-                      // var circleX = (int) (baseXOffset + (figureSize * CIRCLE_X_OFFSET) +
-                      // halfFigureSize); // centered X for circle
-                      // var circleY = (int) (yPosition + halfFigureSize); // centered Y for circle
-                      var circleX = (int) (baseXOffset + (figureSize * CIRCLE_X_OFFSET)
-                          + tokenSize / 5); // centered X
-                                            // for circle
-                      var circleY = (int) (yPosition + tokenSize / 5); // centered Y for circle
-
-                      var tile = listOfTiles.get(i - 1);
-
-                      // draw Habitat tile (rectangle)
-                      switch (tile.firstHabitat()) {
-                      case FOREST->drawRectangle(graphics, baseXOffset, yPosition, figureSize,
-                          figureSize, COLOR_FOREST);
-                      case WETLAND->drawRectangle(graphics, baseXOffset, yPosition, figureSize,
-                          figureSize, COLOR_WETLAND);
-                      case MOUNTAIN->drawRectangle(graphics, baseXOffset, yPosition, figureSize,
-                          figureSize, COLOR_MOUNTAIN);
-                      case RIVER->drawRectangle(graphics, baseXOffset, yPosition, figureSize,
-                          figureSize, COLOR_RIVER);
-                      case PRAIRIE -> drawRectangle(graphics, baseXOffset, yPosition, figureSize,
-                          figureSize, COLOR_PRAIRIE);
+      // to check coordinates from user
+      var userCoordinates = getCoordinatesFromUser(context, width, height);
+      if (userCoordinates == null) {
+        System.err.println("Coordinates are invalid 1"); /* for tests, to delete later */
+        return false;
       }
 
-      int placement = 0;
-      for (var animal :
-      tile.animals()) {
-        var scale = (int) (figureSize / 2);
-        var xAnimal = (int) ((baseXOffset + figureSize / 20) + placement * (figureSize / 2.5));
-        var yAnimal = (int) (yPosition + figureSize / 4); // + (placement * figureSize / 5)
-        placement++;
+      // drawRectangle(context, (int) (figureSize / 5), 0,
+      // (int) (figureSize * 3.3), (int) (figureSize * 0.8),
+      // Color.BLACK);
 
-        switch (animal) {
-        case BEAR->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scale,
-            scale);
-        case ELK->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scale,
-            scale);
-        case SALMON->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scale,
-            scale);
-        case HAWK->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scale,
-            scale);
-        case FOX->drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scale,
-            scale);}
-          ;}
-
-          var token = listOfTokens.get(i - 1); // BEAR, ELK, SALMON, HAWK, FOX
-          // draw Wildlife token (circle)
-          // drawCircle(context, circleX, circleY, tokenSize, Color.RED);
-
-          // case BEAR -> drawCircle(context, circleX, circleY, tokenSize, Color.RED);
-          // case ELK -> drawCircle(context, circleX, circleY, tokenSize, Color.BLUE);
-          // case SALMON -> drawCircle(context, circleX, circleY, tokenSize, Color.GREEN);
-          // case HAWK -> drawCircle(context, circleX, circleY, tokenSize, Color.YELLOW);
-          // case FOX -> drawCircle(context, circleX, circleY, tokenSize, Color.CYAN);
-
-          switch (token) {
-          case BEAR->drawImage(graphics, images.image(token.ordinal()), circleX, circleY,
-              scaledTokenSize, scaledTokenSize);
-          case ELK->drawImage(graphics, images.image(token.ordinal()), circleX, circleY,
-              scaledTokenSize, scaledTokenSize);
-          case SALMON->drawImage(graphics, images.image(token.ordinal()), circleX, circleY,
-              scaledTokenSize, scaledTokenSize);
-          case HAWK->drawImage(graphics, images.image(token.ordinal()), circleX, circleY,
-              scaledTokenSize, scaledTokenSize);
-          case FOX -> drawImage(graphics, images.image(token.ordinal()), circleX, circleY,
-              scaledTokenSize, scaledTokenSize);}
-            ;
-
-            // do not delete this code for now ! it's for internal use and see where the
-            // lines are
-            if (i != 4) {
-              drawLine(graphics, (int) (figureSize / 3), (int) (yPosition + figureSize * 1.4), // y
-                                                                                               // (int)
-                                                                                               // (figureSize
-                                                                                               // *
-                                                                                               // 1.8f
-                                                                                               // *
-                                                                                               // i);
-                  (int) (figureSize / 3 + figureSize * 2.35), (int) (yPosition + figureSize * 1.4),
-                  Color.BLACK);
-            }
-
-            /*
-             * Previos code used for draw game board // drawRectangle(context, // (int)
-             * (figureSize / 1.8), // (int) ((figureSize * 1.8 * i) + (figureSize * 1.8)),
-             * // figureSize, figureSize, COLOR_RIVER); // drawCircle(context, // (int)
-             * (figureSize / 1.8 + (figureSize * 1.05)) + (figureSize / 2), // (int)
-             * ((figureSize * 1.8 * i) + (figureSize * 1.8)) + (figureSize / 2), // (int)
-             * tokenSize, Color.RED);
-             */
-            }
+      if (insideRectangle(userCoordinates.x(), userCoordinates.y(),
+          (int) (figureSize / 5), 0, (int) (figureSize * 3.3), (int) (figureSize * 0.8))) {
+        System.out.println("tokens are now updated");
+        data.updateTokens();
+      }
+      context.renderFrame(graphics -> {
+        drawRectangle(graphics, (int) (figureSize / 6), 0, (int) (figureSize * 3.5),
+            (int) (figureSize * 0.9), Color.WHITE);
+        showGameBoard(graphics, data.getGameBoard(), figureSize, figureSize);
+      });
+      return true;
+    }
+    return false;
   }
+
+  // private static int handleUserChoiceTileAndToken() {
+  // int choice;
+  // do {
+  // choice = Integer
+  // .parseInt(IO.readln("Please choose ONLY from 1 to 4 to take a couple: (Tile,
+  // Token)\n"));
+  // } while (!Constants.isValidChoice(choice));
+  // return choice;
+  // }
+
+
+  private void showPossibleTokenPlacement(
+    Graphics2D graphics, Player player, WildlifeType token,
+    int width, int height,
+    int figureSize, int tokenSize) {
+    Objects.requireNonNull(player, "player is null in showPossibleTokenPlacement()");
+    Objects.requireNonNull(token, "token is null in showPossibleTokenPlacement()");
+
+    var listOfCells = player.getEnvironment().getCells();
+
+    for (var cell : listOfCells) {
+      if (cell.isOccupiedByTile()) {
+        if (cell.canBePlaced(token)) {
+          var x = cell.getCoordinates().x();
+          var y = cell.getCoordinates().y();
+          // drawSquare(context,
+          // (int) ((x + width / 2 / figureSize) * figureSize + (figureSize / 2)),
+          // (int) ((y + height / 2 / figureSize) * figureSize + (figureSize / 2)),
+          // figureSize,
+          // Color.RED);
+          drawCircle(graphics,
+              (int) ((x + width / 2 / figureSize) * figureSize + (figureSize / 8.5)),
+              (int) ((y + height / 2 / figureSize) * figureSize + (figureSize / 8.5)),
+              (int) (tokenSize / 3),
+              Color.WHITE);
+        }
+      }
+    }
+  }
+
+  /**
+   * Handles the user's choice of tile and token.
+   * @param context
+   * @param player
+   * @param chosenTile
+   * @param width
+   * @param height
+   * @param figureSize
+   * @return true if the tile was placed successfully, false otherwise
+   */  
+  private boolean handleTilePlacement(
+      ApplicationContext context, Player player,
+      Tile chosenTile, int width, int height, int figureSize) {
+    Objects.requireNonNull(player);
+    Objects.requireNonNull(chosenTile);
+
+    /* player has to place tile correctly */
+    do {
+      var userCoordinates = getCoordinatesFromUser(context, width, height);
+      if (userCoordinates == null) {
+        System.err.println("Coordinates are invalid WHEN PLACING TILE"); /* for tests, to delete later */
+        return false;
+      }
+      var chosenCoordinates = new Coordinates(
+          (int) (userCoordinates.y() / figureSize - height / 2 / figureSize),
+          (int) (userCoordinates.x() / figureSize - width / 2 / figureSize));
+
+      System.err.println("Coordinates (TilePlacement) : (" +
+                chosenCoordinates.x() + ", " + chosenCoordinates.y() + ")");  /* for tests, to delete later */
+
+      if (data.placeTileIfPossible(chosenTile, chosenCoordinates)) {
+        return true;
+      }
+    } while (true);
+  }
+
+  private boolean handleTokenPlacement(
+      ApplicationContext context, Player player, WildlifeType chosenToken,
+      int width, int height, int figureSize, int tokenSize
+    ) {
+    context.renderFrame(graphics -> {
+      showPossibleTokenPlacement(graphics, player, chosenToken, width, height, figureSize, tokenSize);
+    });
+    var userCoordinates = getCoordinatesFromUser(context, width, height);
+    if (userCoordinates == null) {
+      System.err.println("Coordinates are invalid WHEN PLACING TOKEN"); /* for tests, to delete later */
+      return true;
+    }
+    System.err.println("Coordinates (TokenPlacement) : (" + userCoordinates.x() + "," + userCoordinates.y() + ")");
+    var chosenCoordinates = new Coordinates(
+        (int) ((userCoordinates.y() / figureSize) - height / 2 / figureSize),
+        (int) ((userCoordinates.x() / figureSize) - width / 2 / figureSize));
+
+    var tokenWasPlaced = data.placeAnimalIfPossible(chosenToken, chosenCoordinates);
+    /* for tests, to delete later */
+    System.err.println(tokenWasPlaced ? "Token was placed successfully" : "Token wasn't placed");
+    return tokenWasPlaced;
+  }
+
+  private void drawString(Graphics2D graphics, String text, int x, int y, int fontSize, Color color) {
+    graphics.setColor(color);
+    // https://stackoverflow.com/questions/18249592/how-to-change-font-size-in-drawstring-java
+    // graphics.setFont(new Font("Arial", Font.PLAIN, fontSize));
+    graphics.setFont(new Font("Arial", Font.BOLD, fontSize));
+    graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    graphics.drawString(text, x, y);
+  }
+
+
+  private String askName(ApplicationContext context) {
+    var name = IO.readln("What is your name?");
+    context.renderFrame(graphics -> {
+      graphics.setColor(Color.WHITE);
+      graphics.fill(new Rectangle2D.Float(0, 0, 800, 600));
+    });
+    return name;
+  }
+
+
+  private static boolean insideRectangle(int x, int y, int x1, int y1, int x2, int y2) {
+    return x >= x1 && x <= x2 && 
+           y >= y1 && y <= y2;
+  }
+
+
+
+  private int indexOfGameBoardCouple(
+    ApplicationContext context, int x, int y, int figureSize, int environmentSquareWidth) {
+    for (var index = 0; index < 4; ++index) {
+      int[] yOffsets = { figureSize,
+        (int) (figureSize * 3.2f),
+        (int) (figureSize * 5f),
+        (int) (figureSize * 6.8f) };
+        
+        int[] heights = { (int) (figureSize * 2.2f),
+          (int) (figureSize * 1.8f),
+          (int) (figureSize * 1.8f),
+          (int) (figureSize * 2.2f) };
+          
+      // to see their hitboxes
+      // Color[] colors = { Color.GREEN, Color.BLUE, Color.YELLOW, Color.GREEN };
+      // drawRectangle(context, figureSize / 3, yOffsets[index], (int)
+      // (environmentSquareWidth / 5), heights[index], colors[index]);
+
+      var x1 = figureSize / 3;
+      var y1 = yOffsets[index];
+      var x2 = x1 + (int) (environmentSquareWidth / 5);
+      var y2 = y1 + heights[index];
+      if (x >= x1 && x <= x2 &&
+          y >= y1 && y <= y2) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+
+  private void restartEnvironmentRectangle(Graphics2D graphics, 
+    int width, int height,
+    int environmentSquareWidth, int environmentSquareHeight) {
+    drawRoundRectangle(graphics,
+        width / 2 - (environmentSquareWidth / 2), // center of the screen - x
+        height / 2 - (environmentSquareHeight / 2), // center of the screen - y
+        environmentSquareWidth,
+        environmentSquareHeight,
+        environmentSquareWidth / 10,
+        environmentSquareHeight / 10,
+        Color.PINK);
+  }
+
+
+
+  private void restartGameBoardRectangle(Graphics2D graphics,
+    int figureSize, int environmentSquareHeight) {
+    drawRoundRectangle(graphics,
+        (int) (figureSize / 3), // width
+        figureSize, // height
+        (int) (figureSize * 2.35), // to think about coefficient
+        environmentSquareHeight,
+        figureSize,
+        environmentSquareHeight / 10,
+        Color.PINK);
+  }
+
+  private void restartScoringCardRectangle(Graphics2D graphics,
+    int width, int figureSize, int environmentSquareHeight) {
+    drawRoundRectangle(graphics,
+        width - (int) (figureSize * 2.35) - (int) (figureSize / 3), // width
+        figureSize, // height
+        (int) (figureSize * 2.35),
+        environmentSquareHeight,
+        figureSize,
+        environmentSquareHeight / 10,
+        Color.PINK);
+  }
+
+
+  private void restartRectangleWithText(
+    Graphics2D graphics, String text,
+    int x, int y, int fontSize, int width,
+    int environmentSquareWidth, int environmentSquareHeight, Color color) {
+    drawRoundRectangle(graphics,
+        width - (environmentSquareWidth / 3), // center of the screen - x
+        0, // center of the screen - y
+        environmentSquareWidth / 3,
+        environmentSquareHeight / 10,
+        environmentSquareWidth / 15,
+        environmentSquareHeight / 10,
+        Color.RED);
+
+    drawString(graphics, text, x, y, fontSize, color);
+  }
+
+
 
   /////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////

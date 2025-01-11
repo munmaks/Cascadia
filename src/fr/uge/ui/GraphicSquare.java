@@ -490,7 +490,7 @@ public class GraphicSquare {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private static void showEnvironment(Player player) {
-
+    ;
   }
 
   private static void showPossibleCoordinates(ApplicationContext context, Player player, int width, int height,
@@ -566,7 +566,7 @@ public class GraphicSquare {
     return false;
   }
 
-   // done in CascadiaData.java
+  // done in CascadiaData.java
   private static void handleTurnChange(Game game) {
     Objects.requireNonNull(game);
     game.turnManager().changePlayer();
@@ -819,14 +819,14 @@ public class GraphicSquare {
   // }
   // }
 
-  private static String askName(ApplicationContext context) {
-    var name = IO.readln("What is your name?");
-    context.renderFrame(graphics -> {
-      graphics.setColor(Color.WHITE);
-      graphics.fill(new Rectangle2D.Float(0, 0, 800, 600));
-    });
-    return name;
-  }
+  // private static String askName(ApplicationContext context) {
+  //   var name = IO.readln("What is your name?");
+  //   context.renderFrame(graphics -> {
+  //     graphics.setColor(Color.WHITE);
+  //     graphics.fill(new Rectangle2D.Float(0, 0, 800, 600));
+  //   });
+  //   return name;
+  // }
 
   private static boolean insideRectangle(int x, int y, int x1, int y1, int x2, int y2) {
     return x >= x1 && x <= x2 &&
