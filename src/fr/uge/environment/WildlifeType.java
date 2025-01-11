@@ -16,9 +16,5 @@ package fr.uge.environment;
  * </ul>
  */
 public enum WildlifeType {
-  BEAR,
-  ELK,
-  HAWK,
-  FOX,
-  SALMON
+  BEAR, ELK, HAWK, FOX, SALMON
 }

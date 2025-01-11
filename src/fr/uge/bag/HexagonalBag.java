@@ -1,5 +1,6 @@
 package fr.uge.bag;
 
+
 import fr.uge.environment.Tile;
 import fr.uge.environment.TileType;
 import fr.uge.environment.WildlifeType;
@@ -27,8 +28,7 @@ public final class HexagonalBag implements Bag {
    * FOX : 3 <br>
    * SALMON : 4 <br>
    */
-  private final int[] animals = {
-      Constants.ANIMALS_HEXAGONAL, /* BEAR */
+  private final int[] animals = {Constants.ANIMALS_HEXAGONAL, /* BEAR */
       Constants.ANIMALS_HEXAGONAL, /* ELK */
       Constants.ANIMALS_HEXAGONAL, /* HAWK */
       Constants.ANIMALS_HEXAGONAL, /* FOX */
@@ -61,9 +61,8 @@ public final class HexagonalBag implements Bag {
   }
 
   /**
-   * Decrease number of tiles in bag to maxTilesForGame
-   * Result: it takes only needed number of tiles for a game (depends on number of
-   * players)
+   * Decrease number of tiles in bag to maxTilesForGame Result: it takes only
+   * needed number of tiles for a game (depends on number of players)
    */
   // private void decreaseNumberOfTiles() {
   // int currentNumberOfTiles = this.maxTilesTotal;
@@ -74,8 +73,8 @@ public final class HexagonalBag implements Bag {
   // }
 
   /**
-   * Initialize tiles for Hexagonal version
-   * throws IOException if file not found or can't be read
+   * Initialize tiles for Hexagonal version throws IOException if file not found
+   * or can't be read
    */
   private void initializeGame() throws IOException {
     readHabitatTilesThreeAnimals(); /* 15 tiles */
@@ -95,7 +94,8 @@ public final class HexagonalBag implements Bag {
   // }
   // }
 
-  private void readHabitatTilesThreeAnimals() throws IOException { /* tile, tile, animal, animal, animal */
+  private void readHabitatTilesThreeAnimals()
+      throws IOException { /* tile, tile, animal, animal, animal */
     UtilsBag.readTiles(Constants.PATH_HABITAT_TILE_THREE_ANIMALS,
         row -> tiles.add(getHabitatTile(row[0], row[1], row[2], row[3], row[4])));
   }
@@ -106,7 +106,8 @@ public final class HexagonalBag implements Bag {
   }
 
   private void readKeystoneTiles() throws IOException { /* tile, animal */
-    UtilsBag.readTiles(Constants.PATH_KEYSTONE_TILE, row -> tiles.add(getKeystoneTile(row[0], row[1])));
+    UtilsBag.readTiles(Constants.PATH_KEYSTONE_TILE,
+        row -> tiles.add(getKeystoneTile(row[0], row[1])));
   }
 
   // private void readHabitatTilesThreeAnimals() throws IOException { /* tile,
@@ -122,8 +123,8 @@ public final class HexagonalBag implements Bag {
   // }
 
   /**
-   * read all keystone tiles in `tiles`.
-   * throws IOException if file not found or can't be read
+   * read all keystone tiles in `tiles`. throws IOException if file not found or
+   * can't be read
    */
   // private void readKeystoneTiles() throws IOException { /* tile, animal */
   // readTiles(Constants.PATH_KEYSTONE_TILE, row -> getKeystoneTile(row[0],
@@ -195,9 +196,7 @@ public final class HexagonalBag implements Bag {
    * @return one KeystoneTile from array `tiles`
    */
   private static Tile getKeystoneTile(String tile, String animal) {
-    return new Tile(
-        TileType.valueOf(tile),
-        TileType.valueOf(tile),
+    return new Tile(TileType.valueOf(tile), TileType.valueOf(tile),
         Set.of(WildlifeType.valueOf(animal)));
   }
 
@@ -211,9 +210,7 @@ public final class HexagonalBag implements Bag {
   private Tile getHabitatTile(String firstTile, String secondTile, String... animals) {
     var firstHabitat = TileType.valueOf(firstTile);
     var secondHabitat = TileType.valueOf(secondTile);
-    var setAnimals = Arrays.stream(animals)
-        .map(WildlifeType::valueOf)
-        .collect(Collectors.toSet());
+    var setAnimals = Arrays.stream(animals).map(WildlifeType::valueOf).collect(Collectors.toSet());
     return new Tile(firstHabitat, secondHabitat, setAnimals);
   }
 
@@ -255,9 +252,7 @@ public final class HexagonalBag implements Bag {
    * @return WildlifeType - the randomly selected token.
    */
   @Override
-  public final WildlifeType getRandomToken() {
-    return UtilsBag.getRandomToken(this.animals);
-  }
+  public final WildlifeType getRandomToken() { return UtilsBag.getRandomToken(this.animals); }
 
   @Override
   public String toString() {

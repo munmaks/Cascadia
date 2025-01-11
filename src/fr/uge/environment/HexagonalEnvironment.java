@@ -1,5 +1,6 @@
 package fr.uge.environment;
 
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,7 +44,8 @@ public final class HexagonalEnvironment implements Environment {
    * <br>
    * Source: https://www.redblobgames.com/grids/hexagons/#neighbors-offset </b>
    */
-  public static final int[][][] HEXAGONE_DIRECTION_DIFFERENCES = {{{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 0}, {0, -1}},
+  public static final int[][][] HEXAGONE_DIRECTION_DIFFERENCES = {
+      {{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 0}, {0, -1}},
       {{0, -1}, {-1, 0}, {0, 1}, {1, 1}, {1, 0}, {1, -1}}};
 
   public HexagonalEnvironment() {
@@ -105,7 +107,10 @@ public final class HexagonalEnvironment implements Environment {
   @Override
   public List<Cell> getNeighbors(Cell cell) {
     Objects.requireNonNull(cell, "Cell can't be null in getNeighbors()");
-    return IntStream.range(0, HexagonalEnvironment.HEXAGONE_DIRECTION_DIFFERENCES[cell.getCoordinates().y() & 1].length)
+    return IntStream
+        .range(0,
+            HexagonalEnvironment.HEXAGONE_DIRECTION_DIFFERENCES[cell.getCoordinates().y()
+                & 1].length)
         .mapToObj(direction -> getOneNeighbor(cell, direction))
         // .filter(Objects::nonNull) // no need to filter, because we create new cell if
         // not exists
@@ -189,9 +194,7 @@ public final class HexagonalEnvironment implements Environment {
 
   /* gets all tiles in the environment */
   @Override
-  public final List<Cell> getCells() {
-    return List.copyOf(this.cellsMap.values());
-  }
+  public final List<Cell> getCells() { return List.copyOf(this.cellsMap.values()); }
 
   @Override
   public final Set<Coordinates> getPossibleCells() {
@@ -273,11 +276,13 @@ public final class HexagonalEnvironment implements Environment {
     if (!tileType.equals(cell.getTile().firstHabitat())) {
       return 0;
     } /* not the same tile */
-    return 1 + getNeighbors(cell).stream().mapToInt(neighbor -> dfs(tileType, neighbor, visited)).max().orElse(0);
+    return 1 + getNeighbors(cell).stream().mapToInt(neighbor -> dfs(tileType, neighbor, visited))
+        .max().orElse(0);
   }
 
   private int calculateScoreTileType(TileType tileType) {
-    return this.cellsMap.values().stream().mapToInt(cell -> dfs(tileType, cell, new HashSet<>())).max().orElse(0);
+    return this.cellsMap.values().stream().mapToInt(cell -> dfs(tileType, cell, new HashSet<>()))
+        .max().orElse(0);
   }
 
   @Override

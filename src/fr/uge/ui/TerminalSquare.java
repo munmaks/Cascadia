@@ -1,5 +1,6 @@
 package fr.uge.ui;
 
+
 import fr.uge.core.*;
 import fr.uge.environment.Coordinates;
 import fr.uge.environment.Tile; // enable preview
@@ -22,9 +23,7 @@ final class TerminalSquare {
     // throw new IllegalStateException("Utility class, cannot be instantiated");
   }
 
-  private String readName(int num) {
-    return IO.readln("Player " + num + ", what's your name? ");
-  }
+  private String readName(int num) { return IO.readln("Player " + num + ", what's your name? "); }
 
   /**
    * 1 for Family, 2 for Intermediate Still need to improve it
@@ -130,7 +129,8 @@ final class TerminalSquare {
       System.out.println("Tokens were updated, because one token had 4 occurences");
       showGameBoard(game.board());
     } else if (game.board().tokensCanBeUpdated()) {
-      var stringTokensToChange = IO.readln("Enter `yes` if you want to change the tokens, otherwise press enter ");
+      var stringTokensToChange = IO
+          .readln("Enter `yes` if you want to change the tokens, otherwise press enter ");
       try (Scanner s = new Scanner(stringTokensToChange)) {
         if (s.hasNext() && "yes".equals(s.next())) {
           System.out.println("tokens are now updated");
@@ -144,14 +144,16 @@ final class TerminalSquare {
   private int handleUserChoiceTileAndToken() {
     int choice;
     do {
-      choice = Integer.parseInt(IO.readln("Please choose ONLY from 1 to 4 to take a couple: (Tile, Token)\n"));
+      choice = Integer
+          .parseInt(IO.readln("Please choose ONLY from 1 to 4 to take a couple: (Tile, Token)\n"));
     } while (!Constants.isValidChoice(choice));
     return choice;
   }
 
   private void handleTurnChange(Game game) {
     Objects.requireNonNull(game);
-    game.board().setDefaultTokensAreUpdated(); // that means, next person can change tokens (if needed)
+    game.board().setDefaultTokensAreUpdated(); // that means, next person can change tokens (if
+                                               // needed)
     game.turnManager().changePlayer();
     game.turnManager().nextTurn();
   }
@@ -164,8 +166,8 @@ final class TerminalSquare {
     System.out.println("Now you need to place the wildlife token: " + chosedToken.toString());
     showPossibleTokenPlacement(player, chosedToken);
 
-    var userCoordinatesString = IO
-        .readln("Give me coordinates of tile, that you want to place the token on (format: \"x, y\"): ");
+    var userCoordinatesString = IO.readln(
+        "Give me coordinates of tile, that you want to place the token on (format: \"x, y\"): ");
 
     var userCoordinates = getCoordinatesFromUser(userCoordinatesString);
     var currCell = player.getEnvironment().getCell(userCoordinates);
@@ -183,11 +185,12 @@ final class TerminalSquare {
 
     /* player has to place tile correctly */
     do {
-      var userCoordinatesString = IO
-          .readln("Give me coordinates of cell, that you want to place the tile on (format: \"x, y\"): ");
+      var userCoordinatesString = IO.readln(
+          "Give me coordinates of cell, that you want to place the tile on (format: \"x, y\"): ");
       var userCoordinates = getCoordinatesFromUser(userCoordinatesString);
 
-      if (possibleCoordinates.stream().anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
+      if (possibleCoordinates.stream()
+          .anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
         var currCell = player.getEnvironment().getCell(userCoordinates);
         if (player.getEnvironment().placeTile(currCell, chosedTile)) {
           System.out.println("Tile was placed successfully"); // for test, to delete later
@@ -209,7 +212,8 @@ final class TerminalSquare {
     Objects.requireNonNull(scoreTile);
     var builder = new StringBuilder();
     for (var entry : scoreTile.entrySet()) {
-      builder.append(entry.getKey().toString()).append(": ").append(entry.getValue()).append(" pts\n");
+      builder.append(entry.getKey().toString()).append(": ").append(entry.getValue())
+          .append(" pts\n");
     }
     return builder.toString();
   }
@@ -222,7 +226,8 @@ final class TerminalSquare {
       var map = card.getWildlifeTokenMap(player.getEnvironment(), value);
       for (var entry : map.entrySet()) {
         System.out.println("For " + value.toString() + ": " + entry.getKey().toString() + ": "
-            + card.getFamilyAndIntermediateGroupSizeToPoints(entry.getKey()) * entry.getValue() + " points");
+            + card.getFamilyAndIntermediateGroupSizeToPoints(entry.getKey()) * entry.getValue()
+            + " points");
       }
     }
   }
@@ -237,7 +242,8 @@ final class TerminalSquare {
     System.out.println("Based on the scoring card: \n" + showScoreTile(scoreTile) + "\n");
 
     showTokensMap(player, card);
-    System.out.println("\n" + player.getName() + " your final score: " + (score + player.calculateScore()));
+    System.out.println(
+        "\n" + player.getName() + " your final score: " + (score + player.calculateScore()));
   }
 
   private void calculateAndShowScore(Game game, int familyOrIntermediate) {
@@ -278,7 +284,8 @@ final class TerminalSquare {
     var firstPlayerName = readName(1);
     var secondPlayerName = readName(2);
     var familyOrIntermediate = chooseVersion();
-    System.out.println("You have chosen " + (familyOrIntermediate == 1 ? "Family" : "Intermediate") + " Scoring Card");
+    System.out.println("You have chosen " + (familyOrIntermediate == 1 ? "Family" : "Intermediate")
+        + " Scoring Card");
 
     System.out.println("The game is starting!");
     var player1 = new Player(firstPlayerName, Constants.VERSION_SQUARE);

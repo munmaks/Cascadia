@@ -8,12 +8,9 @@ package fr.uge.environment;
  */
 public record Coordinates(int y, int x) {
 
-  public Coordinates {
-  }
+  public Coordinates {}
 
   @Override
-  public final String toString() {
-    return "(" + x + ", " + y + ")";
-  }
+  public final String toString() { return "(" + x + ", " + y + ")"; }
 
 }

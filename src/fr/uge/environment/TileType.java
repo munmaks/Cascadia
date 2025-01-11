@@ -16,9 +16,5 @@ package fr.uge.environment;
  * </ul>
  */
 public enum TileType {
-  FOREST,
-  WETLAND,
-  MOUNTAIN,
-  RIVER,
-  PRAIRIE
+  FOREST, WETLAND, MOUNTAIN, RIVER, PRAIRIE
 }
