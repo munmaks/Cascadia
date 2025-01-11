@@ -26,8 +26,7 @@ public final class HexagonalEnvironment implements Environment {
   private final HashMap<Coordinates, Cell> cellsMap;
 
   /**
-   * <b>
-   * Direction offsets based on "odd-r" layout<br>
+   * <b> Direction offsets based on "odd-r" layout<br>
    * (x, y)</b><br>
    * <br>
    * even rows<br>
@@ -36,26 +35,16 @@ public final class HexagonalEnvironment implements Environment {
    * ( 0, 1), ( 1, 0), ( 0, -1) right habitat: (right down, right, right up)<br>
    * }<br>
    * <br>
-   *
    * odd rows<br>
    * {<br>
    * ( 0, -1), (-1, 0), ( 0, 1), left habitat: (left up, left, left down)<br>
    * ( 1, 1), ( 1, 0), ( 1, -1) right habitat: (right down, right, right up)<br>
    * }<br>
    * <br>
-   * Source: https://www.redblobgames.com/grids/hexagons/#neighbors-offset
-   * </b>
+   * Source: https://www.redblobgames.com/grids/hexagons/#neighbors-offset </b>
    */
-  public static final int[][][] HEXAGONE_DIRECTION_DIFFERENCES = {
-      {
-          { -1, -1 }, { -1, 0 }, { -1, 1 },
-          { 0, 1 }, { 1, 0 }, { 0, -1 }
-      },
-      {
-          { 0, -1 }, { -1, 0 }, { 0, 1 },
-          { 1, 1 }, { 1, 0 }, { 1, -1 }
-      }
-  };
+  public static final int[][][] HEXAGONE_DIRECTION_DIFFERENCES = {{{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 0}, {0, -1}},
+      {{0, -1}, {-1, 0}, {0, 1}, {1, 1}, {1, 0}, {1, -1}}};
 
   public HexagonalEnvironment() {
     /*
@@ -71,8 +60,7 @@ public final class HexagonalEnvironment implements Environment {
     var parity = cell.getCoordinates().y() & 1; /* parity: 0 - even rows, 1 - odd rows */
     var diff = HexagonalEnvironment.HEXAGONE_DIRECTION_DIFFERENCES[parity][direction];
 
-    return new Coordinates(
-        cell.getCoordinates().y() + diff[1], /* neighborRow */
+    return new Coordinates(cell.getCoordinates().y() + diff[1], /* neighborRow */
         cell.getCoordinates().x() + diff[0] /* neighborCol */
     );
   }
@@ -84,8 +72,7 @@ public final class HexagonalEnvironment implements Environment {
     if (!cell.isOccupiedByTile()) {
       return new HexagonalCell(currCoordinates); // without adding into hashmap
     }
-    return this.cellsMap.computeIfAbsent(
-        currCoordinates, /* neighbor coordinates */
+    return this.cellsMap.computeIfAbsent(currCoordinates, /* neighbor coordinates */
         HexagonalCell::new /* create new cell if not exists */
     );
 
@@ -182,9 +169,8 @@ public final class HexagonalEnvironment implements Environment {
   /**
    * Determine possibility to placed a wildlife token on player's environment.
    * Map.computeIfAbsent() - if the specified key is not already associated with a
-   * value (or is mapped to null),
-   * attempts to compute its value using the given mapping function and enters it
-   * into this map unless null.
+   * value (or is mapped to null), attempts to compute its value using the given
+   * mapping function and enters it into this map unless null.
    */
   @Override
   public final Cell getCell(Coordinates coordinates) {
@@ -228,9 +214,8 @@ public final class HexagonalEnvironment implements Environment {
   // }
 
   /**
-   * To improve and not to use in hexagonal version
-   * Be aware, need to update interface and delete this methode from it
-   * 
+   * To improve and not to use in hexagonal version Be aware, need to update
+   * interface and delete this methode from it
    */
   @Override
   public void printAllNeighbors(Coordinates coordinates) {
@@ -278,8 +263,8 @@ public final class HexagonalEnvironment implements Environment {
 
   private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
     /*
-     * we don't need Objects.requireNonNull(...) because it's internal method
-     * and we know that tileType, cell and visited are not null
+     * we don't need Objects.requireNonNull(...) because it's internal method and we
+     * know that tileType, cell and visited are not null
      */
     if (cell.getTile() == null || visited.contains(cell)) {
       return 0;
@@ -288,27 +273,18 @@ public final class HexagonalEnvironment implements Environment {
     if (!tileType.equals(cell.getTile().firstHabitat())) {
       return 0;
     } /* not the same tile */
-    return 1 + getNeighbors(cell).stream()
-        .mapToInt(neighbor -> dfs(tileType, neighbor, visited))
-        .max()
-        .orElse(0);
+    return 1 + getNeighbors(cell).stream().mapToInt(neighbor -> dfs(tileType, neighbor, visited)).max().orElse(0);
   }
 
   private int calculateScoreTileType(TileType tileType) {
-    return this.cellsMap.values().stream()
-        .mapToInt(cell -> dfs(tileType, cell, new HashSet<>()))
-        .max()
-        .orElse(0);
+    return this.cellsMap.values().stream().mapToInt(cell -> dfs(tileType, cell, new HashSet<>())).max().orElse(0);
   }
 
   @Override
   public final Map<TileType, Integer> calculateTileScore() {
-    return Collections.unmodifiableMap(
-        Arrays.stream(TileType.values())
-            .collect(Collectors.toMap(
-                tileType -> tileType,
-                tileType -> calculateScoreTileType(tileType) // this::calculateScoreTileType
-            )));
+    return Collections.unmodifiableMap(Arrays.stream(TileType.values())
+        .collect(Collectors.toMap(tileType -> tileType, tileType -> calculateScoreTileType(tileType) // this::calculateScoreTileType
+        )));
   }
 
   // @Override

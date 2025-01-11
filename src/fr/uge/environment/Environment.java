@@ -5,23 +5,23 @@ import java.util.Map;
 import java.util.Set;
 
 public sealed interface Environment permits SquareEnvironment, HexagonalEnvironment {
-    Cell getCell(Coordinates coordinates);
+  Cell getCell(Coordinates coordinates);
 
-    List<Cell> getCells();
+  List<Cell> getCells();
 
-    boolean placeTile(Cell cell, Tile tile);
+  boolean placeTile(Cell cell, Tile tile);
 
-    boolean placeAnimal(Cell cell, WildlifeType token);
+  boolean placeAnimal(Cell cell, WildlifeType token);
 
-    Set<Coordinates> getPossibleCells();
+  Set<Coordinates> getPossibleCells();
 
-    Cell getOneNeighbor(Cell cell, int direction);
+  Cell getOneNeighbor(Cell cell, int direction);
 
-    List<Cell> getNeighbors(Cell cell);
+  List<Cell> getNeighbors(Cell cell);
 
-    boolean canBePlacedWildlifeToken(WildlifeType token);
+  boolean canBePlacedWildlifeToken(WildlifeType token);
 
-    Map<TileType, Integer> calculateTileScore();
+  Map<TileType, Integer> calculateTileScore();
 
-    void printAllNeighbors(Coordinates coordinates); // for terminal version, to think if we can do better
+  void printAllNeighbors(Coordinates coordinates); // for terminal version, to think if we can do better
 }
