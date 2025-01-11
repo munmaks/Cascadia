@@ -1,5 +1,6 @@
 package fr.uge.bag;
 
+
 import fr.uge.environment.Tile;
 import fr.uge.environment.TileType;
 import fr.uge.environment.WildlifeType;
@@ -9,7 +10,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Set;
 
-// add generics: 
+// add generics:
 // Bag of Animals
 // Bag of Tiles
 // to think well how to implement it
@@ -23,8 +24,7 @@ public final class SquareBag implements Bag {
    * FOX : 3 <br>
    * SALMON : 4 <br>
    */
-  private final int[] animals = {
-      Constants.ANIMALS_SQUARE, /* BEAR */
+  private final int[] animals = {Constants.ANIMALS_SQUARE, /* BEAR */
       Constants.ANIMALS_SQUARE, /* ELK */
       Constants.ANIMALS_SQUARE, /* HAWK */
       Constants.ANIMALS_SQUARE, /* FOX */
@@ -57,8 +57,8 @@ public final class SquareBag implements Bag {
   }
 
   /**
-   * Decrease number of tiles in bag to maxTilesForGame
-   * Result: it takes one tile from the bag
+   * Decrease number of tiles in bag to maxTilesForGame Result: it takes one tile
+   * from the bag
    */
   // private void decreaseNumberOfTiles() {
   // int currentNumberOfTiles = SquareBag.MAX_TILES_FOR_GAME;
@@ -69,16 +69,17 @@ public final class SquareBag implements Bag {
   // }
 
   /**
-   * Initialize tiles for Square version
-   * throws IOException if file not found or can't be read
+   * Initialize tiles for Square version throws IOException if file not found or
+   * can't be read
    */
   private void initializeGame() throws IOException {
-    UtilsBag.readTiles(Constants.PATH_HABITAT_TILE_SQUARE, row -> tiles.add(getSquareTiles(row[0], row[1], row[2])));
+    UtilsBag.readTiles(Constants.PATH_HABITAT_TILE_SQUARE,
+        row -> tiles.add(getSquareTiles(row[0], row[1], row[2])));
   }
 
   /**
-   * read all square tiles from config files into `tiles` variable.
-   * throws IOException if file not found or can not be read
+   * read all square tiles from config files into `tiles` variable. throws
+   * IOException if file not found or can not be read
    */
 
   /**
@@ -108,15 +109,15 @@ public final class SquareBag implements Bag {
   }
 
   /**
-   * Gives 3 random tiles from the bag
-   * There no keystone tiles in the square version
+   * Gives 3 random tiles from the bag There no keystone tiles in the square
+   * version
    * 
    * @return array of 3 random tiles
    */
   @Override
   public Tile[] getStarter() {
     /* topTile leftTile rightTile */
-    return new Tile[] { getRandomTile(), getRandomTile(), getRandomTile() };
+    return new Tile[] {getRandomTile(), getRandomTile(), getRandomTile()};
   }
 
   /************************ TOKENS ****************************/
@@ -145,9 +146,7 @@ public final class SquareBag implements Bag {
   // }
 
   @Override
-  public final WildlifeType getRandomToken() {
-    return UtilsBag.getRandomToken(this.animals);
-  }
+  public final WildlifeType getRandomToken() { return UtilsBag.getRandomToken(this.animals); }
 
   // return getRandomTokenStream()
   // .findFirst()

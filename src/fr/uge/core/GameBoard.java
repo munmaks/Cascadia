@@ -1,5 +1,6 @@
 package fr.uge.core;
 
+
 import fr.uge.bag.Bag;
 import fr.uge.bag.HexagonalBag;
 import fr.uge.bag.SquareBag;
@@ -32,14 +33,8 @@ public final class GameBoard {
   // WildlifeScoringCard[Constants.NB_SCORING_CARDS];
 
   /*
-   * <p>Indexes for WildlifeType `enum`:</p>
-   * <ul>
-   * <li>BEAR : 0</li>
-   * <li>ELK : 1</li>
-   * <li>HAWK : 2</li>
-   * <li>FOX : 3</li>
-   * <li>SALMON : 4</li>
-   * </ul>
+   * <p>Indexes for WildlifeType `enum`:</p> <ul> <li>BEAR : 0</li> <li>ELK :
+   * 1</li> <li>HAWK : 2</li> <li>FOX : 3</li> <li>SALMON : 4</li> </ul>
    */
   /**
    * This constructor is used to initialise the tiles and tokens on the board.
@@ -54,7 +49,8 @@ public final class GameBoard {
     if (Constants.isInvalidSquareNbPlayers(nbPlayers, version)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_SQUARE_NUMBER_OF_PLAYERS);
     }
-    this.bag = (version == Constants.VERSION_HEXAGONAL) ? new HexagonalBag(nbPlayers) : new SquareBag(nbPlayers);
+    this.bag = (version == Constants.VERSION_HEXAGONAL) ? new HexagonalBag(nbPlayers)
+        : new SquareBag(nbPlayers);
     // this.deck = new Deck(version);
     for (int i = 0; i < Constants.TILES_ON_BOARD; ++i) {
       GameBoard.tiles.add(this.bag.getRandomTile());
@@ -73,13 +69,12 @@ public final class GameBoard {
   }
 
   /**
-   * This method is used to determine which token needs to be updated.
-   * if there's a token with 3 or more occurrences, we return it.
+   * This method is used to determine which token needs to be updated. if there's
+   * a token with 3 or more occurrences, we return it.
    */
   private Optional<WildlifeType> getTokenToUpdate() {
     map.clear();
-    return GameBoard.tokens.stream()
-        .filter(token -> map.merge(token, 1, Integer::sum) >= 3)
+    return GameBoard.tokens.stream().filter(token -> map.merge(token, 1, Integer::sum) >= 3)
         .findFirst();
   }
 
@@ -97,16 +92,12 @@ public final class GameBoard {
 
   /* to add later: using nature tokens for every player */
 
-  public final boolean areTokensUpdated() {
-    return this.tokensAreUpdated;
-  }
+  public final boolean areTokensUpdated() { return this.tokensAreUpdated; }
 
   /**
    * Turn Manager switch
    */
-  public final void setDefaultTokensAreUpdated() {
-    this.tokensAreUpdated = false;
-  }
+  public final void setDefaultTokensAreUpdated() { this.tokensAreUpdated = false; }
 
   // not usefull, because it's true when updateTokens() is called (so need to
   // change)
@@ -115,9 +106,7 @@ public final class GameBoard {
   // this.tokensAreUpdated = true;
   // }
 
-  private WildlifeType updateToken(WildlifeType token) {
-    return this.bag.updateToken(token);
-  }
+  private WildlifeType updateToken(WildlifeType token) { return this.bag.updateToken(token); }
 
   public final void updateTokens() {
     if (this.tokensAreUpdated) {
@@ -168,8 +157,6 @@ public final class GameBoard {
     return token;
   }
 
-  public Bag getBag() {
-    return this.bag;
-  }
+  public Bag getBag() { return this.bag; }
 
 }

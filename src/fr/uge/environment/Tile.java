@@ -1,19 +1,13 @@
 package fr.uge.environment;
 
+
 import java.util.Objects;
 import java.util.Set;
 
-public record Tile(
-    TileType firstHabitat,
-    TileType secondHabitat,
-    Set<WildlifeType> animals) {
+public record Tile(TileType firstHabitat, TileType secondHabitat, Set<WildlifeType> animals) {
   /*
-   * configTilesWithTwoAnimals.txt
-   * 45 Tiles : with two animals
-   * RIVER, PRAIRIE : BEAR, SALMON
-   * 
-   * configTilesWithThreeAnimals.txt
-   * 15 Tiles : with three animals
+   * configTilesWithTwoAnimals.txt 45 Tiles : with two animals RIVER, PRAIRIE :
+   * BEAR, SALMON configTilesWithThreeAnimals.txt 15 Tiles : with three animals
    * MOUNTAIN, WETLAND : ELK, HAWK, FOX
    **/
   public Tile {
@@ -25,12 +19,9 @@ public record Tile(
   /**
    * Check if the tile is a keystone tile
    * 
-   * @return <b>true</b> if the tile is a keystone tile
-   *         <b>false</b> otherwise
+   * @return <b>true</b> if the tile is a keystone tile <b>false</b> otherwise
    */
-  public final boolean isKeystone() {
-    return firstHabitat.equals(secondHabitat);
-  }
+  public final boolean isKeystone() { return firstHabitat.equals(secondHabitat); }
 
   /* to improve later */
   private String habitatsAndAnimalsAsString() {

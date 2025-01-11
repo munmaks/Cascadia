@@ -1,5 +1,6 @@
 package fr.uge.environment;
 
+
 import fr.uge.util.Constants;
 import java.util.Objects;
 
@@ -48,21 +49,15 @@ public final class HexagonalCell implements Cell {
   }
 
   @Override
-  public final int getNumberOfNeighbors() {
-    return Constants.NB_NEIGHBORS_HEXAGONAL;
-  }
+  public final int getNumberOfNeighbors() { return Constants.NB_NEIGHBORS_HEXAGONAL; }
 
   /*
    * @return possibility to place tile on the cell
    */
   @Override
-  public final boolean isOccupiedByTile() {
-    return this.occupiedByTile;
-  }
+  public final boolean isOccupiedByTile() { return this.occupiedByTile; }
 
-  private boolean isOccupiedByAnimal() {
-    return this.occupiedByAnimal;
-  }
+  private boolean isOccupiedByAnimal() { return this.occupiedByAnimal; }
 
   @Override
   public final boolean placeTile(Tile tileToPlace) {
@@ -76,14 +71,10 @@ public final class HexagonalCell implements Cell {
   }
 
   @Override
-  public final Tile getTile() {
-    return this.tile;
-  }
+  public final Tile getTile() { return this.tile; }
 
   @Override
-  public final WildlifeType getAnimal() {
-    return this.placedAnimal;
-  }
+  public final WildlifeType getAnimal() { return this.placedAnimal; }
 
   /**
    * Only in Hexagonal version
@@ -96,15 +87,14 @@ public final class HexagonalCell implements Cell {
    * Only in Hexagonal version
    */
   public final void turnСlockwise() {
-    this.currentRotation = (this.currentRotation - 1 + Constants.MAX_ROTATIONS) % Constants.MAX_ROTATIONS;
+    this.currentRotation = (this.currentRotation - 1 + Constants.MAX_ROTATIONS)
+        % Constants.MAX_ROTATIONS;
   }
 
   /**
    * Only in Hexagonal version
    */
-  public final int getRotation() {
-    return this.currentRotation;
-  }
+  public final int getRotation() { return this.currentRotation; }
 
   @Override
   public boolean canBePlaced(WildlifeType token) {
@@ -138,8 +128,6 @@ public final class HexagonalCell implements Cell {
   }
 
   @Override
-  public final Coordinates getCoordinates() {
-    return this.coordinates;
-  }
+  public final Coordinates getCoordinates() { return this.coordinates; }
 
 }

@@ -1,5 +1,6 @@
 package fr.uge.environment;
 
+
 import fr.uge.util.Constants;
 import java.util.Objects;
 
@@ -24,19 +25,13 @@ public final class SquareCell implements Cell {
   }
 
   @Override
-  public final int getNumberOfNeighbors() {
-    return Constants.NB_NEIGHBORS_SQUARE;
-  }
+  public final int getNumberOfNeighbors() { return Constants.NB_NEIGHBORS_SQUARE; }
 
   @Override
-  public final boolean isOccupiedByTile() {
-    return this.occupiedByTile;
-  }
+  public final boolean isOccupiedByTile() { return this.occupiedByTile; }
 
   @Override
-  public final Tile getTile() {
-    return this.tile;
-  }
+  public final Tile getTile() { return this.tile; }
 
   @Override
   public final boolean placeTile(Tile tileToPlace) {
@@ -50,13 +45,9 @@ public final class SquareCell implements Cell {
   }
 
   @Override
-  public final Coordinates getCoordinates() {
-    return this.coordinates;
-  }
+  public final Coordinates getCoordinates() { return this.coordinates; }
 
-  private boolean isOccupiedByAnimal() {
-    return this.occupiedByAnimal;
-  }
+  private boolean isOccupiedByAnimal() { return this.occupiedByAnimal; }
 
   @Override
   public boolean canBePlaced(WildlifeType token) {
@@ -74,7 +65,8 @@ public final class SquareCell implements Cell {
       return false; /* we don't place animal, and return false (it wasn't placed) */
     }
     if (!this.canBePlaced(token)) {
-      System.err.println(token + " can't be placed on this tile it accepts only: " + this.tile.animals());
+      System.err
+          .println(token + " can't be placed on this tile it accepts only: " + this.tile.animals());
       return false;
     }
     this.placedAnimal = token;
@@ -83,9 +75,7 @@ public final class SquareCell implements Cell {
   }
 
   @Override
-  public WildlifeType getAnimal() {
-    return this.placedAnimal;
-  }
+  public WildlifeType getAnimal() { return this.placedAnimal; }
 
   @Override
   public final String toString() {

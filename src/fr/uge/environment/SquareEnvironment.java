@@ -1,5 +1,6 @@
 package fr.uge.environment;
 
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,9 +30,7 @@ public final class SquareEnvironment implements Environment {
    * {1, 0} right <br>
    * {0, 1} up <br>
    */
-  private static final int[][] SQUARE_DIRECTION_DIFFERENCES = {
-      { -1, 0 }, { 0, -1 }, { 1, 0 }, { 0, 1 }
-  };
+  private static final int[][] SQUARE_DIRECTION_DIFFERENCES = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
 
   // private static final int SQUARE_NUMBER_OF_NEIGHBORS = 4;
 
@@ -50,26 +49,22 @@ public final class SquareEnvironment implements Environment {
    * 
    * @param cell      The cell for which to retrieve a neighbor.
    * @param direction The direction of the neighbor.
-   * 
    * @return The coordinates of the neighbor cell.
    */
   private Coordinates getNeighborCoordinates(Cell cell, int direction) {
     var diff = SquareEnvironment.SQUARE_DIRECTION_DIFFERENCES[direction];
-    return new Coordinates(
-        cell.getCoordinates().y() + diff[1], /* neighborRow */
+    return new Coordinates(cell.getCoordinates().y() + diff[1], /* neighborRow */
         cell.getCoordinates().x() + diff[0] /* neighborCol */
     );
   }
 
   /**
    * Map.computeIfAbsent() - if the specified key is not already associated with a
-   * value (or is mapped to null),
-   * attempts to compute its value using the given mapping function and enters it
-   * into this map unless null.
+   * value (or is mapped to null), attempts to compute its value using the given
+   * mapping function and enters it into this map unless null.
    * 
    * @param cell      The cell for which to retrieve a neighbor.
    * @param direction The direction of the neighbor.
-   * 
    * @return The neighbor cell.
    */
   @Override
@@ -79,8 +74,7 @@ public final class SquareEnvironment implements Environment {
     if (!cell.isOccupiedByTile()) {
       return new SquareCell(currCoordinates); // without adding into hashmap
     }
-    return this.cellsMap.computeIfAbsent(
-        currCoordinates, /* neighbor coordinates */
+    return this.cellsMap.computeIfAbsent(currCoordinates, /* neighbor coordinates */
         SquareCell::new /* create new cell if not exists */
     );
   }
@@ -89,7 +83,6 @@ public final class SquareEnvironment implements Environment {
    * <b>gets a copy of list of all valid neighbors for a given hex cell.</b>
    * 
    * @param cell The hex cell for which to retrieve neighbors.
-   * 
    * @return An immutable list of neighboring cells.
    */
   @Override
@@ -119,7 +112,6 @@ public final class SquareEnvironment implements Environment {
    * 
    * @param cell The cell on which to place the tile.
    * @param tile The tile to place.
-   * 
    * @return true if the tile was placed, false otherwise.
    */
   @Override
@@ -166,9 +158,8 @@ public final class SquareEnvironment implements Environment {
   /**
    * Determine possibility to placed a wildlife token on player's environment.
    * Map.computeIfAbsent() - if the specified key is not already associated with a
-   * value (or is mapped to null),
-   * attempts to compute its value using the given mapping function and enters it
-   * into this map unless null.
+   * value (or is mapped to null), attempts to compute its value using the given
+   * mapping function and enters it into this map unless null.
    */
   @Override
   public final Cell getCell(Coordinates coordinates) {
@@ -197,9 +188,7 @@ public final class SquareEnvironment implements Environment {
         .map(neighbor -> this.cellsMap.get(neighbor.getCoordinates())) // Map to the cell
         .filter(Objects::nonNull) // Filter out null cells
         .filter(cell -> cell.getTile() != null) // Filter cells with null tiles
-        .map(cell -> String.format("%8s  %8s  %6s",
-            coordinates,
-            cell.getTile(),
+        .map(cell -> String.format("%8s  %8s  %6s", coordinates, cell.getTile(),
             (cell.getAnimal() == null) ? "" : cell.getAnimal())) // Format the output string
         .forEach(System.out::println); // Print each formatted string
   }
@@ -238,23 +227,18 @@ public final class SquareEnvironment implements Environment {
   /*
    * private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
    * Objects.requireNonNull(tileType, "TileType can't be null in dfs()");
-   * Objects.requireNonNull(cell, "Cell can't be null in dfs()");
-   * if (cell.getTile() == null || visited.contains(cell)) { return 0; }
-   * visited.add(cell);
-   * if (!tileType.equals(cell.getTile().leftHabitat())) { return 0; }
-   * var score = 1;
-   * var neighbors = getNeighbors(cell);
-   * for (var neighbor : neighbors) {
-   * score += dfs(tileType, neighbor, visited);
-   * }
-   * return score;
-   * }
+   * Objects.requireNonNull(cell, "Cell can't be null in dfs()"); if
+   * (cell.getTile() == null || visited.contains(cell)) { return 0; }
+   * visited.add(cell); if (!tileType.equals(cell.getTile().leftHabitat())) {
+   * return 0; } var score = 1; var neighbors = getNeighbors(cell); for (var
+   * neighbor : neighbors) { score += dfs(tileType, neighbor, visited); } return
+   * score; }
    */
 
   private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
     /*
-     * we don't need Objects.requireNonNull(...) because it's internal method
-     * and we know that tileType, cell and visited are not null
+     * we don't need Objects.requireNonNull(...) because it's internal method and we
+     * know that tileType, cell and visited are not null
      */
     if (cell.getTile() == null || visited.contains(cell)) {
       return 0;
@@ -263,56 +247,36 @@ public final class SquareEnvironment implements Environment {
     if (!tileType.equals(cell.getTile().firstHabitat())) {
       return 0;
     } /* not the same tile */
-    return 1 + getNeighbors(cell).stream()
-        .mapToInt(neighbor -> dfs(tileType, neighbor, visited))
-        .max()
-        .orElse(0);
+    return 1 + getNeighbors(cell).stream().mapToInt(neighbor -> dfs(tileType, neighbor, visited))
+        .max().orElse(0);
   }
 
   private int calculateScoreTileType(TileType tileType) {
-    return this.cellsMap.values().stream()
-        .mapToInt(cell -> dfs(tileType, cell, new HashSet<>()))
-        .max()
-        .orElse(0);
+    return this.cellsMap.values().stream().mapToInt(cell -> dfs(tileType, cell, new HashSet<>()))
+        .max().orElse(0);
   }
 
   @Override
   public final Map<TileType, Integer> calculateTileScore() {
-    return Collections.unmodifiableMap(
-        Arrays.stream(TileType.values())
-            .collect(Collectors.toMap(
-                tileType -> tileType,
-                tileType -> calculateScoreTileType(tileType) // this::calculateScoreTileType
-            )));
+    return Collections.unmodifiableMap(Arrays.stream(TileType.values())
+        .collect(Collectors.toMap(tileType -> tileType, tileType -> calculateScoreTileType(tileType) // this::calculateScoreTileType
+        )));
   }
 
   /*
-   * @Override
-   * public final Map<TileType, Integer> calculateTileScore(){
-   * return Arrays.stream(TileType.values())
-   * .collect(Collectors.toMap(
-   * tileType -> tileType,
-   * tileType -> calculateScoreTileType(tileType) // this::calculateScoreTileType
-   * ));
-   * }
+   * @Override public final Map<TileType, Integer> calculateTileScore(){ return
+   * Arrays.stream(TileType.values()) .collect(Collectors.toMap( tileType ->
+   * tileType, tileType -> calculateScoreTileType(tileType) //
+   * this::calculateScoreTileType )); }
    */
 
   /*
-   * @Override
-   * public final Map<TileType, Integer> calculateTileScore() {
-   * var tileTypes = TileType.values();
-   * var allTiles = this.cellsMap.values();
-   * var map = new HashMap<TileType, Integer>();
-   * for (var tileType : tileTypes) {
-   * var score = 0;
-   * var visited = new HashSet<Cell>();
-   * for (var cell : allTiles) {
-   * score = Math.max(score, dfs(tileType, cell, visited));
-   * }
-   * map.put(tileType, score);
-   * }
-   * return map;
-   * }
+   * @Override public final Map<TileType, Integer> calculateTileScore() { var
+   * tileTypes = TileType.values(); var allTiles = this.cellsMap.values(); var map
+   * = new HashMap<TileType, Integer>(); for (var tileType : tileTypes) { var
+   * score = 0; var visited = new HashSet<Cell>(); for (var cell : allTiles) {
+   * score = Math.max(score, dfs(tileType, cell, visited)); } map.put(tileType,
+   * score); } return map; }
    */
 
 }

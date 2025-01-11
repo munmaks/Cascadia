@@ -1,5 +1,6 @@
 package fr.uge.ui;
 
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,7 +12,6 @@ import javax.imageio.ImageIO;
  * The ImageLoader class deals with retrieving and storing images from files.
  * 
  * @author vincent
- *
  */
 public class ImageLoader {
   /**
@@ -50,9 +50,10 @@ public class ImageLoader {
     Objects.requireNonNull(dirPath);
     Objects.requireNonNull(imagePath);
     var path = Path.of(dirPath + "/" + imagePath);
-    try (var input = Files.newInputStream(path)) {
+    try(var input=Files.newInputStream(path)) {
       images[position] = ImageIO.read(input);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
@@ -82,7 +83,5 @@ public class ImageLoader {
    * 
    * @return Number of image faces of stored.
    */
-  public int size() {
-    return images.length;
-  }
+  public int size() { return images.length; }
 }

@@ -1,5 +1,6 @@
 package fr.uge.core;
 
+
 import fr.uge.environment.Environment;
 import fr.uge.environment.HexagonalEnvironment;
 import fr.uge.environment.SquareEnvironment;
@@ -18,8 +19,8 @@ public final class Player {
   private int score = 0;
 
   /**
-   * To think later how we get here all wildlife scoring card?
-   * List, all in parameters or ...
+   * To think later how we get here all wildlife scoring card? List, all in
+   * parameters or ...
    */
   public Player(String name, int version) {
     if (!Constants.isValidVersion(version)) {
@@ -27,28 +28,20 @@ public final class Player {
     }
     this.name = Objects.requireNonNull(name, "Player name cannot be null");
 
-    this.environment = (version == Constants.VERSION_HEXAGONAL) ? new HexagonalEnvironment() : new SquareEnvironment();
+    this.environment = (version == Constants.VERSION_HEXAGONAL) ? new HexagonalEnvironment()
+        : new SquareEnvironment();
   }
 
-  public final Environment getEnvironment() {
-    return this.environment;
-  }
+  public final Environment getEnvironment() { return this.environment; }
 
-  public final int getNatureTokens() {
-    return this.natureTokens;
-  }
+  public final int getNatureTokens() { return this.natureTokens; }
 
-  public final String getName() {
-    return this.name;
-  }
+  public final String getName() { return this.name; }
 
-  public boolean canUseNatureTokens() {
-    return this.natureTokens > 0;
-  }
+  public boolean canUseNatureTokens() { return this.natureTokens > 0; }
 
   /**
-   * for later usage,
-   * decreases the number of nature tokens
+   * for later usage, decreases the number of nature tokens
    */
   public final boolean useNatureTokens() {
     if (!canUseNatureTokens()) {
@@ -63,11 +56,7 @@ public final class Player {
    * cards
    */
   public final int calculateScore() {
-    score += environment.calculateTileScore()
-        .values()
-        .stream()
-        .mapToInt(Integer::intValue)
-        .sum();
+    score += environment.calculateTileScore().values().stream().mapToInt(Integer::intValue).sum();
     return score;
   }
 
@@ -106,9 +95,8 @@ public final class Player {
 
   @Override
   public String toString() {
-    return "Player, name: [ " + name + " ]\n" +
-        "environment= " + environment.toString() +
-        "\nnatureTokens=" + natureTokens + '\n';
+    return "Player, name: [ " + name + " ]\n" + "environment= " + environment.toString()
+        + "\nnatureTokens=" + natureTokens + '\n';
   }
 
 }
