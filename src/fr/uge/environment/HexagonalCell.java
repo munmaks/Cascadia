@@ -97,8 +97,8 @@ public final class HexagonalCell implements Cell {
   public final int getRotation() { return this.currentRotation; }
 
   @Override
-  public boolean canBePlaced(WildlifeType token) {
-    Objects.requireNonNull(token, "token must not be null in HabitatTile.canBePlaced()");
+  public boolean couldBePlaced(WildlifeType token) {
+    Objects.requireNonNull(token, "token must not be null in HabitatTile.couldBePlaced()");
     if (isOccupiedByAnimal()) {
       return false;
     }
@@ -111,7 +111,7 @@ public final class HexagonalCell implements Cell {
     if (isOccupiedByAnimal()) {
       return false; /* we don't place animal, and return false (it wasn't placed) */
     }
-    if (!canBePlaced(token)) {
+    if (!couldBePlaced(token)) {
       return false;
     }
     this.placedAnimal = token;

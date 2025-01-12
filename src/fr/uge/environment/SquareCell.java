@@ -50,8 +50,8 @@ public final class SquareCell implements Cell {
   private boolean isOccupiedByAnimal() { return this.occupiedByAnimal; }
 
   @Override
-  public boolean canBePlaced(WildlifeType token) {
-    Objects.requireNonNull(token, "token must not be null in HabitatTile.canBePlaced()");
+  public boolean couldBePlaced(WildlifeType token) {
+    Objects.requireNonNull(token, "token must not be null in HabitatTile.couldBePlaced()");
     if (isOccupiedByAnimal() || this.tile == null) {
       return false;
     }
@@ -64,7 +64,7 @@ public final class SquareCell implements Cell {
     if (isOccupiedByAnimal()) {
       return false; /* we don't place animal, and return false (it wasn't placed) */
     }
-    if (!this.canBePlaced(token)) {
+    if (!this.couldBePlaced(token)) {
       System.err
           .println(token + " can't be placed on this tile it accepts only: " + this.tile.animals());
       return false;

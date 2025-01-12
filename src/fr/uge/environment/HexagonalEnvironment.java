@@ -150,10 +150,10 @@ public final class HexagonalEnvironment implements Environment {
    * Determine possibility to placed a wildlife token on player's environment.
    */
   @Override
-  public final boolean canBePlacedWildlifeToken(WildlifeType token) {
+  public final boolean couldBePlacedWildlifeToken(WildlifeType token) {
     Objects.requireNonNull(token);
     for (var cell : this.cellsMap.values()) {
-      if (cell.canBePlaced(token)) { /* found, no need to continue */
+      if (cell.couldBePlaced(token)) { /* found, no need to continue */
         return true;
       }
     }

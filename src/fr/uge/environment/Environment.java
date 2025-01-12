@@ -1,5 +1,6 @@
 package fr.uge.environment;
 
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,9 +20,10 @@ public sealed interface Environment permits SquareEnvironment, HexagonalEnvironm
 
   List<Cell> getNeighbors(Cell cell);
 
-  boolean canBePlacedWildlifeToken(WildlifeType token);
+  boolean couldBePlacedWildlifeToken(WildlifeType token);
 
   Map<TileType, Integer> calculateTileScore();
 
-  void printAllNeighbors(Coordinates coordinates); // for terminal version, to think if we can do better
+  void printAllNeighbors(Coordinates coordinates); // for terminal version, to think if we can do
+                                                   // better
 }
