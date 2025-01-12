@@ -104,17 +104,19 @@ public final class HexagonalEnvironment implements Environment {
   // return List.copyOf(neighbors);
   // }
 
+  /**
+   * search in the different direction of the hexagonal tile the neighbor of the given tile and return it in a list
+   *
+   * @param cell the cell that we want the neighbor
+   * @return a list of neighbor of the given cell
+   */
   @Override
   public List<Cell> getNeighbors(Cell cell) {
     Objects.requireNonNull(cell, "Cell can't be null in getNeighbors()");
     return IntStream
-        .range(0,
-            HexagonalEnvironment.HEXAGONE_DIRECTION_DIFFERENCES[cell.getCoordinates().y()
-                & 1].length)
+        .range(0, HexagonalEnvironment.HEXAGONE_DIRECTION_DIFFERENCES[cell.getCoordinates().y() & 1].length)
         .mapToObj(direction -> getOneNeighbor(cell, direction))
-        // .filter(Objects::nonNull) // no need to filter, because we create new cell if
-        // not exists
-        .collect(Collectors.toUnmodifiableList());
+        .toList();
   }
 
   private void addNeighborsInSet(Cell cell) {

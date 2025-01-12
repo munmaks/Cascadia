@@ -88,7 +88,6 @@ CascadiaData data, ImageLoader loader) {
    *                game. Abscissas are counted from left to right.
    * @param yOrigin Ordinate of the left-hand corner of the area displaying the
    *                game. Ordinates are counted from top to bottom.
-   * @param length  Side of the (square) area displaying the game.
    * @param data    CascadiaData storing each piece of information on the current
    *                state of the game to be displayed.
    * @param loader  ImageLoader that dealt with loading the pictures to be
@@ -777,11 +776,7 @@ CascadiaData data, ImageLoader loader) {
   /**
    * Handles the user's choice of tile and token.
    * @param context
-   * @param player
    * @param chosenTile
-   * @param width
-   * @param height
-   * @param figureSize
    * @return true if the tile was placed successfully, false otherwise
    */  
   public boolean handleTilePlacement(ApplicationContext context, Tile chosenTile) {
@@ -810,11 +805,7 @@ CascadiaData data, ImageLoader loader) {
   /**
    * Handles the user's choice of token.
    * @param context
-   * @param player
    * @param chosenToken
-   * @param width
-   * @param height
-   * @param figureSize
    * @param tokenSize
    * @return
    */
