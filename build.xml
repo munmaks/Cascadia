@@ -1,101 +1,83 @@
-<!--
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project Cascadia with Jar-in-Jar Loader">
-    <property name="dir.buildfile" value="."/>
-    <property name="dir.workspace" value="${dir.buildfile}/.."/>
-    <property name="dir.jarfile" value="${dir.buildfile}"/>
-    <target name="create_run_jar">
-        <jar destfile="${dir.jarfile}/Cascadia.jar">
-            <manifest>
-                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
-                <attribute name="Rsrc-Main-Class" value="fr.uge.main.Main"/>
-                <attribute name="Class-Path" value="."/>
-                <attribute name="Rsrc-Class-Path" value="./ zen-6.0.jar"/>
-            </manifest>
-            <zipfileset src="jar-in-jar-loader.zip"/>
-            <fileset dir="${dir.jarfile}/bin"/>
-            <zipfileset dir="${dir.jarfile}/lib" includes="zen-6.0.jar"/>
-        </jar>
-    </target>
-</project> -->
-
 <project name="Cascadia" default="jar" basedir=".">
+    <!-- Project Properties -->
+    <property name="build.dir" value="build" />
+    <property name="classes.dir" value="classes" />
+    <property name="src.dir" value="src" />
+    <property name="docs.dir" value="docs" />
+    <property name="main-class" value="fr.uge.main.Main" />
+    <property name="javadoc.dir" value="${docs.dir}/doc" />
+    <property name="lib.dir" value="lib" />
+    <property name="java.version" value="23" />
+    <property name="jar.name" value="Cascadia.jar" />
+    <property name="zip.name" value="MUNAITPASOV_MAOUCHE_Cascadia.zip" />
 
-    <property name="build.dir" value="build"/>
-    <property name="classes.dir" value="classes"/>
-    <property name="src.dir" value="src"/>
-    <property name="docs.dir" value="docs"/>
-    <property name="main-class" value="fr.uge.main.Main"/>
-    <!-- <property name="javadoc.dir" value="${docs.dir}/doc"/> -->
-
-
+    <!-- Classpath Reference -->
     <path id="classpath">
-        <pathelement path="lib/zen-6.0.jar"/>
+        <pathelement path="${lib.dir}/zen-6.0.jar" />
     </path>
 
-
-    <!-- Compile target -->
+    <!-- ========== Compile ========== -->
     <target name="compile" depends="clean">
-    	<copy todir="${classes.dir}">
-    	  <fileset dir="config"/>
-    	</copy>
-    	
-        <javac srcdir="${src.dir}" destdir="${classes.dir}" source="23" includeantruntime="false">
-            <compilerarg value="--enable-preview"/> <!-- -Xlint:preview -->
-        	<classpath refid="classpath"/>
+        <copy todir="${classes.dir}">
+            <fileset dir="config" />
+        </copy>
+        <javac srcdir="${src.dir}"
+            destdir="${classes.dir}"
+            source="${java.version}"
+            includeantruntime="false">
+            <compilerarg value="--enable-preview" />
+            <classpath refid="classpath" />
         </javac>
     </target>
 
-
-    <!-- Javadoc target -->
-    <!-- <target name="javadoc" depends="compile">
-        <mkdir dir="${javadoc.dir}"/>
-        <javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}">
-            <classpath refid="classpath"/>
+    <!-- ========== Generate Javadoc ========== -->
+    <target name="javadoc" depends="compile">
+        <mkdir dir="${javadoc.dir}" />
+        <javadoc sourcepath="${src.dir}"
+            destdir="${javadoc.dir}"
+            packagenames="fr.uge.*"
+            failonerror="false"
+            doclint="none">
+            <classpath refid="classpath" />
         </javadoc>
-    </target> -->
+    </target>
 
-    <!-- JAR target -->
+    <!-- ========== Create JAR ========== -->
     <target name="jar" depends="compile">
-    	<delete file="Cascadia.jar"/>
-        <jar destfile="Cascadia.jar" basedir="${classes.dir}">
+        <delete file="${jar.name}" />
+        <jar destfile="${jar.name}" basedir="${classes.dir}">
             <manifest>
-                <attribute name="Main-Class" value="${main-class}"/>
-            	<attribute name="Class-Path" value="lib/zen-6.0.jar"/>
-                <attribute name="Multi-Release" value="true"/>
+                <attribute name="Main-Class" value="${main-class}" />
+                <attribute name="Class-Path" value="${lib.dir}/zen-6.0.jar" />
+                <attribute name="Multi-Release" value="true" />
             </manifest>
         </jar>
     </target>
 
-	
-	
-    <!-- Default target -->
-    <target name="default" depends="jar"/>
-	
-    <!-- Zip target -->
-	<target name="zip">
-		<antcall target="javadoc"/>
-		<antcall target="clean"/>
-		<mkdir dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy"/>
-		<mkdir dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy/MUNAITPASOV_MAOUCHE_Cascadia"/>
-		<copy todir="../MUNAITPASOV_MAOUCHE_Cascadia_copy/MUNAITPASOV_MAOUCHE_Cascadia">
-		  <fileset dir="." excludes=".*"/>
-		</copy>
-		
-		<zip destfile="MUNAITPASOV_MAOUCHE_Cascadia.zip">
-			<fileset dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy"/>
-		</zip>
-		
-		<delete dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy"/>
-	</target>
-    
-	<!-- Clean classes directory -->
-    <target name="clean">
-        <delete dir="${classes.dir}"/>
-    	<mkdir dir="${classes.dir}"/>
-    	<delete file="MUNAITPASOV_MAOUCHE_Cascadia.zip"/>
-    	<delete file="Cascadia.jar"/>
+    <!-- ========== Default Target ========== -->
+    <target name="default" depends="jar" />
+
+    <!-- ========== Zip Project ========== -->
+    <target name="zip">
+        <antcall target="javadoc" />
+        <antcall target="clean" />
+        <mkdir dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy" />
+        <mkdir dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy/MUNAITPASOV_MAOUCHE_Cascadia" />
+        <copy todir="../MUNAITPASOV_MAOUCHE_Cascadia_copy/MUNAITPASOV_MAOUCHE_Cascadia">
+            <fileset dir="." excludes=".*" />
+        </copy>
+        <zip destfile="${zip.name}">
+            <fileset dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy" />
+        </zip>
+        <delete dir="../MUNAITPASOV_MAOUCHE_Cascadia_copy" />
     </target>
 
-
+    <!-- ========== Clean ========== -->
+    <target name="clean">
+        <delete dir="${classes.dir}" />
+        <mkdir dir="${classes.dir}" />
+        <delete file="${zip.name}" />
+        <delete file="${jar.name}" />
+        <delete dir="${javadoc.dir}" />
+    </target>
 </project>
