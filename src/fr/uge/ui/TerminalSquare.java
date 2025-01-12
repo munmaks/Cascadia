@@ -87,7 +87,7 @@ final class TerminalSquare {
       if (cell == null) {
         throw new IllegalArgumentException("cell is null in showPossibleTokenPlacement()");
       }
-      if (cell.canBePlaced(token)) {
+      if (cell.couldBePlaced(token)) {
         System.out.println(cell.toString());
       }
     }

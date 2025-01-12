@@ -8,15 +8,15 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IO;
+
+import java.util.List;
 import java.util.Objects;
 import java.awt.RenderingHints; // to think if we need it
 import java.awt.Graphics2D;
 import java.awt.Font;
-import java.awt.Point;
 
 // import com.github.forax.zen.Application;
 import com.github.forax.zen.ApplicationContext;
-import com.github.forax.zen.Event;
 // import com.github.forax.zen.KeyboardEvent.Action;
 // import com.github.forax.zen.PointerEvent;
 import com.github.forax.zen.KeyboardEvent;
@@ -25,11 +25,13 @@ import com.github.forax.zen.PointerEvent;
 import fr.uge.core.Game;
 import fr.uge.core.GameBoard;
 import fr.uge.core.Player;
+import fr.uge.core.TurnManager;
 import fr.uge.environment.Cell;
 import fr.uge.environment.Coordinates;
 import fr.uge.environment.Tile;
 import fr.uge.environment.TileType;
 import fr.uge.environment.WildlifeType;
+// import fr.uge.util.Constants;
 import fr.uge.util.Constants;
 
 // final class HexagonalPointyTop {
@@ -65,12 +67,12 @@ import fr.uge.util.Constants;
  *                   game. Ordinates are counted from top to bottom.
  * @param height     Height of the (square) area displaying the game.
  * @param width      Width of the (square) area displaying the game.
- * @param squareSize Side of the (square) areas displaying individual cells /
+ * @param figureSize Side of the (square) areas displaying individual cells /
  *                   images.
  * @param loader     ImageLoader that dealt with loading the pictures to be
  *                   memorized.
  */
-public record CascadiaView(int xOrigin, int yOrigin, int height, int width, int squareSize,
+public record CascadiaView(int xOrigin, int yOrigin, int width, int height, int figureSize,
 CascadiaData data, ImageLoader loader) {
 
   private static final Color COLOR_FOREST = Color.GREEN; // new Color(46, 111, 64); // 39, 66, 26
@@ -93,16 +95,14 @@ CascadiaData data, ImageLoader loader) {
    *                memorized.
    * @return CascadiaView
    */
-  public static CascadiaView initGameGraphics(int xOrigin, int yOrigin, int length,
-      CascadiaData data, ImageLoader loader) {
-    // Objects.requireNonNull(data);
-    // Objects.requireNonNull(loader);
-    // var squareSize = length / data.lines();
-    // return new CascadiaView(
-    // xOrigin, yOrigin,
-    // length, data.columns() * squareSize,
-    // squareSize, loader);
-    return null;
+  public static CascadiaView initGameGraphics(
+    int xOrigin, int yOrigin, int width, int height,
+    int figureSize, CascadiaData data, ImageLoader loader) {
+
+    Objects.requireNonNull(data);
+    Objects.requireNonNull(loader);
+
+    return new CascadiaView(xOrigin, yOrigin, width, height, figureSize, data, loader);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +132,7 @@ CascadiaData data, ImageLoader loader) {
     graphics.fill(rectangle);
   }
 
-  private void drawRectangle(Graphics2D graphics, float x, float y, int width, int height,
+  public void drawRectangle(Graphics2D graphics, float x, float y, int width, int height,
       Color color) {
 
     var rectangle = new Rectangle2D.Float(x, y, width, height);
@@ -275,11 +275,9 @@ CascadiaData data, ImageLoader loader) {
     drawAnimal(graphics, images, animal, xAnimal, yAnimal, scaledTokenSize);
   }
 
-  private void drawEnvironment(Graphics2D graphics, Player player, int width, int height,
-      int figureSize) {
-    var listCells = player.getEnvironment().getCells();
-    var images = new ImageLoader("img/tokens", "bear.png", "elk.png", "hawk.png", "fox.png",
-        "salmon.png");
+  public void drawEnvironment(Graphics2D graphics) {
+    var listCells = data.getCurrentPlayerCells();
+
 
     for (var cell : listCells) {
       if (!cell.isOccupiedByTile()) {
@@ -288,13 +286,13 @@ CascadiaData data, ImageLoader loader) {
       var habitatType = cell.getTile().firstHabitat();
 
       /* Calculate screen coordinates relative to the center. */
-      int x = (int) (((cell.getCoordinates().x() + width / (2.0 * figureSize)) * figureSize)
-          + figureSize / 2.0);
-      int y = (int) (((cell.getCoordinates().y() + height / (2.0 * figureSize)) * figureSize)
-          + figureSize / 2.0);
+      int x = (int) (((cell.getCoordinates().x() + width / 2 / figureSize)) *
+      figureSize) + figureSize / 2;
+      int y = (int) (((cell.getCoordinates().y() + height / 2 / figureSize)) *
+      figureSize) + figureSize / 2;
 
       drawHabitatSquare(graphics, habitatType, x, y, figureSize);
-      drawAnimalsOnCell(graphics, images, cell, x, y, figureSize);
+      drawAnimalsOnCell(graphics, loader, cell, x, y, figureSize);
     }
   }
 
@@ -391,22 +389,19 @@ CascadiaData data, ImageLoader loader) {
   //
   //
 
-  private void showGameBoard(Graphics2D graphics, GameBoard board, int figureSize,
-      int tokenSize) {
+  public void showGameBoard(Graphics2D graphics, int tokenSize) {
     final float RECTANGLE_X_OFFSET = 1.8f;
     final float ROW_MULTIPLIER = 1.8f;
     final float CIRCLE_X_OFFSET = 1.05f;
     var baseXOffset = (int) (figureSize / RECTANGLE_X_OFFSET);
 
-    var listOfTiles = board.getCopyOfTiles();
-    var listOfTokens = board.getCopyOfTokens();
-    var images = new ImageLoader("img/tokens", "bear.png", "elk.png", "hawk.png", "fox.png",
-        "salmon.png");
+    var listOfTiles = data.getGameBoard().getCopyOfTiles();
+    var listOfTokens = data.getGameBoard().getCopyOfTokens();
 
     for (int i = 0; i < 4; i++) {
       int yPosition = (int) (figureSize * ROW_MULTIPLIER * (i + 1));
-      drawTileAndAnimals(graphics, listOfTiles.get(i), images, baseXOffset, yPosition, figureSize);
-      drawWildlifeToken(graphics, listOfTokens.get(i), images, tokenSize,
+      drawTileAndAnimals(graphics, listOfTiles.get(i), baseXOffset, yPosition, figureSize);
+      drawWildlifeToken(graphics, listOfTokens.get(i), tokenSize,
           (int) (baseXOffset + figureSize * CIRCLE_X_OFFSET + tokenSize / 5),
           (int) (yPosition + tokenSize / 5));
       if (i != 3) { // draw a line for separation
@@ -417,7 +412,7 @@ CascadiaData data, ImageLoader loader) {
     }
   }
 
-  private void drawTileAndAnimals(Graphics2D graphics, Tile tile, ImageLoader images, int x,
+  private void drawTileAndAnimals(Graphics2D graphics, Tile tile, int x,
       int y, int figureSize) {
     // Draw habitat rectangle
     switch (tile.firstHabitat()) {
@@ -436,14 +431,14 @@ CascadiaData data, ImageLoader loader) {
       int xAnimal = (int) (x + figureSize / 20.0 + placement * (figureSize / 2.5));
       int yAnimal = y + figureSize / 4;
       placement++;
-      drawImage(graphics, images.image(animal.ordinal()), xAnimal, yAnimal, scaled, scaled);
+      drawImage(graphics, loader.image(animal.ordinal()), xAnimal, yAnimal, scaled, scaled);
     }
   }
 
-  private void drawWildlifeToken(Graphics2D graphics, WildlifeType token, ImageLoader images,
+  private void drawWildlifeToken(Graphics2D graphics, WildlifeType token,
       int tokenSize, int circleX, int circleY) {
     int scaledTokenSize = (int) (tokenSize / 1.5);
-    drawImage(graphics, images.image(token.ordinal()), circleX, circleY, scaledTokenSize,
+    drawImage(graphics, loader.image(token.ordinal()), circleX, circleY, scaledTokenSize,
         scaledTokenSize);
   }
 
@@ -605,10 +600,8 @@ CascadiaData data, ImageLoader loader) {
         Color.RED);
   }
 
-  private void showPossibleCoordinates(Graphics2D graphics, Player player, int width,
-      int height, int figureSize) {
-    Objects.requireNonNull(player);
-    var listOfCells = player.getEnvironment().getCells();
+  public void showPossibleCoordinates(Graphics2D graphics) {
+    var listOfCells = data.getCurrentPlayerCells();
     for (var cell : listOfCells) {
       if (cell == null) {
         throw new IllegalArgumentException("cell is null in showPossibleCoordinates()");
@@ -625,7 +618,6 @@ CascadiaData data, ImageLoader loader) {
       }
     }
   }
-
 
 
   // to improve later this method
@@ -655,7 +647,7 @@ CascadiaData data, ImageLoader loader) {
    * @param height the height of the area
    * @return the coordinates from the keyboard event, or null if not applicable
    */
-  private boolean handleKeyboardEvent(KeyboardEvent ke, int width, int height) {
+  private boolean userWantsLeave(KeyboardEvent ke, int width, int height) {
     if (ke.action() == KeyboardEvent.Action.KEY_RELEASED) {
       if (ke.key() == KeyboardEvent.Key.ESCAPE ||
           ke.key() == KeyboardEvent.Key.Q) {
@@ -670,10 +662,11 @@ CascadiaData data, ImageLoader loader) {
    * moved the mouse
    * POINTER_MOVE: user moves his mouse
    */
-  private Coordinates getCoordinatesFromUser(ApplicationContext context, int width, int height) {
+  public Coordinates getCoordinatesFromUser(ApplicationContext context, int width, int height) {
     for (;;){
       var event = context.pollOrWaitEvent(10);
       switch (event) {
+        case null -> { continue; /* do nothing */ }
         case PointerEvent pe -> {
           var coords = getCoordinatesFromPointerEvent(pe, width, height);
           if (coords != null) {
@@ -681,7 +674,7 @@ CascadiaData data, ImageLoader loader) {
           }
         }
         case KeyboardEvent ke -> {
-          if (handleKeyboardEvent(ke, width, height)) {
+          if (userWantsLeave(ke, width, height)) {
             return null;
           }
         }
@@ -692,19 +685,17 @@ CascadiaData data, ImageLoader loader) {
 
 
 
-  private boolean handleTokenChange(
-      ApplicationContext context, Game game,
-      int width, int height, int figureSize, int fontSize) {
+  public boolean handleTokenChange(
+      ApplicationContext context, int fontSize) {
     if (data.tokensMustBeUpdated()) {
       data.updateTokens();
-      context.renderFrame(graphics -> {
-        showGameBoard(graphics, game.board(), figureSize, figureSize);
-      });
+      context.renderFrame(graphics -> { showGameBoard(graphics, figureSize); });
       return true;
     } else if (data.tokensCouldBeUpdated()) { // done in CascadiaData.java
       context.renderFrame(graphics -> {
-        restartRectangleWithText(graphics, "Click here to change", figureSize / 2, figureSize / 2,
-            fontSize, (int) (figureSize * 3.5), figureSize * 10, figureSize * 8, Color.BLACK);
+        restartRectangleWithText(graphics, "Click here to change",
+          figureSize / 2, figureSize / 2, fontSize,
+          (int) (figureSize * 3.5), figureSize * 10, figureSize * 8, Color.BLACK);
       });
 
       // to check coordinates from user
@@ -723,10 +714,11 @@ CascadiaData data, ImageLoader loader) {
         System.out.println("tokens are now updated");
         data.updateTokens();
       }
+
       context.renderFrame(graphics -> {
-        drawRectangle(graphics, (int) (figureSize / 6), 0, (int) (figureSize * 3.5),
-            (int) (figureSize * 0.9), Color.WHITE);
-        showGameBoard(graphics, data.getGameBoard(), figureSize, figureSize);
+        drawRectangle(graphics, (int) (figureSize / 6), 0,
+        (int) (figureSize * 3.5), (int) (figureSize * 0.9), Color.WHITE);
+        showGameBoard(graphics, figureSize);
       });
       return true;
     }
@@ -744,34 +736,43 @@ CascadiaData data, ImageLoader loader) {
   // }
 
 
-  private void showPossibleTokenPlacement(
-    Graphics2D graphics, Player player, WildlifeType token,
-    int width, int height,
-    int figureSize, int tokenSize) {
-    Objects.requireNonNull(player, "player is null in showPossibleTokenPlacement()");
-    Objects.requireNonNull(token, "token is null in showPossibleTokenPlacement()");
+  private void showPossibleTokenPlacement(Graphics2D graphics, WildlifeType token, int tokenSize) {
 
-    var listOfCells = player.getEnvironment().getCells();
+    var listOfCells = data.getCurrentPlayerCells();
 
     for (var cell : listOfCells) {
-      if (cell.isOccupiedByTile()) {
-        if (cell.canBePlaced(token)) {
-          var x = cell.getCoordinates().x();
-          var y = cell.getCoordinates().y();
-          // drawSquare(context,
-          // (int) ((x + width / 2 / figureSize) * figureSize + (figureSize / 2)),
-          // (int) ((y + height / 2 / figureSize) * figureSize + (figureSize / 2)),
-          // figureSize,
-          // Color.RED);
-          drawCircle(graphics,
-              (int) ((x + width / 2 / figureSize) * figureSize + (figureSize / 8.5)),
-              (int) ((y + height / 2 / figureSize) * figureSize + (figureSize / 8.5)),
-              (int) (tokenSize / 3),
-              Color.WHITE);
-        }
+      if (cell.isOccupiedByTile() && cell.couldBePlaced(token)) {
+        var x = cell.getCoordinates().x();
+        var y = cell.getCoordinates().y();
+        // drawSquare(context,
+        // (int) ((x + width / 2 / figureSize) * figureSize + (figureSize / 2)),
+        // (int) ((y + height / 2 / figureSize) * figureSize + (figureSize / 2)),
+        // figureSize,
+        // Color.RED);
+        drawCircle(graphics,
+            (int) ((x + width / 2 / figureSize) * figureSize + (figureSize / 8.5)),
+            (int) ((y + height / 2 / figureSize) * figureSize + (figureSize / 8.5)),
+            (int) (tokenSize / 3),
+            Color.WHITE);
       }
     }
   }
+
+
+  public int selectGameBoardIndex(ApplicationContext context, int environmentSquareWidth, int tokenSize) {
+    System.err.println("Before choosing tile and token");
+    while (true) {
+        var coordinates = getCoordinatesFromUser(context, width, height);
+        if (coordinates == null) {
+            return -2; /* user wants to leave */
+        }
+        var choice = indexOfGameBoardCouple(coordinates.x(), coordinates.y(), environmentSquareWidth);
+        if (choice != -1) {
+            return choice;
+        }
+    }
+}
+
 
   /**
    * Handles the user's choice of tile and token.
@@ -783,10 +784,7 @@ CascadiaData data, ImageLoader loader) {
    * @param figureSize
    * @return true if the tile was placed successfully, false otherwise
    */  
-  private boolean handleTilePlacement(
-      ApplicationContext context, Player player,
-      Tile chosenTile, int width, int height, int figureSize) {
-    Objects.requireNonNull(player);
+  public boolean handleTilePlacement(ApplicationContext context, Tile chosenTile) {
     Objects.requireNonNull(chosenTile);
 
     /* player has to place tile correctly */
@@ -809,12 +807,20 @@ CascadiaData data, ImageLoader loader) {
     } while (true);
   }
 
-  private boolean handleTokenPlacement(
-      ApplicationContext context, Player player, WildlifeType chosenToken,
-      int width, int height, int figureSize, int tokenSize
-    ) {
+  /**
+   * Handles the user's choice of token.
+   * @param context
+   * @param player
+   * @param chosenToken
+   * @param width
+   * @param height
+   * @param figureSize
+   * @param tokenSize
+   * @return
+   */
+  public boolean handleTokenPlacement(ApplicationContext context, WildlifeType chosenToken, int tokenSize) {
     context.renderFrame(graphics -> {
-      showPossibleTokenPlacement(graphics, player, chosenToken, width, height, figureSize, tokenSize);
+      showPossibleTokenPlacement(graphics, chosenToken, tokenSize);
     });
     var userCoordinates = getCoordinatesFromUser(context, width, height);
     if (userCoordinates == null) {
@@ -859,8 +865,7 @@ CascadiaData data, ImageLoader loader) {
 
 
 
-  private int indexOfGameBoardCouple(
-    ApplicationContext context, int x, int y, int figureSize, int environmentSquareWidth) {
+  public int indexOfGameBoardCouple(int x, int y, int environmentSquareWidth) {
     for (var index = 0; index < 4; ++index) {
       int[] yOffsets = { figureSize,
         (int) (figureSize * 3.2f),
@@ -890,8 +895,7 @@ CascadiaData data, ImageLoader loader) {
   }
 
 
-  private void restartEnvironmentRectangle(Graphics2D graphics, 
-    int width, int height,
+  public void restartEnvironmentRectangle(Graphics2D graphics, 
     int environmentSquareWidth, int environmentSquareHeight) {
     drawRoundRectangle(graphics,
         width / 2 - (environmentSquareWidth / 2), // center of the screen - x
@@ -905,8 +909,7 @@ CascadiaData data, ImageLoader loader) {
 
 
 
-  private void restartGameBoardRectangle(Graphics2D graphics,
-    int figureSize, int environmentSquareHeight) {
+  public void restartGameBoardRectangle(Graphics2D graphics, int environmentSquareHeight) {
     drawRoundRectangle(graphics,
         (int) (figureSize / 3), // width
         figureSize, // height
@@ -917,8 +920,7 @@ CascadiaData data, ImageLoader loader) {
         Color.PINK);
   }
 
-  private void restartScoringCardRectangle(Graphics2D graphics,
-    int width, int figureSize, int environmentSquareHeight) {
+  public void restartScoringCardRectangle(Graphics2D graphics, int environmentSquareHeight) {
     drawRoundRectangle(graphics,
         width - (int) (figureSize * 2.35) - (int) (figureSize / 3), // width
         figureSize, // height
@@ -930,12 +932,12 @@ CascadiaData data, ImageLoader loader) {
   }
 
 
-  private void restartRectangleWithText(
+  public void restartRectangleWithText(
     Graphics2D graphics, String text,
-    int x, int y, int fontSize, int width,
+    int x, int y, int fontSize, int width_rect,
     int environmentSquareWidth, int environmentSquareHeight, Color color) {
     drawRoundRectangle(graphics,
-        width - (environmentSquareWidth / 3), // center of the screen - x
+        width_rect - (environmentSquareWidth / 3), // center of the screen - x
         0, // center of the screen - y
         environmentSquareWidth / 3,
         environmentSquareHeight / 10,
@@ -976,7 +978,7 @@ CascadiaData data, ImageLoader loader) {
    * @return Row / column index that was pointed at by coord.
    */
   private int indexFromRealCoord(float coord, int origin) {
-    return (int) ((coord - origin) / squareSize);
+    return (int) ((coord - origin) / figureSize);
   }
 
   /**
@@ -1012,7 +1014,7 @@ CascadiaData data, ImageLoader loader) {
    * @param origin Base coordinate of the display area.
    * @return Base coordinate of the row / column.
    */
-  private float realCoordFromIndex(int index, int origin) { return origin + index * squareSize; }
+  private float realCoordFromIndex(int index, int origin) { return origin + index * figureSize; }
 
   /**
    * Gets base abscissa for the column of index i.

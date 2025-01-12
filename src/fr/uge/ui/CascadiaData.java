@@ -109,7 +109,6 @@ public class CascadiaData {
   public void handleTurnChange() {
     game.turnManager().changePlayer();
     game.turnManager().nextTurn();
-
     /* that means, next person can change tokens (if needed) */
     game.board().setDefaultTokensAreUpdated();
   }
@@ -165,6 +164,15 @@ public class CascadiaData {
   public boolean placeAnimalIfPossible(WildlifeType chosenAnimal, Coordinates chosenCoordinates) {
     return getCurrentPlayer().getEnvironment()
         .placeAnimal(getCellFromCoordinates(chosenCoordinates), chosenAnimal);
+  }
+
+  /**
+   * Gets the current player's cells.
+   * 
+   * @return List of cells.
+   */
+  public List<Cell> getCurrentPlayerCells() {
+    return getCurrentPlayer().getEnvironment().getCells();
   }
 
   /**

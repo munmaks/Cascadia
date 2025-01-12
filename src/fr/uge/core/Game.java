@@ -113,9 +113,9 @@ public final class Game {
      * Hexagonal version: X Y Z Square version: X Y Z
      */
     if (this.version == Constants.VERSION_HEXAGONAL) {
-      placeStarterTilesHexagonal(playerIndex, centerCoordinates, 0, 5);
+      placeStarterTilesHexagonal(playerIndex, centerCoordinates, 2, 3);
     } else {
-      placeStarterTilesSquare(playerIndex, centerCoordinates, 3, 2);
+      placeStarterTilesSquare(playerIndex, centerCoordinates, 1, 2);
     }
     // cells.add(new Cell(centerCoordinates, topTile));
     // var cell = getCell(tile.coordinates());

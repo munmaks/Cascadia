@@ -9,7 +9,7 @@ public sealed interface Cell permits SquareCell, HexagonalCell {
 
   boolean placeTile(Tile tileToPlace);
 
-  boolean canBePlaced(WildlifeType token);
+  boolean couldBePlaced(WildlifeType token);
 
   boolean placeAnimal(WildlifeType token);
 
