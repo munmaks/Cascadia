@@ -1,5 +1,6 @@
 package fr.uge.data.bag;
 
+
 import fr.uge.data.environment.Tile;
 import fr.uge.data.environment.WildlifeType;
 import fr.uge.data.util.Constants;
@@ -19,36 +20,36 @@ final class UtilsBag {
   /*
    * To prevent instantiation
    */
-  private UtilsBag() {
-    throw new IllegalStateException("Utility class, cannot be instantiated");
-  }
+  private UtilsBag() { throw new IllegalStateException("Utility class, cannot be instantiated"); }
 
   public static void decreaseNumberOfTiles(LinkedList<Tile> tiles, int maxTilesForGame) {
-    // int currentNumberOfTiles = maxTilesForGame;
-    // while (currentNumberOfTiles > maxTilesTotal) {
-    // --currentNumberOfTiles;
-    // tiles.remove(0); // Remove the first element
-    // }
-    // tiles.stream()
-    // .limit(maxTilesForGame - maxTilesTotal)
-    // .forEach(tile -> tiles.remove(0));
-
     var random = new Random();
     tiles.removeIf(_ -> tiles.size() > maxTilesForGame && random.nextBoolean());
   }
 
-  public static Tile getRandomTile(LinkedList<Tile> tiles) {
-    return tiles.removeFirst();
-  }
+  /**
+   * Get a random tile from the list of tiles
+   * 
+   * @param tiles list of tiles
+   * @return a random tile
+   */
+  public static Tile getRandomTile(LinkedList<Tile> tiles) { return tiles.removeFirst(); }
 
+  /**
+   * Get a random token from the list of tokens
+   * 
+   * @param animals list of tokens
+   * @return a random token
+   */
   public static WildlifeType getRandomToken(int[] animals) {
     return getRandomTokenStream(animals).findFirst().orElseGet(() -> getFallbackToken(animals));
   }
 
-  /*
-   * public static Tile getRandomTile(ArrayList<Tile> tiles) { var random = new
-   * Random(); var randomIndex = random.nextInt(tiles.size()); // [0,
-   * tiles.size()) return tiles.remove(randomIndex); }
+  /**
+   * Get a random token stream
+   * 
+   * @param animals list of tokens
+   * @return a stream of random tokens
    */
   private static Stream<WildlifeType> getRandomTokenStream(int[] animals) {
     var random = new Random();
@@ -57,20 +58,40 @@ final class UtilsBag {
         .map(index -> WildlifeType.values()[index]);
   }
 
+  /**
+   * Get a fallback token
+   * 
+   * @param animals list of tokens
+   * @return a fallback token
+   */
   private static WildlifeType getFallbackToken(int[] animals) {
     return Arrays.stream(WildlifeType.values()).filter(animal -> animals[animal.ordinal()] > 0)
         .findFirst().orElseThrow(
             () -> new IllegalStateException("No tokens available, game over!")); /* to be sure */
   }
 
+  /**
+   * Update the token
+   * 
+   * @param token
+   * @param animals
+   * @return a new token
+   */
   public static WildlifeType updateToken(WildlifeType token, int[] animals) {
     var index = token.ordinal();
     animals[index]++; /* return into deck current token */
     return getRandomToken(animals);
   }
 
+  /**
+   * Read tiles from a file
+   * 
+   * @param path         file path
+   * @param tileConsumer consumer
+   * @throws IOException if an I/O error occurs
+   */
   public static void readTiles(String path, Consumer<String[]> tileConsumer) throws IOException {
-    try (var reader = Files.newBufferedReader(Paths.get(path))) {
+    try(var reader=Files.newBufferedReader(Paths.get(path))) {
       reader.lines().map(line -> line.split("\\s+")).forEach(tileConsumer);
     }
   }

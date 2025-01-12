@@ -1,27 +1,23 @@
 package fr.uge.data.core;
 
+
 import fr.uge.data.environment.Environment;
 import fr.uge.data.environment.HexagonalEnvironment;
 import fr.uge.data.environment.SquareEnvironment;
-import fr.uge.data.scoring.BearScoringCard;
-import fr.uge.data.scoring.ElkScoringCard;
-import fr.uge.data.scoring.FoxScoringCard;
-import fr.uge.data.scoring.HawkScoringCard;
-import fr.uge.data.scoring.SalmonScoringCard;
 import fr.uge.data.util.Constants;
 
 import java.util.Objects;
 
+/**
+ * Represents a player in the game. A player has a name, an environment, a
+ * number of nature tokens and a score.
+ */
 public final class Player {
   private final String name; /* just for counting later */
   private final Environment environment;
   private int natureTokens = 0;
   private int score = 0;
 
-  /**
-   * To think later how we get here all wildlife scoring card? List, all in
-   * parameters or ...
-   */
   public Player(String name, int version) {
     this.name = Objects.requireNonNull(name, "Player name cannot be null");
 
@@ -29,24 +25,30 @@ public final class Player {
         : new SquareEnvironment();
   }
 
-  public final Environment getEnvironment() {
-    return this.environment;
-  }
-
-  public final int getNatureTokens() {
-    return this.natureTokens;
-  }
-
-  public final String getName() {
-    return this.name;
-  }
-
-  public boolean canUseNatureTokens() {
-    return this.natureTokens > 0;
-  }
+  /**
+   * @return the player's environment
+   */
+  public final Environment getEnvironment() { return this.environment; }
 
   /**
-   * for later usage, decreases the number of nature tokens
+   * @return the player's score
+   */
+  public final int getNatureTokens() { return this.natureTokens; }
+
+  /**
+   * @return the player's score
+   */
+  public final String getName() { return this.name; }
+
+  /**
+   * @return the player's score
+   */
+  public boolean canUseNatureTokens() { return this.natureTokens > 0; }
+
+  /**
+   * Uses a nature token to choose a tile and token
+   * 
+   * @return
    */
   public final boolean useNatureTokens() {
     if (!canUseNatureTokens()) {
@@ -57,47 +59,18 @@ public final class Player {
   }
 
   /**
-   * calculates the player's score based on his environment and current wildlife
-   * cards
+   * Adds a nature token to the player's inventory
+   * 
+   * @return the player's final score based on the environment
    */
   public final int calculateScore() {
     score += environment.calculateTileScore().values().stream().mapToInt(Integer::intValue).sum();
     return score;
   }
 
-  // public final Map<TileType, Integer> calculateTileScore() {
-  // var tileTypes = TileType.values();
-  // var score = 0;
-  // var allTiles = environment.getCells();
-
-  // return score;
-  // }
-
-  public final int calculateBearScore(BearScoringCard card) {
-
-    return 0;
-  }
-
-  public final int calculateElkScore(ElkScoringCard card) {
-
-    return 0;
-  }
-
-  public final int calculateHawkScore(HawkScoringCard card) {
-
-    return 0;
-  }
-
-  public final int calculateFoxScore(FoxScoringCard card) {
-
-    return 0;
-  }
-
-  public final int calculateSalmonScore(SalmonScoringCard card) {
-
-    return 0;
-  }
-
+  /**
+   * toString method for the player
+   */
   @Override
   public String toString() {
     return "Player, name: [ " + name + " ]\n" + "environment= " + environment.toString()

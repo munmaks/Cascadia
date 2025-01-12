@@ -1,5 +1,6 @@
 package fr.uge.data.core;
 
+
 import fr.uge.data.util.Constants;
 
 /**
@@ -14,39 +15,25 @@ public final class TurnManager {
   private boolean needToTurn = false;
 
   public TurnManager(int numberOfPlayers) {
-    // Objects.requireNonNull(listOfPlayers);
+    if (numberOfPlayers < 1 || numberOfPlayers > 4) {
+      throw new IllegalArgumentException("Invalid number of players");
+    }
     this.numberOfPlayers = numberOfPlayers;
-    /* listOfPlayers is already immutable, and we don't need to change */
-    // this.players = listOfPlayers;
   }
 
-  // public final Player getCurrentPlayer() {
-  // return this.players.get(this.currentPlayerIndex);
-  // }
+  /**
+   * @return the number of players in the game
+   */
+  public final int getCurrentPlayerIndex() { return this.currentPlayerIndex; }
 
-  public final int getCurrentPlayerIndex() {
-    return this.currentPlayerIndex;
-  }
+  /**
+   * changes the current player to the next player in the list
+   */
+  public final void changePlayer() { this.currentPlayerIndex++; }
 
-  // public final Player getPlayerByIndex(int index) {
-  // if (index < 0 || index >= this.numberOfPlayers) {
-  // throw new IllegalArgumentException("Invalid index"); /* to improve later */
-  // }
-  // return this.players.get(index);
-  // }
-
-  // public final List<Player> getAllPlayers(){
-  // return this.players;
-  // }
-
-  public final void changePlayer() {
-    this.currentPlayerIndex++;
-    // if (this.currentPlayerIndex == this.playersLength - 1) {
-    // this.currentPlayerIndex = 0;
-    // needToTurn = true;
-    // }
-  }
-
+  /**
+   * handles the end of a player's turn
+   */
   public final void nextTurn() {
     if (this.currentPlayerIndex == this.numberOfPlayers) {
       this.currentPlayerIndex %= this.numberOfPlayers;
@@ -55,13 +42,14 @@ public final class TurnManager {
     }
   }
 
-  public final boolean getNeedToTurn() {
-    return this.needToTurn;
-  }
+  /**
+   * if the player can turn
+   * 
+   * @return true if the player needs to turn, false otherwise
+   */
+  public final boolean getNeedToTurn() { return this.needToTurn; }
 
-  public final int getTotalTurns() {
-    return this.totalTurns;
-  }
+  public final int getTotalTurns() { return this.totalTurns; }
 
   /**
    * Checks if the game has reached the end based on a set number of turns.
@@ -69,8 +57,6 @@ public final class TurnManager {
    * @param maxTurns Maximum turns allowed in the game.
    * @return true if the game should end, false otherwise
    */
-  public final boolean isGameEnd() {
-    return this.totalTurns >= Constants.MAX_GAME_TURNS;
-  }
+  public final boolean isGameEnd() { return this.totalTurns >= Constants.MAX_GAME_TURNS; }
 
 }

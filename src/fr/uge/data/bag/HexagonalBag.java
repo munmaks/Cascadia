@@ -1,5 +1,6 @@
 package fr.uge.data.bag;
 
+
 import fr.uge.data.environment.Tile;
 import fr.uge.data.environment.TileType;
 import fr.uge.data.environment.WildlifeType;
@@ -28,7 +29,7 @@ public final class HexagonalBag implements Bag {
    * FOX : 3 <br>
    * SALMON : 4 <br>
    */
-  private final int[] animals = { Constants.ANIMALS_HEXAGONAL, /* BEAR */
+  private final int[] animals = {Constants.ANIMALS_HEXAGONAL, /* BEAR */
       Constants.ANIMALS_HEXAGONAL, /* ELK */
       Constants.ANIMALS_HEXAGONAL, /* HAWK */
       Constants.ANIMALS_HEXAGONAL, /* FOX */
@@ -38,14 +39,16 @@ public final class HexagonalBag implements Bag {
   /* fill tiles with needed number of tiles for a game */
   private final LinkedList<Tile> tiles = new LinkedList<>();
 
-  /*
-   * 3 tiles for each starter habitat tile (top, left, right), total 5 occurences
-   */
   private final Tile[][] starters = new Tile[Constants.MAX_STARTER_HABITATS][Constants.MAX_TILES_ON_STARTER];
   private final int maxTilesForGame;
 
   private int indexStarterHabitatTile = -1;
 
+  /**
+   * Constructor for HexagonalBag
+   * 
+   * @param numberOfPlayers
+   */
   public HexagonalBag(int numberOfPlayers) {
     if (!Constants.isValidNbPlayers(numberOfPlayers)) {
       throw new IllegalArgumentException(Constants.ILLEGAL_NUMBER_OF_PLAYERS);
@@ -61,20 +64,9 @@ public final class HexagonalBag implements Bag {
   }
 
   /**
-   * Decrease number of tiles in bag to maxTilesForGame Result: it takes only
-   * needed number of tiles for a game (depends on number of players)
-   */
-  // private void decreaseNumberOfTiles() {
-  // int currentNumberOfTiles = this.maxTilesTotal;
-  // while (currentNumberOfTiles > this.maxTilesForGame){
-  // --currentNumberOfTiles;
-  // this.tiles.remove(0); /* remove first element */
-  // }
-  // }
-
-  /**
-   * Initialize tiles for Hexagonal version throws IOException if file not found
-   * or can't be read
+   * Initialize the game by reading all tiles from the files.
+   * 
+   * @throws IOException
    */
   private void initializeGame() throws IOException {
     readHabitatTilesThreeAnimals(); /* 15 tiles */
@@ -83,53 +75,38 @@ public final class HexagonalBag implements Bag {
     readStarterHabitatTiles(); /* 15 tiles (5 * 3) */
   }
 
-  // private void readTiles(String path, Function<String[], Tile> tileMapper)
-  // throws IOException {
-  // try (var reader = Files.newBufferedReader(Paths.get(path))) {
-  // String line;
-  // while ((line = reader.readLine()) != null) {
-  // var row = line.split("\\s+");
-  // tiles.add(tileMapper.apply(row));
-  // }
-  // }
-  // }
-
-  private void readHabitatTilesThreeAnimals()
-      throws IOException { /* tile, tile, animal, animal, animal */
+  /**
+   * add all habitat tiles with three animals in `tiles`.
+   * 
+   * @throws IOException
+   */
+  private void readHabitatTilesThreeAnimals() throws IOException {
+    /* tile, tile, animal, animal, animal */
     UtilsBag.readTiles(Constants.PATH_HABITAT_TILE_THREE_ANIMALS,
         row -> tiles.add(getHabitatTile(row[0], row[1], row[2], row[3], row[4])));
   }
 
-  private void readHabitatTilesTwoAnimals() throws IOException { /* tile, tile, animal, animal */
+  /**
+   * add all habitat tiles with two animals in `tiles`.
+   * 
+   * @throws IOException
+   */
+  private void readHabitatTilesTwoAnimals() throws IOException {
+    /* tile, tile, animal, animal */
     UtilsBag.readTiles(Constants.PATH_HABITAT_TILE_TWO_ANIMALS,
         row -> tiles.add(getHabitatTile(row[0], row[1], row[2], row[3])));
   }
 
-  private void readKeystoneTiles() throws IOException { /* tile, animal */
+  /**
+   * add all keystone tiles in `tiles`.
+   * 
+   * @throws IOException
+   */
+  private void readKeystoneTiles() throws IOException {
+    /* tile, animal */
     UtilsBag.readTiles(Constants.PATH_KEYSTONE_TILE,
         row -> tiles.add(getKeystoneTile(row[0], row[1])));
   }
-
-  // private void readHabitatTilesThreeAnimals() throws IOException { /* tile,
-  // tile, animal, animal, animal */
-  // readTiles(Constants.PATH_HABITAT_TILE_THREE_ANIMALS, row ->
-  // getHabitatTile(row[0], row[1], row[2], row[3], row[4]));
-  // }
-
-  // private void readHabitatTilesTwoAnimals() throws IOException { /* tile, tile,
-  // animal, animal */
-  // readTiles(Constants.PATH_HABITAT_TILE_TWO_ANIMALS, row ->
-  // getHabitatTile(row[0], row[1], row[2], row[3]));
-  // }
-
-  /**
-   * read all keystone tiles in `tiles`. throws IOException if file not found or
-   * can't be read
-   */
-  // private void readKeystoneTiles() throws IOException { /* tile, animal */
-  // readTiles(Constants.PATH_KEYSTONE_TILE, row -> getKeystoneTile(row[0],
-  // row[1]));
-  // }
 
   /**
    * <p>
@@ -168,19 +145,18 @@ public final class HexagonalBag implements Bag {
   }
 
   /**
-   * Gives random Habitat or Keystone tile
+   * Gives random Tile
    * 
-   * @return one tile from array `tiles`
+   * @return one Tile from array `tiles`
    */
   @Override
-  public Tile getRandomTile() {
-    // var random = new Random();
-    // var randomIndex = random.nextInt(this.tiles.size()); /* in [0, tiles.size()[
-    // */
-    // return this.tiles.remove(randomIndex);
-    return UtilsBag.getRandomTile(this.tiles);
-  }
+  public Tile getRandomTile() { return UtilsBag.getRandomTile(this.tiles); }
 
+  /**
+   * Gives random StarterHabitatTile
+   * 
+   * @return one StarterHabitatTile from array `starters`
+   */
   @Override
   public Tile[] getStarter() {
     if (this.indexStarterHabitatTile >= Constants.MAX_STARTER_HABITATS) { /* prevent overflow ... */
@@ -252,9 +228,7 @@ public final class HexagonalBag implements Bag {
    * @return WildlifeType - the randomly selected token.
    */
   @Override
-  public final WildlifeType getRandomToken() {
-    return UtilsBag.getRandomToken(this.animals);
-  }
+  public final WildlifeType getRandomToken() { return UtilsBag.getRandomToken(this.animals); }
 
   @Override
   public String toString() {

@@ -1,5 +1,6 @@
 package fr.uge.data.core;
 
+
 import fr.uge.data.environment.Coordinates;
 import fr.uge.data.util.Constants;
 
@@ -22,7 +23,6 @@ public final class Game {
 
   public Game(GameBoard board, /* 1 game board */
       TurnManager turnManager, /* 20 turns for entire game */
-      // int playerCount, /* number of players */
       List<Player> players, /* list of players */
       int version) {
     this.board = Objects.requireNonNull(board);
@@ -32,30 +32,32 @@ public final class Game {
     }
     this.version = version;
 
-    // this.playerCount = playerCount;
     this.playerCount = players.size();
     this.players = Objects.requireNonNull(players);
     initializeGame();
   }
 
   /**
-   * @return number of players in the game.
+   * @return the version of the game.
    */
-  public final int getPlayerCount() {
-    return this.playerCount;
-  }
+  public final int getPlayerCount() { return this.playerCount; }
 
   /**
    * @return the game board.
    */
-  public final GameBoard board() {
-    return this.board;
-  }
+  public final GameBoard board() { return this.board; }
 
-  public final List<Player> getPlayers() {
-    return List.copyOf(this.players);
-  }
+  /**
+   * @return the list of players.
+   */
+  public final List<Player> getPlayers() { return List.copyOf(this.players); }
 
+  /**
+   * Returns the player at the specified index.
+   * 
+   * @param index the index of the player.
+   * @return the player at the specified index.
+   */
   public final Player getPlayerByIndex(int index) {
     if (index < 0 || index >= this.playerCount) {
       throw new IllegalArgumentException("Invalid index");
@@ -66,42 +68,12 @@ public final class Game {
   /**
    * @return the turn manager.
    */
-  public final TurnManager turnManager() {
-    return this.turnManager;
-  }
-
-  public void startGame() {
-    /* Initialize game components and start the game loop */
-  }
-
-  public void endGame() {
-    /* ends the game and performs final scoring */
-  }
-
-  public int performCalculations() {
-    /*
-     * for every player we calculate their score based on WildlifeScoringCard for
-     * every animal After, we must add additional score based on every tile:
-     * (Forest, Mountain etc ...) if player has the most habitat tile type than
-     * other players so he gets +1 points on each habitat type.
-     */
-    return 0;
-  }
-
-  /*
-   * public int performCalculations() { int totalScore = 0; for (Player player :
-   * turnManager.getPlayers()) { int score = calculatePlayerScore(player);
-   * totalScore += score; } return totalScore; } private int
-   * calculatePlayerScore(Player player) { int score = 0; // // Calculate score
-   * based on wildlife scoring card // score += calculateWildlifeScore(player); //
-   * // Calculate score based on habitat tiles // score +=
-   * calculateHabitatScore(player); return score; }
-   */
+  public final TurnManager turnManager() { return this.turnManager; }
 
   /**
-   * Initializes the game by placing the starter tiles for each player. The
-   * starter tiles are placed in the center of the board. The placement of starter
-   * tiles depends on the version of the game.
+   * initializes the game by placing the starter tiles for each player.
+   * 
+   * @return the winner of the game.
    */
   private void initializeGame() {
     Coordinates centerCoordinates = new Coordinates(0, 0);
@@ -130,6 +102,14 @@ public final class Game {
     // placeTile(cell, tile);
   }
 
+  /**
+   * Places the starter tiles for a player in a square pattern.
+   * 
+   * @param playerIndex         the index of the player.
+   * @param centerCoordinates   the center coordinates of the board.
+   * @param leftNeighborNumber  left neighbor number.
+   * @param rightNeighborNumber right neighbor number.
+   */
   private void placeStarterTilesSquare(int playerIndex, Coordinates centerCoordinates,
       int leftNeighborNumber, int rightNeighborNumber) {
     var starter = board.getBag().getStarter(); /* 3 tiles */
@@ -147,6 +127,14 @@ public final class Game {
     playerEnvironment.placeTile(neighborCell, starter[2]);
   }
 
+  /**
+   * Places the starter tiles for a player in a hexagonal pattern.
+   * 
+   * @param playerIndex         player index
+   * @param centerCoordinates   center coordinates
+   * @param leftNeighborNumber  left neighbor number
+   * @param rightNeighborNumber right neighbor number
+   */
   private void placeStarterTilesHexagonal(int playerIndex, Coordinates centerCoordinates,
       int leftNeighborNumber, int rightNeighborNumber) {
     var starter = board.getBag().getStarter(); /* 3 tiles */

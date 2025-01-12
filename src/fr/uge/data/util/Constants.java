@@ -16,10 +16,6 @@ public final class Constants {
   public static final int TILES_ON_BOARD = 4;
   public static final int NB_SCORING_CARDS = 5;
 
-  /* Environment */
-  // public static final int MAX_ROW = 12;
-  // public static final int MAX_COL = 12;
-
   public static final int NB_NEIGHBORS_SQUARE = 4;
   public static final int NB_NEIGHBORS_HEXAGONAL = 6;
   public static final int MAX_ROTATIONS = 6; /* for hexagonals */
@@ -61,33 +57,46 @@ public final class Constants {
   public static final int ANIMALS_SQUARE = 10;
   public static final int MAX_ITERATION = 0xFF; /* some number to prevent infinity loop */
 
-  /* useful methods across the project */
+  /**
+   * Check if the version is valid
+   * 
+   * @param version the version
+   * @return true if the version is valid, false otherwise
+   */
   public static boolean isValidVersion(int version) {
     return version >= VERSION_SQUARE && version <= VERSION_HEXAGONAL;
   }
 
-  public static boolean isValidCoordinates(int y, int x) {
-    return true;
-    // return y >= 0 && y < MAX_ROW &&
-    // x >= 0 && x < MAX_COL;
+  /**
+   * Check if the number of players is valid
+   * 
+   * @param numberOfPlayers the number of players
+   * @return true if the number of players is valid, false otherwise
+   */
+  public static boolean isValidNbPlayers(int numberOfPlayers) {
+    return numberOfPlayers >= MIN_PLAYERS && numberOfPlayers <= MAX_PLAYERS;
   }
 
-  public static boolean isValidNbPlayers(int nbPlayers) {
-    return nbPlayers >= MIN_PLAYERS && nbPlayers <= MAX_PLAYERS;
+  /**
+   * Check if the square version has exactly 2 players
+   * 
+   * @param numberOfPlayers the number of players
+   * @param version         the version
+   * @return true if the square version has exactly 2 players, false otherwise
+   */
+  public static boolean isInvalidSquareNbPlayers(int numberOfPlayers, int version) {
+    return version != VERSION_HEXAGONAL && numberOfPlayers != NB_PLAYERS_SQUARE;
   }
 
-  public static boolean isInvalidSquareNbPlayers(int nbPlayers, int version) {
-    return version != VERSION_HEXAGONAL && nbPlayers != NB_PLAYERS_SQUARE;
-  }
-
+  /**
+   * Check if the choice is valid
+   * 
+   * @param choice the choice
+   * @return true if the choice is valid, false otherwise
+   */
   public static boolean isValidChoice(int choice) {
     return choice >= 1 && choice <= TOKENS_ON_BOARD;
   }
-
-  /* Error messages, to improve later */
-  // public static final String ILLEGAL_COORDINATES =
-  // "Invalid coordinates, must be between (0, 0) and " +
-  // "(" + MAX_ROW + ", " + MAX_COL + ")\n";
 
   public static final String ILLEGAL_NUMBER_OF_PLAYERS = "Number of Players must be between "
       + MIN_PLAYERS + " and " + MAX_PLAYERS + "\n";

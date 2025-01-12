@@ -12,5 +12,4 @@ public record Coordinates(int y, int x) {
 
   @Override
   public final String toString() { return "(" + x + ", " + y + ")"; }
-
 }

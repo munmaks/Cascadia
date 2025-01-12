@@ -16,5 +16,4 @@ public sealed interface Cell permits SquareCell, HexagonalCell {
   boolean isOccupiedByTile();
 
   int getNumberOfNeighbors();
-  // boolean isOccupiedByAnimal(); // not needed
 }

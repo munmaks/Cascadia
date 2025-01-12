@@ -1,5 +1,6 @@
 package fr.uge.data.environment;
 
+
 import java.util.Objects;
 
 import fr.uge.data.util.Constants;
@@ -40,31 +41,34 @@ public final class HexagonalCell implements Cell {
   private int currentRotation = 0;
 
   public HexagonalCell(Coordinates coordinates) {
-
-    this.coordinates = Objects.requireNonNull(coordinates);
-
+    this.coordinates = Objects.requireNonNull(coordinates,
+        "coordinates must not be null in HexagonalCell()");
     this.occupiedByTile = false;
     this.occupiedByAnimal = false;
     this.tile = null;
   }
 
+  /**
+   * @return number of neighbors for hexagonal cell
+   */
   @Override
-  public final int getNumberOfNeighbors() {
-    return Constants.NB_NEIGHBORS_HEXAGONAL;
-  }
+  public final int getNumberOfNeighbors() { return Constants.NB_NEIGHBORS_HEXAGONAL; }
 
   /*
    * @return possibility to place tile on the cell
    */
   @Override
-  public final boolean isOccupiedByTile() {
-    return this.occupiedByTile;
-  }
+  public final boolean isOccupiedByTile() { return this.occupiedByTile; }
 
-  private boolean isOccupiedByAnimal() {
-    return this.occupiedByAnimal;
-  }
+  /*
+   * @return possibility to place animal on the cell
+   */
+  private boolean isOccupiedByAnimal() { return this.occupiedByAnimal; }
 
+  /**
+   * @param tileToPlace The tile to place on the cell.
+   * @return true if the tile was placed, false otherwise.
+   */
   @Override
   public final boolean placeTile(Tile tileToPlace) {
     Objects.requireNonNull(tileToPlace);
@@ -76,25 +80,27 @@ public final class HexagonalCell implements Cell {
     return this.occupiedByTile;
   }
 
+  /**
+   * @return the tile placed on the cell
+   */
   @Override
-  public final Tile getTile() {
-    return this.tile;
-  }
-
-  @Override
-  public final WildlifeType getAnimal() {
-    return this.placedAnimal;
-  }
+  public final Tile getTile() { return this.tile; }
 
   /**
-   * Only in Hexagonal version
+   * @return the animal placed on the cell
+   */
+  @Override
+  public final WildlifeType getAnimal() { return this.placedAnimal; }
+
+  /**
+   * turn the tile rotation clockwise, only in Hexagonal version
    */
   public final void turnСounterСlockwise() {
     this.currentRotation = (this.currentRotation + 1) % Constants.MAX_ROTATIONS;
   }
 
   /**
-   * Only in Hexagonal version
+   * turn the tile rotation counter clockwise, only in Hexagonal version
    */
   public final void turnСlockwise() {
     this.currentRotation = (this.currentRotation - 1 + Constants.MAX_ROTATIONS)
@@ -102,12 +108,18 @@ public final class HexagonalCell implements Cell {
   }
 
   /**
-   * Only in Hexagonal version
+   * Get the current rotation of the tile.
+   * 
+   * @param rotation The current rotation of the tile.
    */
-  public final int getRotation() {
-    return this.currentRotation;
-  }
+  public final int getRotation() { return this.currentRotation; }
 
+  /**
+   * Determine possibility to placed a wildlife token on player's environment.
+   * 
+   * @param token The wildlife token to place.
+   * @return true if the token could be placed, false otherwise.
+   */
   @Override
   public boolean couldBePlaced(WildlifeType token) {
     Objects.requireNonNull(token, "token must not be null in HabitatTile.couldBePlaced()");
@@ -117,6 +129,12 @@ public final class HexagonalCell implements Cell {
     return this.tile.animals().contains(token);
   }
 
+  /**
+   * Determine possibility to placed a wildlife token on player's environment.
+   * 
+   * @param token The wildlife token to place.
+   * @return true if the token was placed, false otherwise.
+   */
   @Override
   public boolean placeAnimal(WildlifeType token) {
     Objects.requireNonNull(token, "animal must not be null in placeToken()");
@@ -139,9 +157,10 @@ public final class HexagonalCell implements Cell {
     return builder.toString();
   }
 
+  /**
+   * @return the coordinates of the cell
+   */
   @Override
-  public final Coordinates getCoordinates() {
-    return this.coordinates;
-  }
+  public final Coordinates getCoordinates() { return this.coordinates; }
 
 }
