@@ -34,6 +34,72 @@ enum BearScoringType {
 public record BearScoringCard(BearScoringType version, Player player) implements WildlifeScoringCard {
 
   /**
+   * Take the value of each and depend on his value and the boolean parameters return his point's conversion
+   *
+   * @param groupSize a list of integer where we take the number of group of Bear depends on his size
+   * @param pair a boolean who permits to convert each in a different way
+   * @param oneToThree a boolean who permits to convert each in a different way
+   * @param twoToFour a boolean who permits to convert each in a different way
+   * @return the conversion in point depend on the value of each and the boolean parameters
+   */
+  static int pointConversionBear(ArrayList<Integer> groupSize, boolean pair, boolean oneToThree, boolean twoToFour) {
+    if (pair) {
+      return convertForPair(groupSize);
+    }
+    if (oneToThree) {
+      return convertForOneToThree(groupSize);
+    }
+    if (twoToFour) {
+      return convertForTwoToFour(groupSize);
+    }
+    return 0;
+  }
+
+  /**
+   * Take the value of each and depend on his value, return his point's conversion
+   *
+   * @param groupSize a list of integer where we take the number of group of Bear depends on his size
+   * @return the conversion in point depend on the value of each
+   */
+  static private int convertForPair(ArrayList<Integer> groupSize) {
+    return switch (groupSize.getFirst()){
+      case 1 -> 4;
+      case 2 -> 11;
+      case 3 -> 19;
+      default -> 27;
+    };
+  }
+
+  /**
+   * Take the value of each and depend on his value, return his point's conversion
+   *
+   * @param groupSize a list of integer where we take the number of group of Bear depends on his size
+   * @return the conversion in point depend on the value of each
+   */
+  static private int convertForOneToThree(ArrayList<Integer> groupSize) {
+    int res = 0;
+    if(groupSize.getFirst()!=0 && groupSize.get(1)!=0 && groupSize.get(2)!=0) res = 3;
+    res += groupSize.getFirst()*2;
+    res += groupSize.get(1)*5;
+    res += groupSize.get(2)*8;
+    return res;
+  }
+
+  /**
+   * Take the value of each and depend on his value, return his point's conversion
+   *
+   * @param groupSize a list of integer where we take the number of group of Bear depends on his size
+   * @return the conversion in point depend on the value of each
+   */
+  static private int convertForTwoToFour(ArrayList<Integer> groupSize) {
+    int res = 0;
+    res += groupSize.get(1)*5;
+    res += groupSize.get(2)*8;
+    res += groupSize.get(2)*13;
+    return res;
+  }
+
+  /**
    * This method take all the tiles in the player's environment and stock the number of group of Bear in a List
    *
    * @param player The player whose score is calculated
@@ -69,10 +135,10 @@ public record BearScoringCard(BearScoringType version, Player player) implements
     // si version 4, points gqgnés = twoBear + threeBear + fourBear
     ArrayList<Integer> numbers = numberBear(player);
     switch(version){
-      case FIRST: player.score += WildlifeScoringCard.pointConversionBear(numbers, true, false, false);
+      case FIRST: player.score += pointConversionBear(numbers, true, false, false);
       case SECOND: player.score += numbers.get(1) * 10;
-      case THIRD: player.score += WildlifeScoringCard.pointConversionBear(numbers, false, true, false);
-      case FOURTH: player.score += WildlifeScoringCard.pointConversionBear(numbers, false, false, true);
+      case THIRD: player.score += pointConversionBear(numbers, false, true, false);
+      case FOURTH: player.score += pointConversionBear(numbers, false, false, true);
     }
   }
 }

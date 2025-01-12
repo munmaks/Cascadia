@@ -48,6 +48,55 @@ enum FoxScoringType {
 public record FoxScoringCard(HawkScoringType version, Player player) implements WildlifeScoringCard {
 
   /**
+   * Take the value of each and depend on his value and the boolean parameters return his point's conversion
+   *
+   * @param each the value that we want to convert
+   * @param AloneAndMorePresentAnimal a boolean who permits to convert each in a different way
+   * @param AloneWithoutFox a boolean who permits to convert each in a different way
+   * @return the conversion in point depend on the value of each and the boolean parameters
+   */
+  static int pointConversionFox(int each, boolean AloneAndMorePresentAnimal, boolean AloneWithoutFox) {
+    if (AloneAndMorePresentAnimal) {
+      return convertForAloneAndMorePresentAnimal(each);
+    }
+    if (AloneWithoutFox) {
+      return convertForAloneWithoutFox(each);
+    }
+    return 0;
+  }
+
+  /**
+   * Take the value of each and depend on his value, return his point's conversion
+   *
+   * @param each the value that we want to convert
+   * @return the conversion in point depend on the value of each
+   */
+  static private int convertForAloneAndMorePresentAnimal(int each) {
+    return switch (each){
+      case 1 -> 1;
+      case 2 -> 2;
+      case 3 -> 3;
+      case 4 -> 4;
+      case 5 -> 5;
+      default -> 6;
+    };
+  }
+
+  /**
+   * Take the value of each and depend on his value, return his point's conversion
+   *
+   * @param each the value that we want to convert
+   * @return the conversion in point depend on the value of each
+   */
+  static private int convertForAloneWithoutFox(int each) {
+    return switch (each){
+      case 1 -> 3;
+      case 2 -> 5;
+      default -> 7;
+    };
+  }
+
+  /**
    * Search in the map whose Wildlife type is the most present and return it
    *
    * @param speciesCount a Map whose list the Wildlife type and the number of it
@@ -106,11 +155,11 @@ public record FoxScoringCard(HawkScoringType version, Player player) implements 
     Map<Cell, Map<WildlifeType, Integer>> neighborSpecies = WildlifeScoringCard.countNeighborsForAnimals(onlyFox, player);
     for(var each : neighborSpecies.values()) {
       beforePointConversion = WildlifeScoringCard.numberNeighborSpecies(each, true, FOX, false);
-      aloneWithFox += WildlifeScoringCard.pointConversionFox(beforePointConversion, true, false);
+      aloneWithFox += pointConversionFox(beforePointConversion, true, false);
       beforePointConversion = (int)each.entrySet().stream().filter(entry -> entry.getKey() != FOX).filter(entry -> entry.getValue() == 2).count(); // vérifie pour chaque fox si ces voisins sont en pairs et si oui, les compte
-      aloneWithoutFox += WildlifeScoringCard.pointConversionFox(beforePointConversion, false, true); // convertis le compte d'animaux paire obtenus en points
+      aloneWithoutFox += pointConversionFox(beforePointConversion, false, true); // convertis le compte d'animaux paire obtenus en points
       beforePointConversion = WildlifeScoringCard.numberNeighborSpecies(each, false, getMostCommonWildlifeType(each), true);
-      onlyMorePresentAnimal += WildlifeScoringCard.pointConversionFox(beforePointConversion, true, false);
+      onlyMorePresentAnimal += pointConversionFox(beforePointConversion, true, false);
     }
     numbers.add(aloneWithFox);
     numbers.add(aloneWithoutFox);

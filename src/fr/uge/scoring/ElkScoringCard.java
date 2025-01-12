@@ -35,6 +35,58 @@ enum ElkScoringType {
 public record ElkScoringCard(ElkScoringType version, Player player) implements WildlifeScoringCard {
 
   /**
+   * Take the value of each and depend on his value, return his point's conversion
+   *
+   * @param each the value that we want to convert
+   * @return the conversion in point depend on the value of each
+   */
+  static private int convertForGroup(int each) {
+    return switch (each) {
+      case 1 -> 2;
+      case 2 -> 4;
+      case 3 -> 7;
+      case 4 -> 10;
+      case 5 -> 14;
+      case 6 -> 18;
+      case 7 -> 23;
+      default -> 28;
+    };
+  }
+
+  /**
+   * Take the value of each and depend on his value, return his point's conversion
+   *
+   * @param each the value that we want to convert
+   * @return the conversion in point depend on the value of each
+   */
+  static private int convertForRow(int each) {
+    return switch (each){
+      case 1 -> 2;
+      case 2 -> 5;
+      case 3 -> 9;
+      default -> 13;
+    };
+  }
+
+  /**
+   * Take the value of each and depend on his value and the boolean parameters return his point's conversion
+   *
+   * @param each the value that we want to convert
+   * @param row a boolean who permits to convert each in a different way
+   * @param group a boolean who permits to convert each in a different way
+   * @return the conversion in point depend on the value of each and the boolean parameters
+   */
+  static int pointConversionElk(int each, boolean row, boolean group) {
+    if (group) {
+      return convertForGroup(each);
+    }
+    if (row) {
+      return convertForRow(each);
+    }
+    return 0;
+  }
+
+  /**
    * Check for all the directions possible if centerCell is part of a triangle of Elk
    *
    * @param centerCell The cell we check if it's part of a triangle
@@ -251,19 +303,19 @@ public record ElkScoringCard(ElkScoringType version, Player player) implements W
             .toList();
     List<Integer> numberElk = WildlifeScoringCard.calculateGroupScore(onlyElk, player, ELK);
     for(var each : numberElk) { // convertis pour chaque groupe son equivalent en point
-      group += WildlifeScoringCard.pointConversionElk(each, false, true);
+      group += pointConversionElk(each, false, true);
     }
     Map<Integer, Integer>elkOnRow = countAlignedElk(onlyElk);
     List<Integer>elkOnShape = countTrianglesAndDiamonds(onlyElk);
     row = elkOnRow.entrySet().stream()
-                    .mapToInt(line -> WildlifeScoringCard.pointConversionElk(line.getKey(), true, false) * line.getValue())
+                    .mapToInt(line -> pointConversionElk(line.getKey(), true, false) * line.getValue())
                     .sum();
     shape = elkOnRow.entrySet().stream()
             .filter(line -> line.getKey() < 3)
-            .mapToInt(line -> WildlifeScoringCard.pointConversionElk(line.getKey(), true, false) * line.getValue())
+            .mapToInt(line -> pointConversionElk(line.getKey(), true, false) * line.getValue())
             .sum();
-    shape += WildlifeScoringCard.pointConversionElk(3, true, false) * elkOnShape.getFirst(); // meme point gagné pour Lignes que pour Formations
-    shape += WildlifeScoringCard.pointConversionElk(4, true, false) * elkOnShape.getLast();
+    shape += pointConversionElk(3, true, false) * elkOnShape.getFirst(); // meme point gagné pour Lignes que pour Formations
+    shape += pointConversionElk(4, true, false) * elkOnShape.getLast();
     numbers.add(row);
     numbers.add(shape);
     numbers.add(group);

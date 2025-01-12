@@ -32,6 +32,74 @@ enum SalmonScoringType {
 public record SalmonScoringCard(SalmonScoringType version, Player player) implements WildlifeScoringCard {
 
   /**
+   * Take the value of each and depend on his value and the boolean parameters return his point's conversion
+   *
+   * @param each the value that we want to convert
+   * @param maxSeven a boolean who permits to convert each in a different way
+   * @param maxFive a boolean who permits to convert each in a different way
+   * @param threeToFive a boolean who permits to convert each in a different way
+   * @return the conversion in point depend on the value of each and the boolean parameters
+   */
+  static int pointConversionSalmon(int each, boolean maxSeven, boolean maxFive, boolean threeToFive) {
+    if (maxSeven) {
+      return convertForMaxSeven(each);
+    } else if (maxFive) {
+      return convertForMaxFive(each);
+    } else if (threeToFive) {
+      return convertForThreeToFive(each);
+    }
+    return 0;
+  }
+
+  /**
+   * Take the value of each and depend on his value, return his point's conversion
+   *
+   * @param each the value that we want to convert
+   * @return the conversion in point depend on the value of each
+   */
+  static private int convertForMaxSeven(int each) {
+    return switch (each) {
+      case 1 -> 2;
+      case 2 -> 5;
+      case 3 -> 8;
+      case 4 -> 12;
+      case 5 -> 16;
+      case 6 -> 20;
+      default -> 25;
+    };
+  }
+
+  /**
+   * Take the value of each and depend on his value, return his point's conversion
+   *
+   * @param each the value that we want to convert
+   * @return the conversion in point depend on the value of each
+   */
+  static private int convertForMaxFive(int each) {
+    return switch (each) {
+      case 1 -> 2;
+      case 2 -> 4;
+      case 3 -> 9;
+      case 4 -> 11;
+      default -> 17;
+    };
+  }
+
+  /**
+   * Take the value of each and depend on his value, return his point's conversion
+   *
+   * @param each the value that we want to convert
+   * @return the conversion in point depend on the value of each
+   */
+  static private int convertForThreeToFive(int each) {
+    return switch (each) {
+      case 3 -> 10;
+      case 4 -> 12;
+      default -> 15;
+    };
+  }
+
+  /**
    * Count the salmon in group in the environment of player and convert this value in point and return the list of it
    *
    * @param player current player which we want to calculate his score
@@ -45,9 +113,9 @@ public record SalmonScoringCard(SalmonScoringType version, Player player) implem
             .toList();
     List<Integer> numberSalmon = WildlifeScoringCard.calculateGroupScore(onlySalmon, player, SALMON);
     for(var each : numberSalmon) { // convertis pour chaque groupe son equivalent en point
-      maxSeven += WildlifeScoringCard.pointConversionSalmon(each, true, false, false);
-      maxFive += WildlifeScoringCard.pointConversionSalmon(each, false, true, false);
-      if(each>3) threeToFive += WildlifeScoringCard.pointConversionSalmon(each, false, false, true);
+      maxSeven += pointConversionSalmon(each, true, false, false);
+      maxFive += pointConversionSalmon(each, false, true, false);
+      if(each>3) threeToFive += pointConversionSalmon(each, false, false, true);
     }
     numbers.add(maxSeven);
     numbers.add(maxFive);

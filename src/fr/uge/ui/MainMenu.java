@@ -34,22 +34,22 @@ public final class MainMenu {
 
 
 
-  // public MainMenu() {
-  //   Application.run(Color.BLACK, context -> {
-  //     int buttonWidth = 300;
-  //     int buttonHeight = 300;
-  //     int buttonX = context.getScreenInfo().width() / 2 - buttonWidth / 2;
-  //     int buttonY = context.getScreenInfo().height() / 2 - buttonHeight / 2;
-  //     context.renderFrame(graphics -> {
-  //       displayVersion(context, buttonX, buttonY);
-  //     });
-  //     while (true) {
-  //       Event event = context.pollEvent();
-  //       if (event instanceof PointerEvent pointerEvent) {
-  //         PointerEvent.Action action = pointerEvent.action();
-  //         PointerEvent.Location location = pointerEvent.location();
-  //         checkClickVersion(context, action, location, buttonX, buttonY);
-  //       }}});}
+// public MainMenu() {
+//   Application.run(Color.BLACK, context -> {
+//     int buttonWidth = 300;
+//     int buttonHeight = 300;
+//     int buttonX = context.getScreenInfo().width() / 2 - buttonWidth / 2;
+//     int buttonY = context.getScreenInfo().height() / 2 - buttonHeight / 2;
+//     context.renderFrame(graphics -> {
+//       displayVersion(context, buttonX, buttonY);
+//     });
+//     while (true) {
+//       Event event = context.pollEvent();
+//       if (event instanceof PointerEvent pointerEvent) {
+//         PointerEvent.Action action = pointerEvent.action();
+//         PointerEvent.Location location = pointerEvent.location();
+//         checkClickVersion(context, action, location, buttonX, buttonY);
+//       }}});}
 
 
   /**

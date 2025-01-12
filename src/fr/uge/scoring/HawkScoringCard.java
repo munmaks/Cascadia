@@ -34,6 +34,8 @@ enum HawkScoringType {
 
 public record HawkScoringCard(HawkScoringType version, Player player) implements WildlifeScoringCard {
 
+
+
   /**
    * Checks if the given cell is aligned with the value of the directions
    *
