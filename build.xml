@@ -37,7 +37,7 @@
             destdir="${javadoc.dir}"
             packagenames="fr.uge.*"
             failonerror="false"
-            doclint="none">
+        >
             <classpath refid="classpath" />
         </javadoc>
     </target>
