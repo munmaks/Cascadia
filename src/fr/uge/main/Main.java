@@ -1,20 +1,14 @@
 package fr.uge.main;
 
 
-import java.awt.Color;
-
-import fr.uge.ui.CascadiaController;
-// import fr.uge.ui.GraphicSquare;
-// import fr.uge.ui.MainMenu;
-// import fr.uge.util.Constants;
-
+import fr.uge.controler.CascadiaControler;
 import com.github.forax.zen.Application;
+import java.awt.Color;
 
 public class Main {
   public static void main(String[] args) {
-    // var _ = new MainMenu(Constants.VERSION_SQUARE);
-    // Application.run(Color.WHITE, GraphicSquare::cascadiaSquareGame);
-    Application.run(Color.WHITE, CascadiaController::cascadiaSquareGame);
+    // var _ = new MainMenu(Constants.VERSION_SQUARE); // square terminal version
+    Application.run(Color.WHITE, CascadiaControler::cascadiaSquareGame);
   }
 
 }
