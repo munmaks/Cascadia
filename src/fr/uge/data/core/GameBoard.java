@@ -1,5 +1,6 @@
 package fr.uge.data.core;
 
+
 import fr.uge.data.bag.Bag;
 import fr.uge.data.bag.HexagonalBag;
 import fr.uge.data.bag.SquareBag;
@@ -26,16 +27,6 @@ public final class GameBoard {
   private static final ArrayList<Tile> tiles = new ArrayList<>(Constants.TILES_ON_BOARD);
   private static final ArrayList<WildlifeType> tokens = new ArrayList<>(Constants.TOKENS_ON_BOARD);
 
-  // private int indexOfTokenToUpdate = 0;
-
-  /* for later usage */
-  // private static final WildlifeScoringCard[] scoringCards = new
-  // WildlifeScoringCard[Constants.NB_SCORING_CARDS];
-
-  /*
-   * <p>Indexes for WildlifeType `enum`:</p> <ul> <li>BEAR : 0</li> <li>ELK :
-   * 1</li> <li>HAWK : 2</li> <li>FOX : 3</li> <li>SALMON : 4</li> </ul>
-   */
   /**
    * This constructor is used to initialise the tiles and tokens on the board.
    * 
@@ -59,7 +50,9 @@ public final class GameBoard {
   }
 
   /**
-   * This method is used to determine if all tokens are the same.
+   * This method is used to determine if tokens need to be updated.
+   * 
+   * @return true if tokens need to be updated, false otherwise
    */
   public final boolean tokensNeedUpdate() {
     if (this.tokensAreUpdated) {
@@ -69,8 +62,9 @@ public final class GameBoard {
   }
 
   /**
-   * This method is used to determine which token needs to be updated. if there's
-   * a token with 3 or more occurrences, we return it.
+   * This method is used to determine which token needs to be updated.
+   * 
+   * @return the token to update
    */
   private Optional<WildlifeType> getTokenToUpdate() {
     map.clear();
@@ -90,30 +84,31 @@ public final class GameBoard {
     return !getTokenToUpdate().isEmpty();
   }
 
-  /* to add later: using nature tokens for every player */
-
-  public final boolean areTokensUpdated() {
-    return this.tokensAreUpdated;
-  }
+  /**
+   * This method is used to determine if tokens have been updated.
+   * 
+   * @return true if tokens have been updated, false otherwise
+   */
+  public final boolean areTokensUpdated() { return this.tokensAreUpdated; }
 
   /**
-   * Turn Manager switch
+   * This method is used to set the default value of tokensAreUpdated to false.
+   * 
+   * @param tokensAreUpdated the default value of tokensAreUpdated
    */
-  public final void setDefaultTokensAreUpdated() {
-    this.tokensAreUpdated = false;
-  }
+  public final void setDefaultTokensAreUpdated() { this.tokensAreUpdated = false; }
 
-  // not usefull, because it's true when updateTokens() is called (so need to
-  // change)
-  // and token weren't already changed
-  // public final void setTrueTokensAreUpdated() {
-  // this.tokensAreUpdated = true;
-  // }
+  /**
+   * This method is used to update the token.
+   * 
+   * @param token the token to update
+   * @return the updated token
+   */
+  private WildlifeType updateToken(WildlifeType token) { return this.bag.updateToken(token); }
 
-  private WildlifeType updateToken(WildlifeType token) {
-    return this.bag.updateToken(token);
-  }
-
+  /**
+   * This method is used to update the tokens.
+   */
   public final void updateTokens() {
     if (this.tokensAreUpdated) {
       System.err.println("Tokens are already updated, wait next turn please");
@@ -137,14 +132,30 @@ public final class GameBoard {
     this.tokensAreUpdated = true;
   }
 
+  /**
+   * This method is used to get a copy of the tiles.
+   * 
+   * @return a copy of the tiles
+   */
   public final List<Tile> getCopyOfTiles() {
     return List.copyOf(GameBoard.tiles); // we sent a copy
   }
 
+  /**
+   * This method is used to get a copy of the tokens.
+   * 
+   * @return a copy of the tokens
+   */
   public final List<WildlifeType> getCopyOfTokens() {
     return List.copyOf(GameBoard.tokens); // we sent a copy
   }
 
+  /**
+   * This method is used to get a tile.
+   * 
+   * @param index the index of the tile
+   * @return the tile
+   */
   public Tile getTile(int index) {
     if (index < 0 || index >= Constants.TILES_ON_BOARD) {
       throw new IllegalArgumentException("Index of tile out of bounds");
@@ -154,6 +165,12 @@ public final class GameBoard {
     return tile;
   }
 
+  /**
+   * This method is used to get a token.
+   * 
+   * @param index the index of the token
+   * @return the token
+   */
   public WildlifeType getToken(int index) {
     if (index < 0 || index >= Constants.TOKENS_ON_BOARD) {
       throw new IllegalArgumentException("Index of wildlife token out of bounds");
@@ -163,8 +180,11 @@ public final class GameBoard {
     return token;
   }
 
-  public Bag getBag() {
-    return this.bag;
-  }
+  /**
+   * This method is used to get the bag.
+   * 
+   * @return the bag
+   */
+  public Bag getBag() { return this.bag; }
 
 }

@@ -17,9 +17,6 @@ import java.util.stream.IntStream;
  */
 public final class HexagonalEnvironment implements Environment {
 
-  /* 100 - 196 total tiles to show in player's environment */
-  // private final Cell[][] grid = new Cell[Constants.MAX_ROW][Constants.MAX_COL];
-
   /* environment of all placed tiles by one player */
   private final HashSet<Coordinates> cellsSet;
 
@@ -48,16 +45,21 @@ public final class HexagonalEnvironment implements Environment {
       {{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 0}, {0, -1}},
       {{0, -1}, {-1, 0}, {0, 1}, {1, 1}, {1, 0}, {1, -1}}};
 
+  /**
+   * Constructor of HexagonalEnvironment
+   */
   public HexagonalEnvironment() {
-    /*
-     * class for all check and valid parameters to stop checking everytime THE SAME
-     * THING
-     */
-    // initializeGrid(version);
     this.cellsMap = new HashMap<>();
     this.cellsSet = new HashSet<>();
   }
 
+  /**
+   * Get neighbor coordinates of a cell in the environment
+   * 
+   * @param cell      cell to get neighbor
+   * @param direction direction of neighbor
+   * @return coordinates of neighbor
+   */
   private Coordinates getNeighborCoordinates(Cell cell, int direction) {
     var parity = cell.getCoordinates().y() & 1; /* parity: 0 - even rows, 1 - odd rows */
     var diff = HexagonalEnvironment.HEXAGONE_DIRECTION_DIFFERENCES[parity][direction];
@@ -67,6 +69,12 @@ public final class HexagonalEnvironment implements Environment {
     );
   }
 
+  /**
+   * Get one neighbor of a cell in the environment
+   * 
+   * @param cell      - cell to get neighbor
+   * @param direction - direction of neighbor
+   */
   @Override
   public Cell getOneNeighbor(Cell cell, int direction) {
     Objects.requireNonNull(cell);
@@ -77,33 +85,14 @@ public final class HexagonalEnvironment implements Environment {
     return this.cellsMap.computeIfAbsent(currCoordinates, /* neighbor coordinates */
         HexagonalCell::new /* create new cell if not exists */
     );
-
-    // var neighbor = new HexagonalCell(currCoordinates);
-    // if (!cellsMap.containsKey(currCoordinates)) { /* insert in hashmap `cellsMap`
-    // and return new coordinates */
-    // cellsMap.put(currCoordinates, neighbor);
-    // }
-    // return neighbor;
   }
 
   /**
-   * <b>gets a copy of list of all valid neighbors for a given hex cell.</b>
+   * Get all neighbors of a cell in the environment
    * 
-   * @param cell The hex cell for which to retrieve neighbors.
-   * @return An immutable list of neighboring cells.
+   * @param cell - cell to get neighbors
+   * @return list of neighbors
    */
-  // @Override
-  // public List<Cell> getNeighbors(Cell cell) {
-  // var neighbors = new ArrayList<Cell>();
-  // for (var direction = 0; direction < Constants.MAX_ROTATIONS; ++direction) {
-  // var neighbor = getOneNeighbor(cell, direction);
-  // if (null != neighbor) {
-  // neighbors.add(neighbor);
-  // }
-  // }
-  // return List.copyOf(neighbors);
-  // }
-
   @Override
   public List<Cell> getNeighbors(Cell cell) {
     Objects.requireNonNull(cell, "Cell can't be null in getNeighbors()");
@@ -111,10 +100,7 @@ public final class HexagonalEnvironment implements Environment {
         .range(0,
             HexagonalEnvironment.HEXAGONE_DIRECTION_DIFFERENCES[cell.getCoordinates().y()
                 & 1].length)
-        .mapToObj(direction -> getOneNeighbor(cell, direction))
-        // .filter(Objects::nonNull) // no need to filter, because we create new cell if
-        // not exists
-        .collect(Collectors.toUnmodifiableList());
+        .mapToObj(direction -> getOneNeighbor(cell, direction)).collect(Collectors.toList());
   }
 
   private void addNeighborsInSet(Cell cell) {
@@ -223,7 +209,7 @@ public final class HexagonalEnvironment implements Environment {
   @Override
   public void printAllNeighbors(Coordinates coordinates) {
     Objects.requireNonNull(coordinates);
-    System.err.println("Not implemented yet, HexagonalEnvironment.printAllNeighbors()");
+    System.err.println("Not implemented, HexagonalEnvironment.printAllNeighbors()");
     // var neighbors = getNeighbors(cellsMap.get(coordinates));
     // for (var neighbor : neighbors) {
     // var cell = cellsMap.get(neighbor.getCoordinates());
@@ -287,9 +273,8 @@ public final class HexagonalEnvironment implements Environment {
 
   @Override
   public final Map<TileType, Integer> calculateTileScore() {
-    return Collections.unmodifiableMap(Arrays.stream(TileType.values())
-        .collect(Collectors.toMap(tileType -> tileType, tileType -> calculateScoreTileType(tileType) // this::calculateScoreTileType
-        )));
+    return Collections.unmodifiableMap(Arrays.stream(TileType.values()).collect(
+        Collectors.toMap(tileType -> tileType, tileType -> calculateScoreTileType(tileType))));
   }
 
   // @Override

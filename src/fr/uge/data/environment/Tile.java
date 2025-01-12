@@ -23,7 +23,11 @@ public record Tile(TileType firstHabitat, TileType secondHabitat, Set<WildlifeTy
    */
   public final boolean isKeystone() { return firstHabitat.equals(secondHabitat); }
 
-  /* to improve later */
+  /**
+   * string representation of the tile with the habitats and the animals
+   * 
+   * @return the string representation of the tile
+   */
   private String habitatsAndAnimalsAsString() {
     var builder = new StringBuilder();
     builder.append(firstHabitat).append(" ");
@@ -39,6 +43,9 @@ public record Tile(TileType firstHabitat, TileType secondHabitat, Set<WildlifeTy
     return builder.toString();
   }
 
+  /**
+   * toString method of the Tile
+   */
   @Override
   public String toString() {
     var builder = new StringBuilder();

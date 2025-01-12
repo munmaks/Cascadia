@@ -14,8 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The CascadiaData class stores all relevant pieces of information for the game
- * status.
+ * The CascadiaData class stores all relevant pieces of information for the game status.
  *
  * @author MUNAITPASOV M.
  * @author MAOUCHE M.
@@ -23,8 +22,8 @@ import java.util.Objects;
 public class CascadiaData {
 
   /**
-   * Game instance, which stores all the game data, such as the game board, the
-   * players, and the turn manager.
+   * Game instance, which stores all the game data, such as the game board, the players,
+   * and the turn manager.
    */
   private final Game game;
 
@@ -177,7 +176,8 @@ public class CascadiaData {
    * @param chosenCoordinates
    * @return True if the animal was placed successfully.
    */
-  public boolean placeAnimalIfPossible(WildlifeType chosenAnimal, Coordinates chosenCoordinates) {
+  public boolean placeAnimalIfPossible(WildlifeType chosenAnimal,
+      Coordinates chosenCoordinates) {
     return getCurrentPlayer().getEnvironment()
         .placeAnimal(getCellFromCoordinates(chosenCoordinates), chosenAnimal);
   }
@@ -191,11 +191,4 @@ public class CascadiaData {
     return getCurrentPlayer().getEnvironment().getCells();
   }
 
-  /**
-   * Tests if the player has won.
-   *
-   * @return True if the player has won by finding all pairs of objects, and False
-   *         otherwize.
-   */
-  public boolean win() { return game.turnManager().isGameEnd(); }
 }

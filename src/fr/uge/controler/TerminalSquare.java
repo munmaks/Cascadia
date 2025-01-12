@@ -17,12 +17,7 @@ import java.util.Scanner;
 
 public final class TerminalSquare {
 
-  // private final int numberOfPlayers;
-  // private final boolean isIntermediateScoringCard;
-
-  public TerminalSquare() {
-    // throw new IllegalStateException("Utility class, cannot be instantiated");
-  }
+  public TerminalSquare() {}
 
   private String readName(int num) { return IO.readln("Player " + num + ", what's your name? "); }
 
@@ -45,8 +40,6 @@ public final class TerminalSquare {
     System.out.println("\nHere is " + player.getName() + "'s environment: ");
     var listCells = player.getEnvironment().getCells();
 
-    // System.err.println("Size of list : " + listCells.size()); // for test, to
-    // delete later
     for (var cell : listCells) {
       if (cell.isOccupiedByTile()) {
         System.out.println(cell.toString());
@@ -104,10 +97,6 @@ public final class TerminalSquare {
     return new Coordinates(y, x);
   }
 
-  // don't forget to check if already was changed and if so we don't change it
-  // setToDefault in `src/fr/uge/core/TurnManager.java`
-  /**
-   * */
   private void handleTokenChange(Game game) {
     Objects.requireNonNull(game);
     if (game.board().tokensNeedUpdate()) {
@@ -138,8 +127,7 @@ public final class TerminalSquare {
 
   private void handleTurnChange(Game game) {
     Objects.requireNonNull(game);
-    game.board().setDefaultTokensAreUpdated(); // that means, next person can change tokens (if
-                                               // needed)
+    game.board().setDefaultTokensAreUpdated();
     game.turnManager().changePlayer();
     game.turnManager().nextTurn();
   }
@@ -160,7 +148,7 @@ public final class TerminalSquare {
     var tokenWasPlaced = player.getEnvironment().placeAnimal(currCell, chosedToken);
 
     if (!tokenWasPlaced) {
-      System.err.println("Token wasn't placed"); /* for tests, to delete later */
+      System.err.println("Token wasn't placed");
     }
   }
 
@@ -179,7 +167,7 @@ public final class TerminalSquare {
           .anyMatch(coordinates -> coordinates.equals(userCoordinates))) {
         var currCell = player.getEnvironment().getCell(userCoordinates);
         if (player.getEnvironment().placeTile(currCell, chosedTile)) {
-          System.out.println("Tile was placed successfully"); // for test, to delete later
+          System.out.println("Tile was placed successfully");
           break;
         }
       }
@@ -241,7 +229,6 @@ public final class TerminalSquare {
     }
   }
 
-  // under test
   private void gameLoopVersionSquare(Game game) {
     Objects.requireNonNull(game);
     while (!game.turnManager().isGameEnd()) {
@@ -258,7 +245,6 @@ public final class TerminalSquare {
       handleTilePlacement(currentPlayer, chosedTile);
       handleTokenPlacement(currentPlayer, chosedToken);
 
-      // IO.readln("STOP before the next turn");
       handleTurnChange(game);
     }
 

@@ -32,17 +32,10 @@ public final class SquareEnvironment implements Environment {
    */
   private static final int[][] SQUARE_DIRECTION_DIFFERENCES = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
 
-  // private static final int SQUARE_NUMBER_OF_NEIGHBORS = 4;
-
-  public SquareEnvironment() {
-    /*
-     * class for all check and valid parameters to stop checking everytime THE SAME
-     * THING
-     */
-    // initializeGrid(version);
-    // this.cellsMap = new HashMap<>();
-    // this.cellsSet = new HashSet<>();
-  }
+  /**
+   * Create a new environment for a player.
+   */
+  public SquareEnvironment() {}
 
   /**
    * Get the coordinates of a neighbor cell.
@@ -74,9 +67,8 @@ public final class SquareEnvironment implements Environment {
     if (!cell.isOccupiedByTile()) {
       return new SquareCell(currCoordinates); // without adding into hashmap
     }
-    return this.cellsMap.computeIfAbsent(currCoordinates, /* neighbor coordinates */
-        SquareCell::new /* create new cell if not exists */
-    );
+    /* neighbor coordinates, create new cell if not exists */
+    return this.cellsMap.computeIfAbsent(currCoordinates, SquareCell::new);
   }
 
   /**
@@ -90,14 +82,15 @@ public final class SquareEnvironment implements Environment {
     Objects.requireNonNull(cell, "Cell can't be null in getNeighbors()");
     return IntStream.range(0, SquareEnvironment.SQUARE_DIRECTION_DIFFERENCES.length)
         .mapToObj(direction -> getOneNeighbor(cell, direction))
-        // .filter(Objects::nonNull) // no need to filter, because we create new cell if
-        // not exists
         .collect(Collectors.toUnmodifiableList());
   }
 
+  /**
+   * Add all neighbors of a cell to the set of possible cells.
+   * 
+   * @param cell The cell for which to add neighbors to the set.
+   */
   private void addNeighborsInSet(Cell cell) {
-    // don't need to check again if cell is null, because we did it in placeTile()
-    // Objects.requireNonNull(cell, "cell can't be null in addNeighborsInSet()");
     var neighbors = getNeighbors(cell);
     for (var neighbor : neighbors) {
       var currCoordinates = neighbor.getCoordinates();
@@ -132,6 +125,9 @@ public final class SquareEnvironment implements Environment {
 
   /**
    * Determine possibility to placed a wildlife token on player's environment.
+   * 
+   * @param token The wildlife token to place.
+   * @return true if the token was placed, false otherwise.
    */
   @Override
   public final boolean couldBePlacedWildlifeToken(WildlifeType token) {
@@ -144,6 +140,13 @@ public final class SquareEnvironment implements Environment {
     return false;
   }
 
+  /**
+   * places a wildlife token on a tile within the environment
+   * 
+   * @param cell  The cell on which to place the wildlife token.
+   * @param token The wildlife token to place.
+   * @return true if the token was placed, false otherwise.
+   */
   @Override
   public final boolean placeAnimal(Cell cell, WildlifeType token) {
     Objects.requireNonNull(cell);
@@ -157,63 +160,57 @@ public final class SquareEnvironment implements Environment {
 
   /**
    * Determine possibility to placed a wildlife token on player's environment.
-   * Map.computeIfAbsent() - if the specified key is not already associated with a
-   * value (or is mapped to null), attempts to compute its value using the given
-   * mapping function and enters it into this map unless null.
+   * 
+   * @param token The wildlife token to place.
+   * @return true if the token was placed, false otherwise.
    */
   @Override
   public final Cell getCell(Coordinates coordinates) {
+    /*
+     * Map.computeIfAbsent() - if the specified key is not already associated with a
+     * value (or is mapped to null), attempts to compute its value using the given
+     * mapping function and enters it into this map unless null.
+     */
     Objects.requireNonNull(coordinates, "Coordinates can't be null in getCell()");
     return this.cellsMap.computeIfAbsent(coordinates, SquareCell::new);
   }
 
-  /* gets all tiles in the environment */
+  /**
+   * Get all cells of the environment.
+   * 
+   * @return An immutable list of all cells.
+   */
   @Override
   public final List<Cell> getCells() {
-    // return List.copyOf(this.cellsMap.values());
-    return this.cellsMap.values().stream().collect(Collectors.toUnmodifiableList());
+    return this.cellsMap.values().stream().collect(Collectors.toList());
   }
 
   @Override
   public final Set<Coordinates> getPossibleCells() {
-    // return Set.copyOf(this.cellsSet);
     return Collections.unmodifiableSet(this.cellsSet);
   }
 
+  /**
+   * Print all neighbors of a cell.
+   * 
+   * @param coordinates The coordinates of the cell for which to print neighbors.
+   */
   @Override
   public void printAllNeighbors(Coordinates coordinates) {
     Objects.requireNonNull(coordinates, "Coordinates can't be null in printAllNeighbors()");
 
     getNeighbors(this.cellsMap.get(coordinates)).stream()
-        .map(neighbor -> this.cellsMap.get(neighbor.getCoordinates())) // Map to the cell
-        .filter(Objects::nonNull) // Filter out null cells
-        .filter(cell -> cell.getTile() != null) // Filter cells with null tiles
-        .map(cell -> String.format("%8s  %8s  %6s", coordinates, cell.getTile(),
-            (cell.getAnimal() == null) ? "" : cell.getAnimal())) // Format the output string
-        .forEach(System.out::println); // Print each formatted string
+        .map(neighbor -> this.cellsMap.get(neighbor.getCoordinates())).filter(Objects::nonNull)
+        .filter(cell -> cell.getTile() != null).map(cell -> String.format("%8s  %8s  %6s",
+            coordinates, cell.getTile(), (cell.getAnimal() == null) ? "" : cell.getAnimal()))
+        .forEach(System.out::println);
   }
 
-  /*
-   * We look at all cells in set and then we show them
+  /**
+   * Get the string representation of the environment.
+   * 
+   * @return The string representation of the environment.
    */
-  // @Override
-  // public void printAllNeighbors(Coordinates coordinates) {
-  // Objects.requireNonNull(coordinates, "Coordinates can't be null in
-  // printAllNeighbors()");
-  // var neighbors = getNeighbors(this.cellsMap.get(coordinates));
-  // for (var neighbor : neighbors) {
-  // var builder = new StringBuilder();
-  // var cell = this.cellsMap.getOrDefault(neighbor.getCoordinates(), null);
-  // if (cell != null) {
-  // var tile = cell.getTile();
-  // if (tile == null) { continue; }
-  // builder.append(coordinates).append(" - ").append(tile.toString()).append(" -
-  // ").append(cell.getAnimal());
-  // System.out.println(builder);
-  // }
-  // }
-  // }
-
   @Override
   public String toString() {
     var builder = new StringBuilder();
@@ -224,22 +221,15 @@ public final class SquareEnvironment implements Environment {
     return builder.toString();
   }
 
-  /*
-   * private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
-   * Objects.requireNonNull(tileType, "TileType can't be null in dfs()");
-   * Objects.requireNonNull(cell, "Cell can't be null in dfs()"); if
-   * (cell.getTile() == null || visited.contains(cell)) { return 0; }
-   * visited.add(cell); if (!tileType.equals(cell.getTile().leftHabitat())) {
-   * return 0; } var score = 1; var neighbors = getNeighbors(cell); for (var
-   * neighbor : neighbors) { score += dfs(tileType, neighbor, visited); } return
-   * score; }
+  /**
+   * Depth-first search to calculate the score of a tile type in the environment.
+   * 
+   * @param tileType
+   * @param cell
+   * @param visited
+   * @return
    */
-
   private int dfs(TileType tileType, Cell cell, Set<Cell> visited) {
-    /*
-     * we don't need Objects.requireNonNull(...) because it's internal method and we
-     * know that tileType, cell and visited are not null
-     */
     if (cell.getTile() == null || visited.contains(cell)) {
       return 0;
     } /* no tile or already visited */
@@ -251,32 +241,27 @@ public final class SquareEnvironment implements Environment {
         .max().orElse(0);
   }
 
+  /**
+   * Calculate the score of a tile type in the environment.
+   * 
+   * @param tileType The tile type for which to calculate the score.
+   * @return The score of the tile type.
+   */
   private int calculateScoreTileType(TileType tileType) {
     return this.cellsMap.values().stream().mapToInt(cell -> dfs(tileType, cell, new HashSet<>()))
         .max().orElse(0);
   }
 
+  /**
+   * Calculate the score of each tile type in the environment.
+   * 
+   * @return An immutable map of tile types and their scores.
+   */
   @Override
   public final Map<TileType, Integer> calculateTileScore() {
     return Collections.unmodifiableMap(Arrays.stream(TileType.values())
         .collect(Collectors.toMap(tileType -> tileType, tileType -> calculateScoreTileType(tileType) // this::calculateScoreTileType
         )));
   }
-
-  /*
-   * @Override public final Map<TileType, Integer> calculateTileScore(){ return
-   * Arrays.stream(TileType.values()) .collect(Collectors.toMap( tileType ->
-   * tileType, tileType -> calculateScoreTileType(tileType) //
-   * this::calculateScoreTileType )); }
-   */
-
-  /*
-   * @Override public final Map<TileType, Integer> calculateTileScore() { var
-   * tileTypes = TileType.values(); var allTiles = this.cellsMap.values(); var map
-   * = new HashMap<TileType, Integer>(); for (var tileType : tileTypes) { var
-   * score = 0; var visited = new HashSet<Cell>(); for (var cell : allTiles) {
-   * score = Math.max(score, dfs(tileType, cell, visited)); } map.put(tileType,
-   * score); } return map; }
-   */
 
 }

@@ -13,27 +13,21 @@ import fr.uge.view.CascadiaView;
 import fr.uge.view.ImageLoader;
 
 import com.github.forax.zen.ApplicationContext;
-// import com.github.forax.zen.Application;
-// import com.github.forax.zen.KeyboardEvent;
-// import com.github.forax.zen.PointerEvent;
 
 public class CascadiaControler {
   private static final int VERSION_SQUARE = 1;
   private static final int NB_PLAYERS_SQUARE = 2;
 
-  public CascadiaControler() {
-    // TO DO
-  }
+  public CascadiaControler() {}
 
   public static void cascadiaSquareGame(ApplicationContext context) {
     var screenInfo = context.getScreenInfo();
     var width = screenInfo.width();
     var height = screenInfo.height();
 
-    /* makeCalculations(width, height); */
     // var coeffSizePolygone = 0.069; /* optimal, to have 8 hexagonal on screen */
     var coeffSizeSquare = 0.1; /* optimal, to have 10 square on screen */
-    var coeffSizeToken = 0.08; /* to test */
+    var coeffSizeToken = 0.08;
 
     var coeffFontSizeInstructions = 0.01328125;
 
@@ -47,7 +41,7 @@ public class CascadiaControler {
 
     var firstPlayerName = "Player 1";
     var secondPlayerName = "Player 2";
-    // var familyOrIntermediate = 1;
+    /* var familyOrIntermediate = 1; */
 
     var player1 = new Player(firstPlayerName, VERSION_SQUARE);
     var player2 = new Player(secondPlayerName, VERSION_SQUARE);
@@ -64,9 +58,6 @@ public class CascadiaControler {
     var view = CascadiaView.initGameGraphics(0, 0, width, height, figureSize, data, images);
 
     for (;;) {
-
-      // drawRectangle(graphics, 0, 0, width, height, Color.WHITE); /* clear the
-      // screen */
 
       CascadiaView.drawStart(context, data, view, width, height,
           (int) (width * coeffFontSizeInstructions), figureSize, environmentSquareWidth,
@@ -113,11 +104,10 @@ public class CascadiaControler {
 
       data.handleTurnChange();
       if (data.isGameEnd()) {
-        System.out.println("Game is over");
+        System.out.println("Game is over\nThanks for playing Cascadia game!");
         context.dispose();
         return;
       }
     }
   }
-
 }

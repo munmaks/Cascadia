@@ -24,6 +24,5 @@ public sealed interface Environment permits SquareEnvironment, HexagonalEnvironm
 
   Map<TileType, Integer> calculateTileScore();
 
-  void printAllNeighbors(Coordinates coordinates); // for terminal version, to think if we can do
-                                                   // better
+  void printAllNeighbors(Coordinates coordinates);
 }
