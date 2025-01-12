@@ -1,5 +1,6 @@
 package fr.uge.main;
 
+
 import fr.uge.ui.MainMenu;
 import fr.uge.ui.GraphicSquare;
 import fr.uge.util.Constants;
