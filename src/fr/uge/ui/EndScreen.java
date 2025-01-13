@@ -29,22 +29,22 @@ public class EndScreen {
       String playerName = playerNames.get(i);
       int score = scores.get(i);
       graphics.setFont(graphics.getFont().deriveFont(36f));
-      graphics.drawString("Joueur " + (i + 1) + ": " + playerName, screenWidth / 2 - screenWidth / 10, yPosition);
-      graphics.drawString("Score : " + score, screenWidth / 2 - screenWidth / 10, yPosition + 40);
-      yPosition += 100;
+      graphics.drawString("Joueur " + (i + 1) + ": " + playerName, (int) (screenWidth / 2.3), yPosition);
+      graphics.drawString("Score : " + score, (int) (screenWidth / 2.3), yPosition + screenHeight/27);
+      yPosition += screenHeight/10;
     }
     graphics.setFont(graphics.getFont().deriveFont(24f));
-    graphics.drawString("Cliquez ici pour quitter", (int) (screenWidth / 2.5), screenHeight * 3 / 4 + 50);
+    graphics.drawString("Cliquez ici pour quitter", (int) (screenWidth / 2.3), (int) (screenHeight * 0.8));
     graphics.setColor(Color.RED);
-    graphics.fillRoundRect(screenWidth / 2 - screenWidth / 8, screenHeight * 3 / 4 + 70, screenWidth / 4, screenHeight / 12, 10, 10);
+    graphics.fillRoundRect((int) (screenWidth / 2.6), (int) (screenHeight / 1.22), screenWidth / 4, screenHeight / 12, 10, 10);
     graphics.setColor(Color.WHITE);
-    graphics.drawString("Quitter", screenWidth / 2 - screenWidth / 16, screenHeight * 3 / 4 + 105);
+    graphics.drawString("Quitter", (int) (screenWidth / 2.1), (int) (screenHeight * 0.86));
   }
 
   public void checkClickQuit(PointerEvent.Action action, PointerEvent.Location location, int screenWidth, int screenHeight) {
     if (action == PointerEvent.Action.POINTER_UP &&
-            location.x() >= screenWidth / 2 - screenWidth / 8 && location.x() <= screenWidth / 2 - screenWidth / 8 + screenWidth / 4 &&
-            location.y() >= screenHeight * 3 / 4 + 70 && location.y() <= screenHeight * 3 / 4 + 70 + screenHeight / 12) {
+            location.x() >= screenWidth / 2.6 && location.x() <= screenWidth / 1.6 &&
+            location.y() >= screenHeight /1.22 && location.y() <= screenHeight / 1.11) {
       System.out.println("Fin du jeu. Merci d'avoir joué !");
       System.exit(0);
     }
